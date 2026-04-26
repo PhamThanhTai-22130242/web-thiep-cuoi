@@ -1,0 +1,83 @@
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <nav className="navbar">
+        <div className="brand">
+          <div className="brand-mark">H</div>
+          <div>
+            <strong>Harmony</strong>
+            <span>Thiệp Cưới</span>
+          </div>
+        </div>
+        <ul className="nav-links">
+          <li><a href="#home">Trang chủ</a></li>
+          <li><a href="#services">Bảng giá</a></li>
+          <li><a href="#cards">Mẫu thiệp</a></li>
+          <li><a href="#contact">Liên hệ</a></li>
+        </ul>
+      </nav>
+
+      <main className="hero" id="home">
+        <div className="hero-copy">
+          <span className="eyebrow">Thiệp cưới online</span>
+          <h1>Thiệp cưới online<br />Nhà có Hỷ</h1>
+          <p>
+            Một tấm thiệp không chỉ là lời mời, mà là cách kể lại câu chuyện tình yêu của bạn.
+          </p>
+          <div className="hero-actions">
+            <a href="#contact" className="btn btn-primary">Liên hệ ngay</a>
+            <a href="#cards" className="btn btn-ghost">Xem mẫu thiệp</a>
+          </div>
+        </div>
+
+        <div className="hero-visual">
+          <div className="phone phone-left">
+            <div className="phone-screen screen-golden">
+              <div className="screen-top">Golden | Tựa ảnh hoàn hảo</div>
+              <div className="couple-name">Văn Bách<br />Khánh Ly</div>
+              <div className="cta-pill">Thư mời tham dự lễ cưới</div>
+            </div>
+          </div>
+          <div className="phone phone-right">
+            <div className="phone-screen screen-elegant">
+              <div className="screen-top">Elegant | Sang trọng &amp; tinh tế</div>
+              <div className="couple-name">Bách &amp; Ly</div>
+              <div className="cta-pill">Save The Date<br />12.10.2025</div>
+            </div>
+          </div>
+          <div className="hero-decor">
+            <span className="dot dot-large"></span>
+            <span className="dot dot-small"></span>
+          </div>
+        </div>
+      </main>
+
+      <section className="features" id="services">
+        <article>
+          <h2>Thiết kế tinh tế</h2>
+          <p>Thiệp cưới mang phong cách sang trọng, màu sắc hài hòa và cảm giác ấm áp.</p>
+        </article>
+        <article>
+          <h2>Dễ dàng tùy chỉnh</h2>
+          <p>Chọn mẫu, chỉnh chữ và gửi link mời chỉ trong vài phút.</p>
+        </article>
+        <article>
+          <h2>Trải nghiệm mượt mà</h2>
+          <p>Giao diện nhẹ nhàng, animation tinh tế phù hợp với mọi thiết bị.</p>
+        </article>
+      </section>
+
+      <section className="contact" id="contact">
+        <div>
+          <h2>Muốn tạo thiệp cưới ngay?</h2>
+          <p>Liên hệ với chúng tôi để nhận tư vấn thiết kế và giá tốt nhất.</p>
+        </div>
+        <a href="mailto:hello@harmony.com" className="btn btn-primary">Gửi email</a>
+      </section>
+    </div>
+  );
+}
+
+export default App;

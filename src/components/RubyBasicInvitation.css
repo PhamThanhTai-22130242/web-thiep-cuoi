@@ -1,0 +1,1456 @@
+:root {
+  --rbi-red: #9f2c24;
+  --rbi-red-deep: #7f1712;
+  --rbi-gold: #d8b16a;
+  --rbi-paper: #f6e8dc;
+  --rbi-paper-strong: #fbf4ee;
+  --rbi-ink: #4d3129;
+  --rbi-muted: #735349;
+  --rbi-script: 'Great Vibes', cursive;
+  --rbi-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --rbi-speed: 1;
+}
+
+.rbi-page {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 540px);
+  margin: 0 auto;
+  background:
+    linear-gradient(90deg, rgba(159, 44, 36, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 24%),
+    var(--rbi-paper);
+  background-size: 34px 34px, auto, auto;
+  color: var(--rbi-ink);
+  box-shadow: 0 0 70px rgba(72, 23, 16, 0.18);
+}
+
+.rbi-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(246, 232, 220, 0.1), rgba(246, 232, 220, 0.16)),
+    url('https://chungdoi.com/images/double-dragon.webp') center top / cover no-repeat;
+  opacity: 1;
+  filter: saturate(0.92) contrast(1.04);
+}
+
+.rbi-page>* {
+  position: relative;
+  z-index: 1;
+}
+
+.rbi-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rbi-ornaments {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  overflow: hidden;
+}
+
+.rbi-ornaments span {
+  position: absolute;
+  top: -30px;
+  left: calc((var(--i) * 6%) + 2%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 177, 106, 0.4), transparent 72%);
+  opacity: 0;
+  animation: rbi-fall calc(18s * var(--rbi-speed)) linear infinite;
+  animation-delay: calc(var(--i) * -0.5s);
+}
+
+.rbi-back-top {
+  position: fixed;
+  right: max(18px, calc((100vw - 540px) / 2 + 18px));
+  bottom: 22px;
+  z-index: 30;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--rbi-red);
+  color: #fffaf3 !important;
+  font-size: 1.6rem;
+  box-shadow: 0 14px 28px rgba(90, 19, 14, 0.26);
+}
+
+.rbi-hero {
+  position: relative;
+  min-height: 100vh;
+  padding: 22px 22px 42px;
+  text-align: center;
+}
+
+.rbi-hero::before,
+.rbi-hero::after,
+.rbi-invite-card::before,
+.rbi-invite-card::after {
+  content: '';
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 38%, rgba(255, 255, 255, 0.92) 0 14px, transparent 15px),
+    radial-gradient(circle at 56% 54%, rgba(255, 255, 255, 0.82) 0 18px, transparent 19px),
+    radial-gradient(circle at 44% 62%, rgba(159, 44, 36, 0.14) 0 28px, transparent 29px);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.rbi-hero::before {
+  left: 6px;
+  top: 260px;
+}
+
+.rbi-hero::after {
+  right: -22px;
+  top: 500px;
+}
+
+.rbi-hero-kicker {
+  margin: 0 auto 38px;
+  max-width: 460px;
+  color: var(--rbi-red);
+  font-size: clamp(1rem, 4vw, 1.32rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.rbi-envelope {
+  position: relative;
+  width: min(100%, 492px);
+  height: 470px;
+  margin: 0 auto 30px;
+}
+
+.rbi-envelope::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 38px;
+  height: 252px;
+  background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
+  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
+  box-shadow: 0 24px 44px rgba(90, 19, 14, 0.18);
+  animation: rbi-envelope-settle calc(3.4s * var(--rbi-speed)) 0.3s ease-in-out both;
+}
+
+.rbi-envelope::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 38px;
+  height: 252px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
+}
+
+.rbi-envelope-flap {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 168px;
+  height: 160px;
+  background: linear-gradient(180deg, #b73a2f, #8a2319);
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  transform-origin: bottom;
+  animation: rbi-flap-open calc(2.4s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08) both;
+}
+
+.rbi-photo {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 8px 8px 44px;
+  background: var(--rbi-paper-strong);
+  box-shadow: 0 16px 30px rgba(82, 28, 20, 0.2);
+}
+
+.rbi-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rbi-photo-left {
+  left: 12px;
+  top: 86px;
+  width: 248px;
+  height: 246px;
+  transform: translateX(-74px) rotate(-8deg);
+  animation: rbi-photo-left calc(2.5s * var(--rbi-speed)) 0.34s cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
+    rbi-photo-float-left calc(11s * var(--rbi-speed)) 2.8s ease-in-out infinite;
+}
+
+.rbi-photo-right {
+  right: 12px;
+  top: 38px;
+  width: 220px;
+  height: 266px;
+  transform: translateX(74px) rotate(8deg);
+  animation: rbi-photo-right calc(2.6s * var(--rbi-speed)) 0.52s cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
+    rbi-photo-float-right calc(11.5s * var(--rbi-speed)) 3s ease-in-out infinite;
+}
+
+.rbi-photo-center {
+  position: relative;
+  inset: auto;
+  width: 212px;
+  height: 288px;
+  justify-self: center;
+  transform: rotate(-7deg);
+}
+
+.rbi-seal {
+  position: absolute;
+  left: 50%;
+  bottom: 116px;
+  z-index: 3;
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--rbi-gold) 0 50%, #b1812d 52% 100%);
+  color: var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: 2.4rem;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 8px rgba(255, 245, 213, 0.2), 0 10px 24px rgba(87, 23, 17, 0.28);
+  transform: translateX(-50%);
+  animation: rbi-seal-pop calc(1.4s * var(--rbi-speed)) 1.4s ease both,
+    rbi-seal-glow calc(8s * var(--rbi-speed)) 3s ease-in-out infinite;
+}
+
+.rbi-hero h1,
+.rbi-couple-row h2,
+.rbi-section-title h2,
+.rbi-band h2,
+.rbi-thanks h2 {
+  font-family: var(--rbi-script);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.rbi-hero h1 {
+  margin: 0;
+  color: var(--rbi-red);
+  font-size: clamp(4rem, 18vw, 6.2rem);
+  line-height: 0.98;
+}
+
+.rbi-hero h1 span {
+  color: #9b7a4d;
+  font-size: 0.42em;
+}
+
+.rbi-date-lockup {
+  display: grid;
+  margin-top: 30px;
+  line-height: 0.82;
+}
+
+.rbi-date-lockup strong {
+  color: var(--rbi-red-deep);
+  font-family: var(--rbi-serif);
+  font-size: clamp(4.8rem, 22vw, 6.8rem);
+  font-weight: 600;
+  animation: rbi-breathe calc(9s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-date-lockup span {
+  color: #a17842;
+  font-family: var(--rbi-script);
+  font-size: clamp(3rem, 15vw, 5rem);
+}
+
+.rbi-calendar-section,
+.rbi-invite-card,
+.rbi-timeline,
+.rbi-wishes,
+.rbi-gallery,
+.rbi-thanks {
+  position: relative;
+  padding: 36px 28px;
+}
+
+.rbi-calendar-card {
+  margin-bottom: 42px;
+}
+
+.rbi-weekdays,
+.rbi-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  text-align: center;
+}
+
+.rbi-weekdays {
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: 1.28rem;
+  font-weight: 700;
+}
+
+.rbi-days {
+  row-gap: 15px;
+  padding-top: 22px;
+  color: #7c584d;
+  font-size: 1.14rem;
+}
+
+.rbi-days span {
+  min-height: 24px;
+  position: relative;
+}
+
+.rbi-days .is-wedding-day {
+  color: #fff;
+  font-weight: 700;
+}
+
+.rbi-days .is-wedding-day::before,
+.rbi-days .is-wedding-day::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 24px;
+  height: 38px;
+  border-radius: 24px 24px 4px 4px;
+  background: var(--rbi-red);
+  transform: translateX(-50%) rotate(-45deg);
+  z-index: -1;
+}
+
+.rbi-days .is-wedding-day::after {
+  transform: translateX(-22%) rotate(45deg);
+}
+
+.rbi-countdown {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 42px;
+}
+
+.rbi-countdown article {
+  display: grid;
+  gap: 10px;
+  text-align: center;
+  animation: rbi-soft-rise calc(7s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-countdown article:nth-child(2) {
+  animation-delay: 0.22s;
+}
+
+.rbi-countdown article:nth-child(3) {
+  animation-delay: 0.44s;
+}
+
+.rbi-countdown article:nth-child(4) {
+  animation-delay: 0.66s;
+}
+
+.rbi-countdown strong {
+  color: var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: clamp(2rem, 9vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.rbi-countdown span {
+  color: #8b6648;
+  font-family: var(--rbi-script);
+  font-size: 1.52rem;
+}
+
+.rbi-couple-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.rbi-couple-row article {
+  text-align: center;
+}
+
+.rbi-couple-row article>span {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--rbi-muted);
+  font-size: 1.2rem;
+}
+
+.rbi-couple-row h2 {
+  margin: 0;
+  color: var(--rbi-red);
+  font-size: clamp(3rem, 12vw, 4.2rem);
+  line-height: 0.92;
+}
+
+.rbi-line-ornament {
+  width: 118px;
+  height: 102px;
+  margin: 0 auto 20px;
+  opacity: 0.44;
+  background:
+    linear-gradient(42deg, transparent 48%, var(--rbi-red) 49% 51%, transparent 52%),
+    radial-gradient(ellipse at 34% 46%, transparent 0 18px, var(--rbi-red) 19px 20px, transparent 21px),
+    radial-gradient(ellipse at 58% 34%, transparent 0 16px, var(--rbi-red) 17px 18px, transparent 19px);
+  animation: rbi-drift calc(13s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-invite-card {
+  text-align: center;
+}
+
+.rbi-invite-card::before {
+  left: -40px;
+  top: 0;
+}
+
+.rbi-invite-card::after {
+  right: -42px;
+  top: 70px;
+  transform: rotate(180deg);
+}
+
+.rbi-band {
+  margin: 0 -28px 26px;
+  padding: 22px 22px 28px;
+  background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
+  color: #fff5ee;
+}
+
+.rbi-band p,
+.rbi-band span {
+  display: block;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.rbi-band h2 {
+  margin: 10px 0;
+  color: #fff5ee;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.rbi-invite-card>p {
+  margin: 10px 0;
+  font-family: var(--rbi-serif);
+  font-size: clamp(1.26rem, 6vw, 1.68rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rbi-date-line {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  margin: 18px auto 12px;
+  max-width: 400px;
+}
+
+.rbi-date-line span {
+  padding: 10px 0;
+  border-top: 2px solid var(--rbi-red);
+  border-bottom: 2px solid var(--rbi-red);
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.rbi-date-line strong {
+  color: var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: clamp(4rem, 17vw, 5.2rem);
+  line-height: 0.86;
+}
+
+.rbi-invite-card em {
+  display: block;
+  margin: 14px 0 24px;
+  color: var(--rbi-muted);
+  font-size: 1rem;
+}
+
+.rbi-rings {
+  width: 210px;
+  height: 150px;
+  margin: 0 auto 24px;
+  opacity: 0.76;
+  background:
+    radial-gradient(circle at 44% 62%, transparent 0 34px, var(--rbi-red) 35px 37px, transparent 38px),
+    radial-gradient(circle at 58% 62%, transparent 0 34px, var(--rbi-red) 35px 37px, transparent 38px),
+    radial-gradient(ellipse at 50% 28%, transparent 0 46px, var(--rbi-red) 47px 49px, transparent 50px);
+  animation: rbi-drift calc(10s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-invite-card h3,
+.rbi-invite-card address {
+  margin: 0 auto 18px;
+  max-width: 430px;
+  font-style: normal;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.rbi-invite-card h3 {
+  font-family: var(--rbi-serif);
+  font-size: 1.3rem;
+}
+
+.rbi-invite-card address {
+  color: var(--rbi-muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rbi-invite-card>a,
+.rbi-wishes button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 28px;
+  background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
+  color: #fff7ef;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.rbi-invite-card>a:hover,
+.rbi-wishes button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(92, 22, 18, 0.18);
+}
+
+.rbi-map-section {
+  height: 320px;
+  padding: 0;
+  background: #e9ddd1;
+}
+
+.rbi-map-section iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.rbi-section-title {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.rbi-section-title p {
+  margin: 0 0 10px;
+  color: var(--rbi-red);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.rbi-section-title h2 {
+  margin: 0;
+  color: var(--rbi-red);
+  font-size: clamp(3.2rem, 16vw, 5.4rem);
+  line-height: 0.95;
+}
+
+.rbi-section-title span {
+  display: block;
+  max-width: 420px;
+  margin: 16px auto 0;
+  color: var(--rbi-muted);
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.rbi-timeline-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  padding: 20px 0 54px;
+}
+
+.rbi-timeline-track::before {
+  content: '';
+  position: absolute;
+  left: 13%;
+  right: 13%;
+  bottom: 78px;
+  height: 1px;
+  background: var(--rbi-red);
+}
+
+.rbi-timeline-track::after {
+  content: '';
+  position: absolute;
+  left: -28px;
+  right: -28px;
+  bottom: 0;
+  height: 42px;
+  background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
+  clip-path: polygon(0 100%, 0 46%, 24% 16%, 50% 42%, 76% 14%, 100% 42%, 100% 100%);
+}
+
+.rbi-timeline-track article {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+}
+
+.rbi-timeline-track article::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--rbi-red);
+  animation: rbi-dot-pulse calc(5.4s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-event-icon {
+  width: 62px;
+  height: 62px;
+  opacity: 0.94;
+  animation: rbi-drift calc(8s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+.rbi-event-icon.is-door {
+  border: 3px solid var(--rbi-red);
+  border-bottom: 0;
+  border-radius: 30px 30px 0 0;
+  box-shadow: inset 12px 0 0 transparent, inset -12px 0 0 transparent;
+}
+
+.rbi-event-icon.is-ring {
+  background:
+    radial-gradient(circle at 40% 62%, transparent 0 18px, var(--rbi-red) 19px 21px, transparent 22px),
+    radial-gradient(circle at 62% 62%, transparent 0 18px, var(--rbi-red) 19px 21px, transparent 22px),
+    linear-gradient(var(--rbi-red), var(--rbi-red)) 50% 10% / 4px 18px no-repeat;
+}
+
+.rbi-event-icon.is-glass {
+  background:
+    linear-gradient(70deg, transparent 0 40%, var(--rbi-red) 41% 45%, transparent 46%) 8px 10px / 28px 44px no-repeat,
+    linear-gradient(-70deg, transparent 0 40%, var(--rbi-red) 41% 45%, transparent 46%) 34px 10px / 28px 44px no-repeat;
+}
+
+.rbi-timeline-track strong {
+  color: var(--rbi-red);
+  font-size: 1rem;
+}
+
+.rbi-timeline-track span {
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rbi-wishes {
+  background: linear-gradient(180deg, rgba(159, 44, 36, 0.08), rgba(255, 255, 255, 0));
+}
+
+.rbi-wishes form {
+  display: grid;
+  gap: 14px;
+}
+
+.rbi-wishes input,
+.rbi-wishes textarea {
+  width: 100%;
+  min-height: 56px;
+  border: 1px solid rgba(127, 23, 18, 0.12);
+  border-radius: 10px;
+  outline: 0;
+  padding: 0 16px;
+  background: #fff;
+  color: var(--rbi-ink);
+  font-size: 1rem;
+}
+
+.rbi-wishes textarea {
+  min-height: 132px;
+  padding: 16px;
+  resize: vertical;
+}
+
+.rbi-wishes input::placeholder,
+.rbi-wishes textarea::placeholder {
+  color: rgba(77, 49, 41, 0.42);
+}
+
+.rbi-status {
+  margin: 16px 0 0;
+  color: var(--rbi-red);
+  font-weight: 700;
+  text-align: center;
+}
+
+.rbi-wish-list {
+  overflow-y: auto;
+  display: grid;
+  gap: 14px;
+  max-height: 314px;
+  margin-top: 24px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.54);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(159, 44, 36, 0.62) rgba(255, 248, 240, 0.72);
+}
+
+.rbi-wish-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.rbi-wish-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 248, 240, 0.84);
+  box-shadow: inset 0 0 0 1px rgba(159, 44, 36, 0.08);
+}
+
+.rbi-wish-list::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(255, 248, 240, 0.84);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(182, 57, 48, 0.9), rgba(127, 23, 18, 0.82));
+}
+
+.rbi-wish-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(196, 67, 57, 0.95), rgba(141, 28, 22, 0.9));
+}
+
+.rbi-wish-list article {
+  border-left: 4px solid var(--rbi-red);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(87, 23, 17, 0.08);
+}
+
+.rbi-wish-list strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--rbi-red);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rbi-wish-list p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.rbi-gallery {
+  background: linear-gradient(180deg, rgba(159, 44, 36, 0.08), rgba(255, 255, 255, 0));
+}
+
+.rbi-gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.rbi-gallery-tile {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rbi-gallery-grid img {
+  display: block;
+  width: 100%;
+  height: 166px;
+  object-fit: cover;
+  border-radius: 4px;
+  opacity: 0;
+  transform: translateX(-70px) rotate(-2deg);
+}
+
+.rbi-gallery-tile.is-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(49, 14, 12, 0.08), rgba(49, 14, 12, 0.68));
+}
+
+.rbi-gallery-tile.is-overlay span {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  color: #fff7ef;
+  font-family: var(--rbi-serif);
+  font-size: clamp(2rem, 10vw, 3rem);
+  font-weight: 700;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img {
+  animation: rbi-gallery-left calc(2s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
+    rbi-breathe-image calc(14s * var(--rbi-speed)) ease-in-out 2.6s infinite;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(even) {
+  animation-name: rbi-gallery-right, rbi-breathe-image;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(2) {
+  animation-delay: 0.3s, 2.9s;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(3) {
+  animation-delay: 0.6s, 3.2s;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(4) {
+  animation-delay: 0.9s, 3.5s;
+}
+
+.rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(5) {
+  animation-delay: 1.2s, 3.8s;
+}
+
+.rbi-gallery-grid img:first-child {
+  grid-row: span 2;
+  height: 340px;
+}
+
+.rbi-gallery-grid img:nth-child(4) {
+  height: 230px;
+}
+
+.rbi-gallery-open {
+  display: inline-flex;
+  min-height: 48px;
+  margin-top: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(159, 44, 36, 0.22);
+  border-radius: 999px;
+  padding: 0 20px;
+  background: rgba(255, 248, 240, 0.82);
+  color: var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rbi-gallery-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.rbi-gallery-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background:
+    linear-gradient(90deg, rgba(15, 15, 15, 0.95), rgba(15, 15, 15, 0.84) 18%, rgba(15, 15, 15, 0.84) 82%, rgba(15, 15, 15, 0.95)),
+    rgba(15, 15, 15, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.rbi-gallery-panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1280px);
+  min-height: 100vh;
+  padding: 18px 18px 12px;
+  color: #fff7ef;
+}
+
+.rbi-gallery-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.rbi-gallery-panel-head p {
+  margin: 0 0 4px;
+  color: rgba(255, 247, 239, 0.72);
+  font-size: 0.94rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rbi-gallery-panel-head strong {
+  color: #fff7ef;
+  font-family: var(--rbi-serif);
+  font-size: 1.6rem;
+}
+
+.rbi-gallery-panel-head button {
+  min-width: 72px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff7ef;
+  font-weight: 700;
+}
+
+.rbi-gallery-viewer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 18px;
+  min-height: calc(100vh - 176px);
+}
+
+.rbi-gallery-stage {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  min-height: min(72vh, 760px);
+}
+
+.rbi-gallery-stage img {
+  display: block;
+  max-width: min(100%, 560px);
+  max-height: min(72vh, 760px);
+  width: auto;
+  height: auto;
+  border-radius: 20px;
+  object-fit: contain;
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.34);
+}
+
+.rbi-gallery-nav {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff7ef;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.rbi-gallery-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 72px;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 4px 4px;
+  scrollbar-width: thin;
+}
+
+.rbi-gallery-thumb {
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  opacity: 0.62;
+  overflow: hidden;
+}
+
+.rbi-gallery-thumb.is-active {
+  border-color: var(--rbi-red);
+  opacity: 1;
+  box-shadow: 0 0 0 2px rgba(159, 44, 36, 0.36);
+}
+
+.rbi-gallery-thumb img {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+}
+
+.rbi-thanks {
+  position: relative;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+  background: var(--rbi-paper);
+}
+
+.rbi-thanks::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  height: 72px;
+  background: linear-gradient(180deg, var(--rbi-paper) 0%, rgba(246, 232, 220, 0.18) 100%);
+  pointer-events: none;
+}
+
+.rbi-thanks img {
+  display: block;
+  width: 100%;
+  height: 560px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08);
+  filter: saturate(0.96) contrast(1.02);
+}
+
+.rbi-thanks div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 136px;
+  z-index: 2;
+  padding: 24px;
+  background: rgba(255, 248, 240, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.rbi-thanks h2 {
+  margin: 0;
+  color: var(--rbi-red);
+  font-size: clamp(3.4rem, 14vw, 5.2rem);
+  line-height: 0.9;
+}
+
+.rbi-thanks p {
+  margin: 14px 0 0;
+  color: var(--rbi-muted);
+  font-size: 1.08rem;
+  font-style: italic;
+  font-weight: 700;
+}
+
+[data-rbi-reveal] {
+  opacity: 0;
+  transform: translateY(42px);
+  transition: opacity calc(1.6s * var(--rbi-speed)) ease,
+    transform calc(1.6s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+[data-rbi-image] {
+  opacity: 0;
+  transition: opacity calc(1.9s * var(--rbi-speed)) ease,
+    transform calc(1.9s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08);
+  will-change: opacity, transform;
+}
+
+[data-rbi-image='left'] {
+  transform: translateX(-84px);
+}
+
+[data-rbi-image='right'] {
+  transform: translateX(84px);
+}
+
+[data-rbi-reveal='down'] {
+  transform: translateY(-30px);
+}
+
+[data-rbi-reveal='up'] {
+  transform: translateY(42px) scale(0.98);
+}
+
+[data-rbi-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-rbi-image].is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rbi-couple-row .rbi-photo,
+.rbi-map-section iframe {
+  animation: rbi-breathe-image calc(14s * var(--rbi-speed)) ease-in-out infinite;
+}
+
+@keyframes rbi-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -40px, 0) scale(0.8);
+  }
+
+  16% {
+    opacity: 0.56;
+  }
+
+  48% {
+    transform: translate3d(calc(var(--drift) * -0.4), 48vh, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), 110vh, 0) scale(0.86);
+  }
+}
+
+@keyframes rbi-photo-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-150px) translateY(34px) rotate(-20deg) scale(0.92);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateX(14px) translateY(-8px) rotate(-5deg) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotate(-8deg);
+  }
+}
+
+@keyframes rbi-photo-right {
+  0% {
+    opacity: 0;
+    transform: translateX(154px) translateY(30px) rotate(22deg) scale(0.92);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateX(-14px) translateY(-8px) rotate(5deg) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotate(8deg);
+  }
+}
+
+@keyframes rbi-flap-open {
+  from {
+    transform: rotateX(72deg) translateY(20px);
+    filter: brightness(0.92);
+  }
+
+  68% {
+    transform: rotateX(-8deg) translateY(-4px);
+    filter: brightness(1.06);
+  }
+
+  to {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+@keyframes rbi-seal-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.56) rotate(-18deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) rotate(0);
+  }
+}
+
+@keyframes rbi-breathe-image {
+
+  0%,
+  100% {
+    filter: saturate(0.96) brightness(1);
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    filter: saturate(1.02) brightness(1.02);
+    transform: translateY(-4px) scale(1.006);
+  }
+}
+
+@keyframes rbi-envelope-settle {
+  0% {
+    transform: translateY(18px) scale(0.98);
+  }
+
+  60% {
+    transform: translateY(-5px) scale(1.01);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rbi-photo-float-left {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(-7deg);
+  }
+}
+
+@keyframes rbi-photo-float-right {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(8deg);
+  }
+
+  50% {
+    transform: translateY(7px) rotate(7deg);
+  }
+}
+
+@keyframes rbi-seal-glow {
+
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 8px rgba(255, 245, 213, 0.2), 0 10px 24px rgba(87, 23, 17, 0.28);
+  }
+
+  50% {
+    box-shadow: inset 0 0 0 8px rgba(255, 245, 213, 0.3), 0 10px 30px rgba(155, 121, 45, 0.34);
+  }
+}
+
+@keyframes rbi-breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+@keyframes rbi-soft-rise {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes rbi-drift {
+
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateX(4px) rotate(1deg);
+  }
+}
+
+@keyframes rbi-dot-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(159, 44, 36, 0.2);
+  }
+
+  50% {
+    transform: scale(1.14);
+    box-shadow: 0 0 0 10px rgba(159, 44, 36, 0);
+  }
+}
+
+@keyframes rbi-gallery-left {
+  from {
+    opacity: 0;
+    transform: translateX(-90px) rotate(-5deg) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes rbi-gallery-right {
+  from {
+    opacity: 0;
+    transform: translateX(90px) rotate(5deg) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .rbi-page {
+    width: 100%;
+  }
+
+  .rbi-hero {
+    padding-inline: 14px;
+  }
+
+  .rbi-envelope {
+    height: 430px;
+  }
+
+  .rbi-photo-left {
+    left: 4px;
+    width: 236px;
+    height: 236px;
+  }
+
+  .rbi-photo-right {
+    right: 2px;
+    width: 204px;
+    height: 252px;
+  }
+
+  .rbi-calendar-section,
+  .rbi-invite-card,
+  .rbi-timeline,
+  .rbi-wishes,
+  .rbi-gallery {
+    padding-inline: 24px;
+  }
+
+  .rbi-couple-row {
+    grid-template-columns: 1fr;
+  }
+
+  .rbi-photo-center {
+    width: min(82vw, 300px);
+    height: 330px;
+  }
+
+  .rbi-date-line {
+    gap: 8px;
+  }
+
+  .rbi-countdown {
+    gap: 8px;
+  }
+
+  .rbi-countdown strong {
+    font-size: 2rem;
+  }
+
+  .rbi-countdown span {
+    font-size: 1.3rem;
+  }
+
+  .rbi-gallery-grid img,
+  .rbi-gallery-grid img:nth-child(4) {
+    height: 144px;
+  }
+
+  .rbi-gallery-grid img:first-child {
+    height: 292px;
+  }
+
+  .rbi-gallery-panel {
+    padding: 14px 12px 12px;
+  }
+
+  .rbi-gallery-panel-head {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  .rbi-gallery-panel-head button {
+    min-width: 64px;
+  }
+
+  .rbi-gallery-viewer {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 8px;
+    min-height: calc(100vh - 188px);
+  }
+
+  .rbi-gallery-stage {
+    min-height: auto;
+  }
+
+  .rbi-gallery-stage img {
+    max-width: 100%;
+    max-height: calc(100vh - 240px);
+    border-radius: 14px;
+  }
+
+  .rbi-gallery-nav {
+    width: 42px;
+    height: 42px;
+    font-size: 1.9rem;
+  }
+
+  .rbi-gallery-strip {
+    grid-auto-columns: 60px;
+    gap: 8px;
+  }
+
+  .rbi-gallery-thumb img {
+    height: 60px;
+  }
+}
