@@ -126,9 +126,9 @@ export const defaultInvitationTemplate: InvitationTemplate = {
         days: Array.from({ length: 30 }, (_, index) => index + 1),
     },
     images: {
-        cover: 'https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1000&q=85',
-        kiss: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=85',
-        walk: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=85',
+        cover: '/img/IMG_0977.jpg',
+        kiss: '/img/IMG_0977.jpg',
+        walk: '/img/IMG_0977.jpg',
         smile: 'https://images.unsplash.com/photo-1509610973147-232dfea52a97?auto=format&fit=crop&w=1000&q=85',
         studio: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=85',
         thank: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=85',
@@ -168,14 +168,84 @@ export const defaultWishes: Wish[] = [
 ];
 
 export const templateStorageKey = 'harmony.invitationTemplates';
+export const templatePreviewStorageKey = 'harmony.invitationPreviewTemplate';
+export const rubyTemplateStorageKey = 'harmony.invitationTemplates.99k';
+export const rubyTemplatePreviewStorageKey = 'harmony.invitationPreviewTemplate.99k';
+const templatePreviewDatabaseName = 'harmonyInvitationPreview';
+const templatePreviewStoreName = 'templates';
 
-export function loadStoredInvitationTemplate() {
+function openTemplatePreviewDatabase() {
+    return new Promise<IDBDatabase>((resolve, reject) => {
+        const request = window.indexedDB.open(templatePreviewDatabaseName, 1);
+
+        request.onupgradeneeded = () => {
+            request.result.createObjectStore(templatePreviewStoreName);
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function writePreviewToDatabase(template: InvitationTemplate, storageKey = templatePreviewStorageKey) {
+    return new Promise<void>(async (resolve, reject) => {
+        try {
+            const database = await openTemplatePreviewDatabase();
+            const transaction = database.transaction(templatePreviewStoreName, 'readwrite');
+            const store = transaction.objectStore(templatePreviewStoreName);
+            store.put(template, storageKey);
+            transaction.oncomplete = () => {
+                database.close();
+                resolve();
+            };
+            transaction.onerror = () => {
+                database.close();
+                reject(transaction.error);
+            };
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+function readPreviewFromDatabase(storageKey = templatePreviewStorageKey) {
+    return new Promise<InvitationTemplate | null>(async (resolve, reject) => {
+        try {
+            const database = await openTemplatePreviewDatabase();
+            const transaction = database.transaction(templatePreviewStoreName, 'readonly');
+            const request = transaction.objectStore(templatePreviewStoreName).get(storageKey);
+            request.onsuccess = () => resolve((request.result as InvitationTemplate | undefined) || null);
+            request.onerror = () => reject(request.error);
+            transaction.oncomplete = () => database.close();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export async function savePreviewInvitationTemplate(template: InvitationTemplate, storageKey = templatePreviewStorageKey) {
+    await writePreviewToDatabase(template, storageKey);
+}
+
+export async function loadPreviewInvitationTemplate(storageKey = templatePreviewStorageKey) {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        return await readPreviewFromDatabase(storageKey);
+    } catch {
+        return null;
+    }
+}
+
+export function loadStoredInvitationTemplate(storageKey = templateStorageKey) {
     if (typeof window === 'undefined') {
         return defaultInvitationTemplate;
     }
 
     try {
-        const stored = window.localStorage.getItem(templateStorageKey);
+        const stored = window.localStorage.getItem(storageKey);
         if (!stored) {
             return defaultInvitationTemplate;
         }

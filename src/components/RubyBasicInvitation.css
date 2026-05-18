@@ -83,6 +83,7 @@
   color: #fffaf3 !important;
   font-size: 1.6rem;
   box-shadow: 0 14px 28px rgba(90, 19, 14, 0.26);
+  cursor: pointer;
 }
 
 .rbi-hero {
@@ -115,6 +116,7 @@
 }
 
 .rbi-hero::after {
+  content: none;
   right: -22px;
   top: 500px;
 }
@@ -188,6 +190,61 @@
   object-fit: cover;
 }
 
+.rbi-photo.is-empty {
+  display: grid;
+  place-items: center;
+}
+
+.rbi-photo-empty {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 2px dashed rgba(78, 102, 96, 0.18);
+  color: rgba(78, 102, 96, 0.56);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1rem, 4vw, 1.28rem);
+  font-weight: 900;
+  text-align: center;
+}
+
+.rbi-photo.is-editable,
+.rbi-gallery-tile,
+.rbi-thanks img[role='button'] {
+  cursor: pointer;
+}
+
+.rbi-edit-image-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 4;
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 10px;
+  background: rgba(127, 23, 18, 0.86);
+  color: #fff7ef;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.rbi-photo.is-editable:hover .rbi-edit-image-hint,
+.rbi-gallery-tile:hover .rbi-edit-image-hint,
+.rbi-photo.is-empty .rbi-edit-image-hint,
+.rbi-gallery-tile.is-empty .rbi-edit-image-hint,
+.rbi-thanks:hover .rbi-thanks-hint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 .rbi-photo-left {
   left: 12px;
   top: 86px;
@@ -211,8 +268,8 @@
 .rbi-photo-center {
   position: relative;
   inset: auto;
-  width: 212px;
-  height: 288px;
+  width: 184px;
+  height: 252px;
   justify-self: center;
   transform: rotate(-7deg);
 }
@@ -339,17 +396,23 @@
   background: var(--rbi-red);
   transform: translateX(-50%) rotate(-45deg);
   z-index: -1;
+  animation: rbi-heart-lobe-left calc(2.4s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-days .is-wedding-day::after {
   transform: translateX(-22%) rotate(45deg);
+  animation-name: rbi-heart-lobe-right;
+}
+
+.rbi-days .is-wedding-day {
+  animation: rbi-heart-sway calc(3.2s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-countdown {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
-  margin-bottom: 42px;
+  margin-bottom: 10px;
 }
 
 .rbi-countdown article {
@@ -373,9 +436,10 @@
 
 .rbi-countdown strong {
   color: var(--rbi-red);
-  font-family: var(--rbi-serif);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(2rem, 9vw, 3rem);
-  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -388,11 +452,12 @@
 .rbi-couple-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 14px;
+  gap: 8px;
   align-items: center;
 }
 
 .rbi-couple-row article {
+  min-width: 0;
   text-align: center;
 }
 
@@ -406,8 +471,10 @@
 .rbi-couple-row h2 {
   margin: 0;
   color: var(--rbi-red);
-  font-size: clamp(3rem, 12vw, 4.2rem);
+  font-size: clamp(2.55rem, 9.5vw, 3.45rem);
   line-height: 0.92;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 .rbi-line-ornament {
@@ -469,6 +536,16 @@
   text-transform: uppercase;
 }
 
+.rbi-invite-time span {
+  color: var(--rbi-red-deep);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.82em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: 0.06em;
+}
+
 .rbi-date-line {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -488,8 +565,10 @@
 
 .rbi-date-line strong {
   color: var(--rbi-red);
-  font-family: var(--rbi-serif);
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(4rem, 17vw, 5.2rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
   line-height: 0.86;
 }
 
@@ -501,57 +580,91 @@
 }
 
 .rbi-rings {
-  width: 210px;
-  height: 150px;
-  margin: 0 auto 24px;
-  opacity: 0.76;
+  width: 116px;
+  height: 86px;
+  margin: 0 auto 16px;
+  opacity: 0.62;
   background:
-    radial-gradient(circle at 44% 62%, transparent 0 34px, var(--rbi-red) 35px 37px, transparent 38px),
-    radial-gradient(circle at 58% 62%, transparent 0 34px, var(--rbi-red) 35px 37px, transparent 38px),
-    radial-gradient(ellipse at 50% 28%, transparent 0 46px, var(--rbi-red) 47px 49px, transparent 50px);
+    radial-gradient(circle at 44% 62%, transparent 0 20px, var(--rbi-red) 21px 23px, transparent 24px),
+    radial-gradient(circle at 58% 62%, transparent 0 20px, var(--rbi-red) 21px 23px, transparent 24px),
+    radial-gradient(ellipse at 50% 28%, transparent 0 28px, var(--rbi-red) 29px 31px, transparent 32px);
   animation: rbi-drift calc(10s * var(--rbi-speed)) ease-in-out infinite;
 }
 
+.rbi-location-card {
+  max-width: 400px;
+  margin: 4px auto 30px;
+  padding: 0 18px;
+  text-align: center;
+}
+
 .rbi-invite-card h3,
-.rbi-invite-card address {
-  margin: 0 auto 18px;
+.rbi-invite-card address,
+.rbi-location-card h3,
+.rbi-location-card address {
+  margin: 0 auto 10px;
   max-width: 430px;
   font-style: normal;
-  line-height: 1.6;
+  line-height: 1.38;
+}
+
+.rbi-invite-card h3,
+.rbi-location-card h3 {
+  font-family: var(--rbi-serif);
+  font-size: 1.22rem;
+  font-weight: 800;
+}
+
+.rbi-location-card h3 {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 8px 18px;
+  border-top: 1px solid rgba(159, 44, 36, 0.28);
+  border-bottom: 1px solid rgba(159, 44, 36, 0.28);
+  color: var(--rbi-red-deep);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.rbi-invite-card h3 {
-  font-family: var(--rbi-serif);
-  font-size: 1.3rem;
-}
-
-.rbi-invite-card address {
+.rbi-invite-card address,
+.rbi-location-card address {
   color: var(--rbi-muted);
-  font-size: 1rem;
+  font-size: 0.92rem;
+  font-style: italic;
   font-weight: 700;
 }
 
 .rbi-invite-card>a,
+.rbi-location-card>a,
 .rbi-wishes button {
   display: inline-flex;
-  min-height: 52px;
+  min-height: 46px;
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: 8px;
-  padding: 0 28px;
+  border-radius: 999px;
+  padding: 0 24px;
   background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
   color: #fff7ef;
+  box-shadow: 0 12px 22px rgba(92, 22, 18, 0.18);
+  cursor: pointer;
   font-weight: 800;
   text-transform: uppercase;
   transition: transform 0.24s ease, box-shadow 0.24s ease;
 }
 
 .rbi-invite-card>a:hover,
+.rbi-location-card>a:hover,
 .rbi-wishes button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(92, 22, 18, 0.18);
+  box-shadow: 0 16px 28px rgba(92, 22, 18, 0.22);
+}
+
+.rbi-location-card>a {
+  min-height: 38px;
+  padding: 0 18px;
+  font-size: 0.82rem;
+  box-shadow: 0 8px 16px rgba(92, 22, 18, 0.16);
 }
 
 .rbi-map-section {
@@ -630,6 +743,8 @@
 .rbi-timeline-track article {
   display: grid;
   gap: 12px;
+  width: 100%;
+  min-width: 0;
   justify-items: center;
   text-align: center;
 }
@@ -644,6 +759,7 @@
 }
 
 .rbi-event-icon {
+  position: relative;
   width: 62px;
   height: 62px;
   opacity: 0.94;
@@ -665,9 +781,28 @@
 }
 
 .rbi-event-icon.is-glass {
-  background:
-    linear-gradient(70deg, transparent 0 40%, var(--rbi-red) 41% 45%, transparent 46%) 8px 10px / 28px 44px no-repeat,
-    linear-gradient(-70deg, transparent 0 40%, var(--rbi-red) 41% 45%, transparent 46%) 34px 10px / 28px 44px no-repeat;
+  background: none;
+}
+
+.rbi-event-icon.is-glass::before,
+.rbi-event-icon.is-glass::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 3px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--rbi-red);
+  transform-origin: 50% 0;
+}
+
+.rbi-event-icon.is-glass::before {
+  transform: translateX(-10px) rotate(-20deg);
+}
+
+.rbi-event-icon.is-glass::after {
+  transform: translateX(10px) rotate(20deg);
 }
 
 .rbi-timeline-track strong {
@@ -676,9 +811,12 @@
 }
 
 .rbi-timeline-track span {
+  display: block;
+  width: 100%;
   font-size: 0.94rem;
   font-weight: 700;
   letter-spacing: 0.06em;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -725,10 +863,10 @@
 .rbi-wish-list {
   overflow-y: auto;
   display: grid;
-  gap: 14px;
-  max-height: 314px;
-  margin-top: 24px;
-  padding: 14px;
+  gap: 10px;
+  max-height: 268px;
+  margin-top: 18px;
+  padding: 10px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.54);
   scrollbar-width: thin;
@@ -756,17 +894,18 @@
 }
 
 .rbi-wish-list article {
-  border-left: 4px solid var(--rbi-red);
-  border-radius: 8px;
-  padding: 14px 16px;
+  border-left: 3px solid var(--rbi-red);
+  border-radius: 7px;
+  padding: 10px 12px;
   background: #fff;
-  box-shadow: 0 8px 18px rgba(87, 23, 17, 0.08);
+  box-shadow: 0 6px 14px rgba(87, 23, 17, 0.07);
 }
 
 .rbi-wish-list strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   color: var(--rbi-red);
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -774,7 +913,8 @@
 
 .rbi-wish-list p {
   margin: 0;
-  line-height: 1.55;
+  font-size: 0.9rem;
+  line-height: 1.42;
 }
 
 .rbi-gallery {
@@ -795,6 +935,27 @@
   cursor: pointer;
 }
 
+.rbi-gallery-tile.is-empty {
+  display: grid;
+  place-items: center;
+  min-height: 166px;
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.rbi-gallery-empty {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 166px;
+  place-items: center;
+  border: 2px dashed rgba(78, 102, 96, 0.18);
+  color: rgba(78, 102, 96, 0.56);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1rem, 4vw, 1.22rem);
+  font-weight: 900;
+  text-align: center;
+}
+
 .rbi-gallery-grid img {
   display: block;
   width: 100%;
@@ -813,7 +974,7 @@
   background: linear-gradient(180deg, rgba(49, 14, 12, 0.08), rgba(49, 14, 12, 0.68));
 }
 
-.rbi-gallery-tile.is-overlay span {
+.rbi-gallery-tile.is-overlay > span:not(.rbi-edit-image-hint) {
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -855,12 +1016,23 @@
   height: 340px;
 }
 
+.rbi-gallery-tile.is-empty:first-child,
+.rbi-gallery-tile.is-empty:first-child .rbi-gallery-empty {
+  min-height: 340px;
+}
+
 .rbi-gallery-grid img:nth-child(4) {
   height: 230px;
 }
 
+.rbi-gallery-tile.is-empty:nth-child(4),
+.rbi-gallery-tile.is-empty:nth-child(4) .rbi-gallery-empty {
+  min-height: 230px;
+}
+
 .rbi-gallery-open {
   display: inline-flex;
+  gap: 0.32em;
   min-height: 48px;
   margin-top: 18px;
   align-items: center;
@@ -873,6 +1045,15 @@
   font-family: var(--rbi-serif);
   font-size: 1rem;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.rbi-gallery-open span {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.92em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .rbi-gallery-modal {
@@ -892,6 +1073,7 @@
     linear-gradient(90deg, rgba(15, 15, 15, 0.95), rgba(15, 15, 15, 0.84) 18%, rgba(15, 15, 15, 0.84) 82%, rgba(15, 15, 15, 0.95)),
     rgba(15, 15, 15, 0.92);
   backdrop-filter: blur(12px);
+  cursor: pointer;
 }
 
 .rbi-gallery-panel {
@@ -934,6 +1116,7 @@
   background: rgba(255, 255, 255, 0.08);
   color: #fff7ef;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .rbi-gallery-viewer {
@@ -974,6 +1157,7 @@
   color: #fff7ef;
   font-size: 2.4rem;
   line-height: 1;
+  cursor: pointer;
 }
 
 .rbi-gallery-strip {
@@ -993,6 +1177,7 @@
   background: transparent;
   opacity: 0.62;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .rbi-gallery-thumb.is-active {
@@ -1016,6 +1201,10 @@
   background: var(--rbi-paper);
 }
 
+.rbi-thanks-hint {
+  bottom: 18px;
+}
+
 .rbi-thanks::before {
   content: '';
   position: absolute;
@@ -1031,7 +1220,7 @@
 .rbi-thanks img {
   display: block;
   width: 100%;
-  height: 560px;
+  height: 280px;
   object-fit: cover;
   object-position: center;
   transform: scale(1.08);
@@ -1042,24 +1231,25 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 136px;
+  top: 50%;
   z-index: 2;
-  padding: 24px;
+  padding: 12px 24px;
   background: rgba(255, 248, 240, 0.7);
   backdrop-filter: blur(3px);
+  transform: translateY(-50%);
 }
 
 .rbi-thanks h2 {
   margin: 0;
   color: var(--rbi-red);
-  font-size: clamp(3.4rem, 14vw, 5.2rem);
-  line-height: 0.9;
+  font-size: clamp(2.55rem, 10.5vw, 3.65rem);
+  line-height: 0.95;
 }
 
 .rbi-thanks p {
-  margin: 14px 0 0;
+  margin: 8px 0 0;
   color: var(--rbi-muted);
-  font-size: 1.08rem;
+  font-size: 0.94rem;
   font-style: italic;
   font-weight: 700;
 }
@@ -1269,6 +1459,66 @@
   }
 }
 
+@keyframes rbi-heart-number {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes rbi-heart-sway {
+
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: translateX(-1px) rotate(-4deg) scale(1.04);
+  }
+
+  50% {
+    transform: translateX(0) rotate(0deg) scale(1.08);
+  }
+
+  75% {
+    transform: translateX(1px) rotate(4deg) scale(1.04);
+  }
+}
+
+@keyframes rbi-heart-lobe-left {
+
+  0%,
+  100% {
+    filter: brightness(1);
+    transform: translateX(-50%) rotate(-45deg) scale(1);
+  }
+
+  45% {
+    filter: brightness(1.12);
+    transform: translateX(-50%) rotate(-45deg) scale(1.16);
+  }
+}
+
+@keyframes rbi-heart-lobe-right {
+
+  0%,
+  100% {
+    filter: brightness(1);
+    transform: translateX(-22%) rotate(45deg) scale(1);
+  }
+
+  45% {
+    filter: brightness(1.12);
+    transform: translateX(-22%) rotate(45deg) scale(1.16);
+  }
+}
+
 @keyframes rbi-soft-rise {
 
   0%,
@@ -1376,13 +1626,38 @@
     padding-inline: 24px;
   }
 
+  .rbi-location-card {
+    margin-top: 0;
+  }
+
   .rbi-couple-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) clamp(128px, 38vw, 160px) minmax(0, 1fr);
+    gap: 6px;
+    margin-inline: -10px;
+    padding: 18px 6px;
   }
 
   .rbi-photo-center {
-    width: min(82vw, 300px);
-    height: 330px;
+    width: clamp(128px, 38vw, 160px);
+    height: clamp(184px, 52vw, 224px);
+    padding: 6px 6px 34px;
+    transform: rotate(-5deg);
+  }
+
+  .rbi-line-ornament {
+    width: clamp(64px, 20vw, 90px);
+    height: clamp(58px, 18vw, 78px);
+    margin-bottom: 8px;
+  }
+
+  .rbi-couple-row article>span {
+    margin-bottom: 8px;
+    font-size: clamp(0.82rem, 3.6vw, 1rem);
+  }
+
+  .rbi-couple-row h2 {
+    font-size: clamp(2rem, 10.4vw, 3.15rem);
+    overflow-wrap: normal;
   }
 
   .rbi-date-line {
@@ -1390,7 +1665,7 @@
   }
 
   .rbi-countdown {
-    gap: 8px;
+    gap: 6px;
   }
 
   .rbi-countdown strong {
@@ -1399,6 +1674,21 @@
 
   .rbi-countdown span {
     font-size: 1.3rem;
+  }
+
+  .rbi-timeline-track {
+    gap: 6px;
+  }
+
+  .rbi-timeline-track article {
+    gap: 10px;
+  }
+
+  .rbi-timeline-track span {
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+    white-space: nowrap;
   }
 
   .rbi-gallery-grid img,

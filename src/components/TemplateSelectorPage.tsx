@@ -1,50 +1,90 @@
 import { useEffect, useRef } from 'react';
+import { ArrowRight, Eye } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import './TemplateSelectorPage.css';
 
 type PackageKey = '99k' | '199k' | '299k';
 
-const templatePackages: Record<
-    PackageKey,
-    {
-        samples: Array<{
-            name: string;
-            path: string;
-            note: string;
-        }>;
-    }
-> = {
+type TemplateSample = {
+    name: string;
+    path: string;
+    note: string;
+    image: string;
+};
+
+type TemplatePackage = {
+    label: string;
+    price: string;
+    title: string;
+    description: string;
+    accent: string;
+    samples: TemplateSample[];
+};
+
+const packageTabs: Array<{ key: PackageKey; label: string; price: string }> = [
+    { key: '99k', label: 'Cơ bản', price: '99.000 đ' },
+    { key: '199k', label: 'Chuyên nghiệp', price: '199.000 đ' },
+    { key: '299k', label: 'VIP', price: '299.000 đ' },
+];
+
+const templatePackages: Record<PackageKey, TemplatePackage> = {
     '99k': {
+        label: 'Gói Cơ Bản',
+        price: '99.000 đ',
+        title: 'Chọn mẫu thiệp cưới phù hợp với câu chuyện của bạn',
+        description: 'Các mẫu trong gói này tập trung vào bố cục sáng, dễ đọc, tải nhanh và đủ đầy những phần quan trọng cho một thiệp cưới online.',
+        accent: '#b96a2c',
         samples: [
             {
                 name: 'Emerald Classic',
                 path: '/thiep-moi',
-                note: 'Tông xanh sang, layout mềm và lãng mạn.',
+                note: 'Tông xanh sang, ảnh nổi bật, hợp với phong cách nhẹ nhàng và tinh tế.',
+                image: '/img/mockup-thiep-cuoi-online-1.webp',
             },
             {
                 name: 'Song Long Đỏ',
                 path: '/thiep-moi-99k',
-                note: 'Phong cách đỏ truyền thống, nổi bật và đậm chất cưới hỏi.',
+                note: 'Sắc đỏ truyền thống, bố cục rực rỡ và đậm chất ngày cưới Việt.',
+                image: '/img/double-dragon.webp',
             },
         ],
     },
     '199k': {
-        samples: [],
+        label: 'Gói Chuyên Nghiệp',
+        price: '199.000 đ',
+        title: 'Bộ mẫu nâng cấp đang được hoàn thiện',
+        description: 'Khu vực này đã sẵn sàng để gắn thêm các mẫu nhiều hiệu ứng, nhiều section và trải nghiệm cá nhân hóa hơn.',
+        accent: '#1f756d',
+        samples: [
+            {
+                name: 'Hỷ Sự Truyền Thống',
+                path: '/thiep-do-truyen-thong',
+                note: 'Sắc đỏ trang trọng, bố cục điện ảnh và chi tiết song hỷ dành cho lễ cưới truyền thống.',
+                image: '/img/double-dragon.webp',
+            },
+        ],
     },
     '299k': {
+        label: 'Gói VIP',
+        price: '299.000 đ',
+        title: 'Không gian cho những mẫu thiệp cao cấp',
+        description: 'Gói VIP sẽ dành cho các mẫu có chuyển động đặc biệt, phối cảnh ảnh lớn và các chi tiết thiết kế riêng theo cặp đôi.',
+        accent: '#7a3fb2',
         samples: [],
     },
 };
 
 function TemplateSelectorPage() {
     const { packageKey } = useParams<{ packageKey: PackageKey }>();
-    const selectedPackage = templatePackages[(packageKey || '99k') as PackageKey] || templatePackages['99k'];
+    const currentPackageKey = ((packageKey || '99k') in templatePackages ? packageKey : '99k') as PackageKey;
+    const selectedPackage = templatePackages[currentPackageKey];
     const frameRefs = useRef<Array<HTMLIFrameElement | null>>([]);
     const animationRefs = useRef<number[]>([]);
 
     useEffect(() => {
         animationRefs.current.forEach((frameId) => window.cancelAnimationFrame(frameId));
         animationRefs.current = [];
+        frameRefs.current = frameRefs.current.slice(0, selectedPackage.samples.length);
 
         frameRefs.current.forEach((frame, index) => {
             if (!frame) {
@@ -64,12 +104,8 @@ function TemplateSelectorPage() {
                     const body = frameDocument.body;
 
                     root.style.overflow = 'hidden';
-                    root.style.setProperty('scrollbar-width', 'none');
-                    root.style.setProperty('-ms-overflow-style', 'none');
                     body.style.overflow = 'hidden';
                     body.style.pointerEvents = 'none';
-                    body.style.setProperty('scrollbar-width', 'none');
-                    body.style.setProperty('-ms-overflow-style', 'none');
 
                     const maxScroll = Math.max(root.scrollHeight, body.scrollHeight) - frameWindow.innerHeight;
                     if (maxScroll <= 0) {
@@ -77,22 +113,22 @@ function TemplateSelectorPage() {
                         return;
                     }
 
-                    const duration = 24000;
-                    const delayOffset = index * 1200;
+                    const duration = 26000;
+                    const delayOffset = index * 1500;
 
                     const animate = (now: number) => {
                         const elapsed = (now + delayOffset) % duration;
                         const progress = elapsed / duration;
-                        const eased = 0.5 - Math.cos(progress * Math.PI) / 2;
-                        const nextScroll = maxScroll * eased;
-                        frameWindow.scrollTo(0, nextScroll);
+                        const eased = 0.5 - Math.cos(progress * Math.PI * 2) / 2;
+
+                        frameWindow.scrollTo(0, maxScroll * eased);
                         animationRefs.current[index] = window.requestAnimationFrame(animate);
                     };
 
                     frameWindow.scrollTo(0, 0);
                     animationRefs.current[index] = window.requestAnimationFrame(animate);
                 } catch {
-                    // Ignore iframe access issues and keep static preview.
+                    // Preview still works as a static iframe if the browser blocks frame access.
                 }
             };
 
@@ -101,9 +137,7 @@ function TemplateSelectorPage() {
                 return;
             }
 
-            frame.onload = () => {
-                startAutoScroll();
-            };
+            frame.onload = startAutoScroll;
         });
 
         return () => {
@@ -113,41 +147,66 @@ function TemplateSelectorPage() {
     }, [selectedPackage]);
 
     return (
-        <main className="selector-page">
-            <div className="selector-shell">
-                <section className="selector-grid">
-                    {selectedPackage.samples.length > 0 ? (
-                        selectedPackage.samples.map((sample, index) => (
-                            <article key={sample.path} className="selector-card">
-                                <div className="selector-card-preview" aria-hidden="true">
-                                    <div className="selector-card-preview-shell">
-                                        <iframe
-                                            ref={(node) => {
-                                                frameRefs.current[index] = node;
-                                            }}
-                                            src={sample.path}
-                                            title={`Preview ${sample.name}`}
-                                            loading="lazy"
-                                            scrolling="no"
-                                            tabIndex={-1}
-                                        />
-                                    </div>
+        <main className="selector-page" style={{ '--selector-accent': selectedPackage.accent } as React.CSSProperties}>
+            <nav className="selector-tabs" aria-label="Lọc mẫu thiệp theo gói">
+                {packageTabs.map((tab) => (
+                    <Link
+                        key={tab.key}
+                        className={tab.key === currentPackageKey ? 'is-active' : ''}
+                        to={`/chon-mau/${tab.key}`}
+                    >
+                        <span>{tab.label}</span>
+                        <strong>{tab.price}</strong>
+                    </Link>
+                ))}
+            </nav>
+
+            {selectedPackage.samples.length > 0 ? (
+                <section className="selector-grid" aria-label="Danh sách mẫu thiệp cưới">
+                    {selectedPackage.samples.map((sample, index) => (
+                        <article key={sample.path} className="selector-card">
+                            <div className="selector-preview-wrap">
+                                <div className="selector-preview-glow" />
+                                <div className="selector-phone" aria-hidden="true">
+                                    <iframe
+                                        ref={(node) => {
+                                            frameRefs.current[index] = node;
+                                        }}
+                                        src={sample.path}
+                                        title={`Preview ${sample.name}`}
+                                        loading="lazy"
+                                        scrolling="no"
+                                        tabIndex={-1}
+                                    />
                                 </div>
-                                <div className="selector-card-copy">
+                            </div>
+
+                            <div className="selector-card-copy">
+                                <div>
                                     <h2>{sample.name}</h2>
                                     <p>{sample.note}</p>
-                                    <Link to={sample.path}>Xem mẫu này</Link>
                                 </div>
-                            </article>
-                        ))
-                    ) : (
-                        <div className="selector-empty">
-                            <h2>Đang cập nhật mẫu</h2>
-                            <p>Hiện tại gói này chưa có mẫu hiển thị. Khi bạn thêm mẫu mới, trang này sẽ tự dùng được luôn.</p>
-                        </div>
-                    )}
+
+                                <div className="selector-actions">
+                                    <Link className="selector-primary-action" to={sample.path}>
+                                        <Eye size={18} />
+                                        Xem mẫu này
+                                    </Link>
+                                    <Link className="selector-secondary-action" to={sample.path === '/thiep-moi-99k' ? '/template-dashboard-99k' : '/template-dashboard'}>
+                                        Tùy chỉnh <ArrowRight size={17} />
+                                    </Link>
+                                </div>
+                            </div>
+                        </article>
+                    ))}
                 </section>
-            </div>
+            ) : (
+                <section className="selector-empty">
+                    <h2>Mẫu của {selectedPackage.label} đang được cập nhật</h2>
+                    <p>Sắp cập nhập</p>
+                    <Link to="/chon-mau/99k">Xem mẫu đang có <ArrowRight size={17} /></Link>
+                </section>
+            )}
         </main>
     );
 }

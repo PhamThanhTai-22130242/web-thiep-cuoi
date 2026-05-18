@@ -1,20 +1,92 @@
-import { FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { FormEvent, useCallback, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthUserBadge from './AuthUserBadge';
+import GoogleLoginButton from './GoogleLoginButton';
+import { authService } from '../services/auth.service';
+import { authTokenService } from '../services/auth-token.service';
+import { ApiError } from '../services/http.service';
 import './HomePage.css';
 import './SiteHeader.css';
 
 type AuthMode = 'login' | 'register';
 
 function SiteHeader() {
+    const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<AuthMode | null>(null);
+    const [authMessage, setAuthMessage] = useState('');
+    const [authMessageType, setAuthMessageType] = useState<'success' | 'error'>('success');
+    const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
+    const [currentUser, setCurrentUser] = useState(() => authTokenService.getUser());
     const isRegister = authMode === 'register';
 
-    const handleAuthSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleAuthSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-    };
+        const formElement = event.currentTarget;
+        setAuthMessage('');
 
-    const handleGoogleLogin = () => {
-        console.log('Google login clicked');
+        const form = new FormData(formElement);
+        const fullname = String(form.get('fullname') || '').trim();
+        const email = String(form.get('email') || '').trim();
+        const password = String(form.get('password') || '').trim();
+
+        if ((isRegister && !fullname) || !email || !password) {
+            setAuthMessageType('error');
+            setAuthMessage(isRegister ? 'Vui lòng nhập đầy đủ họ tên, email và mật khẩu.' : 'Vui lòng nhập email và mật khẩu.');
+            return;
+        }
+
+        setIsAuthSubmitting(true);
+
+        try {
+            if (isRegister) {
+                await authService.register({ fullname, email, password });
+                setAuthMessageType('success');
+                setAuthMessage('Đăng ký tài khoản thành công.');
+                formElement.reset();
+                setAuthMode('login');
+                return;
+            }
+
+            const response = await authService.login({ email, password });
+            const loggedInUser = response.data?.user ?? authTokenService.getUser();
+            setAuthMessageType('success');
+            setAuthMessage('Đăng nhập thành công.');
+            formElement.reset();
+            setCurrentUser(loggedInUser);
+            setAuthMode(null);
+            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+        } catch (error) {
+            setAuthMessageType('error');
+            setAuthMessage(error instanceof ApiError ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsAuthSubmitting(false);
+        }
+    };
+    const handleGoogleLoginStart = useCallback(() => {
+        setIsAuthSubmitting(true);
+        setAuthMessage('');
+    }, []);
+
+    const handleGoogleLoginSuccess = useCallback((loggedInUser: ReturnType<typeof authTokenService.getUser>) => {
+        setAuthMessageType('success');
+        setAuthMessage('Đăng nhập Google thành công.');
+        setCurrentUser(loggedInUser);
+        setAuthMode(null);
+        navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+    }, [navigate]);
+
+    const handleGoogleLoginError = useCallback((message: string) => {
+        setAuthMessageType('error');
+        setAuthMessage(message);
+    }, []);
+
+    const handleGoogleLoginSettled = useCallback(() => {
+        setIsAuthSubmitting(false);
+    }, []);
+
+    const handleLogout = () => {
+        authTokenService.clearSession();
+        setCurrentUser(null);
     };
 
     return (
@@ -22,29 +94,31 @@ function SiteHeader() {
             <header className="site-header-shell">
                 <nav className="home-navbar">
                     <Link to="/" className="home-brand">
-                        <div className="home-brand-mark">H</div>
+                        <img className="home-brand-mark" src="/img/logo.png" alt="" />
                         <div>
-                            <strong>Harmony</strong>
-                            <span>Thiệp Cưới</span>
+                            <strong>Gòi Xong Cưới</strong>
                         </div>
                     </Link>
 
                     <ul className="home-nav-links">
                         <li><a href="/#home">Trang chủ</a></li>
                         <li><a href="/#pricing">Bảng giá</a></li>
-                        <li><a href="/#cards">Mẫu thiệp</a></li>
+                        <li><Link to="/chon-mau/99k">Mẫu thiệp</Link></li>
                         <li><a href="/#contact">Liên hệ</a></li>
-                        <li><Link to="/dashboard">Dashboard</Link></li>
                     </ul>
 
-                    <div className="home-auth-actions">
-                        <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>
-                            Đăng nhập
-                        </button>
-                        <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>
-                            Đăng ký
-                        </button>
-                    </div>
+                    {currentUser ? (
+                        <AuthUserBadge user={currentUser} onLogout={handleLogout} />
+                    ) : (
+                        <div className="home-auth-actions">
+                            <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>
+                                Đăng nhập
+                            </button>
+                            <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>
+                                Đăng ký
+                            </button>
+                        </div>
+                    )}
                 </nav>
             </header>
 
@@ -85,10 +159,13 @@ function SiteHeader() {
                             </button>
                         </div>
 
-                        <button type="button" className="home-google-auth" onClick={handleGoogleLogin}>
-                            <img src="/img/google-logo.svg" alt="" className="home-google-logo" aria-hidden="true" />
-                            Tiếp tục với Google
-                        </button>
+                        <GoogleLoginButton
+                            disabled={isAuthSubmitting}
+                            onStart={handleGoogleLoginStart}
+                            onSuccess={handleGoogleLoginSuccess}
+                            onError={handleGoogleLoginError}
+                            onSettled={handleGoogleLoginSettled}
+                        />
 
                         <div className="home-auth-divider">
                             <span>hoặc</span>
@@ -98,12 +175,12 @@ function SiteHeader() {
                             {isRegister && (
                                 <label>
                                     Họ và tên
-                                    <input name="name" placeholder="Nguyễn Văn A" autoComplete="name" />
+                                    <input name="fullname" placeholder="Nguyễn Văn A" autoComplete="name" required />
                                 </label>
                             )}
                             <label>
                                 Email
-                                <input name="email" type="email" placeholder="hello@harmony.com" autoComplete="email" />
+                                <input name="email" type="email" placeholder="hello@harmony.com" autoComplete="email" required />
                             </label>
                             <label>
                                 Mật khẩu
@@ -112,6 +189,7 @@ function SiteHeader() {
                                     type="password"
                                     placeholder="Nhập mật khẩu"
                                     autoComplete={isRegister ? 'new-password' : 'current-password'}
+                                    required
                                 />
                             </label>
 
@@ -125,8 +203,10 @@ function SiteHeader() {
                                 </div>
                             )}
 
-                            <button type="submit" className="home-auth-submit">
-                                {isRegister ? 'Đăng ký' : 'Đăng nhập'}
+                            {authMessage && <p className={`home-auth-message is-${authMessageType}`}>{authMessage}</p>}
+
+                            <button type="submit" className="home-auth-submit" disabled={isAuthSubmitting}>
+                                {isAuthSubmitting ? 'Đang xử lý...' : isRegister ? 'Đăng ký' : 'Đăng nhập'}
                             </button>
                         </form>
 
@@ -144,3 +224,7 @@ function SiteHeader() {
 }
 
 export default SiteHeader;
+
+
+
+

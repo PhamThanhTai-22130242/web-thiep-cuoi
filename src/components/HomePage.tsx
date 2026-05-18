@@ -1,5 +1,11 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { BadgeCheck, HeartHandshake, Sparkles, Trophy } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthUserBadge from './AuthUserBadge';
+import GoogleLoginButton from './GoogleLoginButton';
+import { authService } from '../services/auth.service';
+import { authTokenService } from '../services/auth-token.service';
+import { ApiError } from '../services/http.service';
 import './HomePage.css';
 
 type AuthMode = 'login' | 'register';
@@ -20,16 +26,83 @@ function MaterialStatusIcon({ included }: { included: boolean }) {
 }
 
 function HomePage() {
+    const navigate = useNavigate();
     const [authMode, setAuthMode] = useState<AuthMode | null>(null);
     const [openFaq, setOpenFaq] = useState(0);
+    const [authMessage, setAuthMessage] = useState('');
+    const [authMessageType, setAuthMessageType] = useState<'success' | 'error'>('success');
+    const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
+    const [currentUser, setCurrentUser] = useState(() => authTokenService.getUser());
     const isRegister = authMode === 'register';
 
-    const handleAuthSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleAuthSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-    };
+        const formElement = event.currentTarget;
+        setAuthMessage('');
 
-    const handleGoogleLogin = () => {
-        console.log('Google login clicked');
+        const form = new FormData(formElement);
+        const fullname = String(form.get('fullname') || '').trim();
+        const email = String(form.get('email') || '').trim();
+        const password = String(form.get('password') || '').trim();
+
+        if ((isRegister && !fullname) || !email || !password) {
+            setAuthMessageType('error');
+            setAuthMessage(isRegister ? 'Vui lòng nhập đầy đủ họ tên, email và mật khẩu.' : 'Vui lòng nhập email và mật khẩu.');
+            return;
+        }
+
+        setIsAuthSubmitting(true);
+
+        try {
+            if (isRegister) {
+                await authService.register({ fullname, email, password });
+                setAuthMessageType('success');
+                setAuthMessage('Đăng ký tài khoản thành công.');
+                formElement.reset();
+                setAuthMode('login');
+                return;
+            }
+
+            const response = await authService.login({ email, password });
+            const loggedInUser = response.data?.user ?? authTokenService.getUser();
+            setAuthMessageType('success');
+            setAuthMessage('Đăng nhập thành công.');
+            formElement.reset();
+            setCurrentUser(loggedInUser);
+            setAuthMode(null);
+            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+        } catch (error) {
+            setAuthMessageType('error');
+            setAuthMessage(error instanceof ApiError ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsAuthSubmitting(false);
+        }
+    };
+    const handleGoogleLoginStart = useCallback(() => {
+        setIsAuthSubmitting(true);
+        setAuthMessage('');
+    }, []);
+
+    const handleGoogleLoginSuccess = useCallback((loggedInUser: ReturnType<typeof authTokenService.getUser>) => {
+        setAuthMessageType('success');
+        setAuthMessage('Đăng nhập Google thành công.');
+        setCurrentUser(loggedInUser);
+        setAuthMode(null);
+        navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+    }, [navigate]);
+
+    const handleGoogleLoginError = useCallback((message: string) => {
+        setAuthMessageType('error');
+        setAuthMessage(message);
+    }, []);
+
+    const handleGoogleLoginSettled = useCallback(() => {
+        setIsAuthSubmitting(false);
+    }, []);
+
+    const handleLogout = () => {
+        authTokenService.clearSession();
+        setCurrentUser(null);
     };
 
     useEffect(() => {
@@ -53,23 +126,25 @@ function HomePage() {
         <div className="home-app">
             <nav className="home-navbar">
                 <div className="home-brand">
-                    <div className="home-brand-mark">H</div>
+                    <img className="home-brand-mark" src="/img/logo.png" alt="" />
                     <div>
-                        <strong>Harmony</strong>
-                        <span>Thiệp Cưới</span>
+                        <strong>Gòi Xong Cưới</strong>
                     </div>
                 </div>
                 <ul className="home-nav-links">
                     <li><a href="#home">Trang chủ</a></li>
                     <li><a href="#pricing">Bảng giá</a></li>
-                    <li><a href="#cards">Mẫu thiệp</a></li>
+                    <li><Link to="/chon-mau/99k">Mẫu thiệp</Link></li>
                     <li><a href="#contact">Liên hệ</a></li>
-                    <li><Link to="/dashboard">Dashboard</Link></li>
                 </ul>
-                <div className="home-auth-actions">
-                    <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>Đăng nhập</button>
-                    <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>Đăng ký</button>
-                </div>
+                {currentUser ? (
+                    <AuthUserBadge user={currentUser} onLogout={handleLogout} />
+                ) : (
+                    <div className="home-auth-actions">
+                        <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>Đăng nhập</button>
+                        <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>Đăng ký</button>
+                    </div>
+                )}
             </nav>
 
             <main className="home-hero" id="home">
@@ -82,7 +157,7 @@ function HomePage() {
                     </p>
                     <div className="home-hero-actions">
                         <a href="#contact" className="home-btn home-btn-primary">Liên hệ ngay</a>
-                        <Link to="/thiep-moi" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
+                        <Link to="/chon-mau/99k" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
                     </div>
                 </div>
 
@@ -211,9 +286,7 @@ function HomePage() {
                 <div className="home-pricing-cards">
                     <article>
                         <div className="home-plan-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M12 2.5c3.1.7 5.4 3.5 5.4 6.8 0 1.8-.7 3.5-1.8 4.7l1.3 4.8-4.2-2.3c-.2 0-.5.1-.7.1s-.5 0-.7-.1l-4.2 2.3L8.4 14c-1.1-1.2-1.8-2.9-1.8-4.7 0-3.3 2.3-6.1 5.4-6.8zm0 2.4c-1.8.5-3.1 2.2-3.1 4.4 0 2.5 1.8 4.6 3.1 4.6s3.1-2.1 3.1-4.6c0-2.2-1.3-3.9-3.1-4.4z" />
-                            </svg>
+                            <BadgeCheck size={42} strokeWidth={2.35} />
                         </div>
                         <p>Gói Cơ Bản</p>
                         <span>Phù hợp cho cặp đôi mới bắt đầu, muốn có thiệp cưới đẹp với chi phí hợp lý.</span>
@@ -228,15 +301,11 @@ function HomePage() {
                     </article>
                     <article className="is-featured">
                         <div className="home-plan-badge">
-                            <svg viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="m12 17.3 6.2 3.7-1.6-7 5.4-4.7-7.1-.6L12 2 9.1 8.7 2 9.3 7.4 14l-1.6 7 6.2-3.7z" />
-                            </svg>
+                            <Sparkles size={16} strokeWidth={2.6} aria-hidden="true" />
                             Phổ biến nhất
                         </div>
                         <div className="home-plan-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M6.2 3h11.6L22 9l-10 12L2 9l4.2-6zm1.1 2-2 3h4.4l1-3H7.3zm5.9 0-1 3h6.1l-2.1-3h-3zm4.9 5h-5l-1.1 6.6L18.1 10zm-7.2 0h-5L12 16.6 10.9 10z" />
-                            </svg>
+                            <HeartHandshake size={42} strokeWidth={2.35} />
                         </div>
                         <p>Gói Chuyên Nghiệp</p>
                         <span>Lựa chọn hoàn hảo cho cặp đôi muốn thiệp cưới độc đáo và chuyên nghiệp.</span>
@@ -251,9 +320,7 @@ function HomePage() {
                     </article>
                     <article>
                         <div className="home-plan-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24">
-                                <path d="m5 16-3-9 6 4 4-7 4 7 6-4-3 9H5zm14 3H5v2h14v-2z" />
-                            </svg>
+                            <Trophy size={42} strokeWidth={2.35} />
                         </div>
                         <p>Gói VIP</p>
                         <span>Dịch vụ cao cấp nhất, tạo ra thiệp cưới độc đáo và ấn tượng nhất.</span>
@@ -330,7 +397,7 @@ function HomePage() {
                 <p>Liên hệ ngay để được tư vấn miễn phí và chọn gói dịch vụ phù hợp nhất.</p>
                 <div>
                     <a href="#contact" className="home-ready-primary">Liên hệ tư vấn</a>
-                    <Link to="/thiep-moi" className="home-ready-secondary">Xem mẫu thiệp</Link>
+                    <Link to="/chon-mau/99k" className="home-ready-secondary">Xem mẫu thiệp</Link>
                 </div>
             </section>
 
@@ -340,9 +407,9 @@ function HomePage() {
             <footer className="home-footer" data-home-reveal>
                 <div className="home-footer-main">
                     <div className="home-footer-brand">
-                        <h2>WeddingDays</h2>
+                        <h2>Gòi Xong Cưới</h2>
                         <p>Lưu Giữ Khoảnh Khắc Thiêng Liêng</p>
-                        <span>CÔNG TY TNHH WeddingDays</span>
+                        <span>CÔNG TY TNHH Gòi Xong Cưới</span>
                         <span>Mã số thuế: Đang cập nhật</span>
                     </div>
 
@@ -363,7 +430,7 @@ function HomePage() {
                     </div>
 
                     <div className="home-footer-links">
-                        <h3>WeddingDays</h3>
+                        <h3>Gòi Xong Cưới</h3>
                         <a href="#home">Trang chủ</a>
                         <a href="#services">Điều khoản sử dụng</a>
                         <a href="#contact">Chính sách bảo mật</a>
@@ -371,7 +438,7 @@ function HomePage() {
                     </div>
                 </div>
                 <div className="home-footer-bottom">
-                    Copyright © 2024 WeddingDays. All rights reserved
+                    Copyright © 2024 Gòi Xong Cưới. All rights reserved
                 </div>
             </footer>
 
@@ -424,10 +491,13 @@ function HomePage() {
                             </button>
                         </div>
 
-                        <button type="button" className="home-google-auth" onClick={handleGoogleLogin}>
-                            <img src="/img/google-logo.svg" alt="" className="home-google-logo" aria-hidden="true" />
-                            Tiếp tục với Google
-                        </button>
+                        <GoogleLoginButton
+                            disabled={isAuthSubmitting}
+                            onStart={handleGoogleLoginStart}
+                            onSuccess={handleGoogleLoginSuccess}
+                            onError={handleGoogleLoginError}
+                            onSettled={handleGoogleLoginSettled}
+                        />
 
                         <div className="home-auth-divider">
                             <span>hoặc</span>
@@ -437,12 +507,12 @@ function HomePage() {
                             {isRegister && (
                                 <label>
                                     Họ và tên
-                                    <input name="name" placeholder="Nguyễn Văn A" autoComplete="name" />
+                                    <input name="fullname" placeholder="Nguyễn Văn A" autoComplete="name" required />
                                 </label>
                             )}
                             <label>
                                 Email
-                                <input name="email" type="email" placeholder="hello@harmony.com" autoComplete="email" />
+                                <input name="email" type="email" placeholder="hello@harmony.com" autoComplete="email" required />
                             </label>
                             <label>
                                 Mật khẩu
@@ -451,6 +521,7 @@ function HomePage() {
                                     type="password"
                                     placeholder="Nhập mật khẩu"
                                     autoComplete={isRegister ? 'new-password' : 'current-password'}
+                                    required
                                 />
                             </label>
 
@@ -464,8 +535,10 @@ function HomePage() {
                                 </div>
                             )}
 
-                            <button type="submit" className="home-auth-submit">
-                                {isRegister ? 'Đăng ký' : 'Đăng nhập'}
+                            {authMessage && <p className={`home-auth-message is-${authMessageType}`}>{authMessage}</p>}
+
+                            <button type="submit" className="home-auth-submit" disabled={isAuthSubmitting}>
+                                {isAuthSubmitting ? 'Đang xử lý...' : isRegister ? 'Đăng ký' : 'Đăng nhập'}
                             </button>
                         </form>
 
@@ -483,3 +556,7 @@ function HomePage() {
 }
 
 export default HomePage;
+
+
+
+

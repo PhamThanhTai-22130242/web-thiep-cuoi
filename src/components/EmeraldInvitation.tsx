@@ -25,6 +25,55 @@ function getCountdown(targetDate: string) {
     };
 }
 
+function getCountdownTargetDate(event: InvitationTemplate['event']) {
+    const year = event.year || event.date.slice(0, 4);
+    const month = (event.month || event.date.slice(5, 7)).padStart(2, '0');
+    const day = (event.day || event.date.slice(8, 10)).padStart(2, '0');
+    const timeParts = event.time.match(/(\d{1,2})(?:\D+(\d{1,2}))?/);
+    const hour = (timeParts?.[1] || event.date.slice(11, 13) || '00').padStart(2, '0');
+    const minute = (timeParts?.[2] || event.date.slice(14, 16) || '00').padStart(2, '0');
+    const targetDate = `${year}-${month}-${day}T${hour}:${minute}:00+07:00`;
+
+    return Number.isNaN(new Date(targetDate).getTime()) ? event.date : targetDate;
+}
+
+function getWeddingCalendar(event: InvitationTemplate['event']) {
+    const year = Number(event.year || event.date.slice(0, 4));
+    const month = Number(event.month || event.date.slice(5, 7));
+    const weddingDay = Number(event.day || event.date.slice(8, 10));
+
+    if (!year || !month || !weddingDay) {
+        return [];
+    }
+
+    const firstDay = new Date(year, month - 1, 1);
+    const leadingDays = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysInPreviousMonth = new Date(year, month - 1, 0).getDate();
+    const cells = [
+        ...Array.from({ length: leadingDays }, (_, index) => ({
+            day: daysInPreviousMonth - leadingDays + index + 1,
+            monthOffset: -1,
+        })),
+        ...Array.from({ length: daysInMonth }, (_, index) => ({
+            day: index + 1,
+            monthOffset: 0,
+        })),
+    ];
+    const trailingDays = (7 - (cells.length % 7)) % 7;
+
+    return [
+        ...cells,
+        ...Array.from({ length: trailingDays }, (_, index) => ({
+            day: index + 1,
+            monthOffset: 1,
+        })),
+    ].map((cell) => ({
+        ...cell,
+        isWeddingDay: cell.monthOffset === 0 && cell.day === weddingDay,
+    }));
+}
+
 async function postWhenConfigured<T>(endpoint: string, payload: T) {
     if (!endpoint) {
         return;
@@ -60,7 +109,10 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
         () => template || loadStoredInvitationTemplate() || defaultInvitationTemplate,
         [template],
     );
-    const [countdown, setCountdown] = useState(() => getCountdown(invitationData.event.date));
+    const countdownTargetDate = getCountdownTargetDate(invitationData.event);
+    const weddingCalendar = getWeddingCalendar(invitationData.event);
+    const shouldShowVenue = Boolean(invitationData.event.venue?.trim());
+    const [countdown, setCountdown] = useState(() => getCountdown(countdownTargetDate));
     const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
     const [wishStatus, setWishStatus] = useState('');
     const [rsvpStatus, setRsvpStatus] = useState('');
@@ -79,13 +131,13 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
     } as CSSProperties;
 
     useEffect(() => {
-        setCountdown(getCountdown(invitationData.event.date));
+        setCountdown(getCountdown(countdownTargetDate));
         const timer = window.setInterval(() => {
-            setCountdown(getCountdown(invitationData.event.date));
+            setCountdown(getCountdown(countdownTargetDate));
         }, 1000);
 
         return () => window.clearInterval(timer);
-    }, [invitationData.event.date]);
+    }, [countdownTargetDate]);
 
     useEffect(() => {
         const elements = document.querySelectorAll<HTMLElement>('[data-ei-reveal], [data-ei-image-reveal]');
@@ -211,12 +263,12 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                                 ))}
                             </div>
                             <div className="ei-days">
-                                {Array.from({ length: invitationData.calendar.blanks }, (_, index) => (
-                                    <span key={`blank-${index}`} />
-                                ))}
-                                {invitationData.calendar.days.map((day) => (
-                                    <span key={day} className={day === Number(invitationData.event.day) ? 'is-wedding-day' : ''}>
-                                        {day}
+                                {weddingCalendar.map((cell, index) => (
+                                    <span
+                                        key={`${cell.monthOffset}-${cell.day}-${index}`}
+                                        className={`${cell.isWeddingDay ? 'is-wedding-day' : ''}${cell.monthOffset !== 0 ? ' is-outside-month' : ''}`}
+                                    >
+                                        {cell.day}
                                     </span>
                                 ))}
                             </div>
@@ -236,7 +288,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                                 ['Giây', countdown.seconds],
                             ].map(([label, value]) => (
                                 <article key={label}>
-                                    <strong>{String(value).padStart(2, '0')}</strong>
+                                    <strong key={`${label}-${value}`}>{String(value).padStart(2, '0')}</strong>
                                     <span>{label}</span>
                                 </article>
                             ))}
@@ -277,12 +329,12 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                     </div>
                     <em>({invitationData.event.lunar})</em>
                     <div className="ei-rings" aria-hidden="true" />
-                    <h3>Tại: {invitationData.event.venue}</h3>
-                    <address>{invitationData.event.address}</address>
-                    <a href="#map">Xem chỉ đường</a>
+                    {shouldShowVenue && <h3>Tại: {invitationData.event.venue}</h3>}
+                    {shouldShowVenue && <address>{invitationData.event.address}</address>}
+                    {shouldShowVenue && <a href="#map">Xem chỉ đường</a>}
                 </div>
 
-                <div className="ei-map-card" data-ei-image-reveal="left">
+                {shouldShowVenue && <div className="ei-map-card" data-ei-image-reveal="left">
                     <div className="ei-map-copy">
                         <span>Venue Guide</span>
                         <h3>{invitationData.event.venue}</h3>
@@ -291,7 +343,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                     <section className="ei-map-section" id="map">
                         <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
                     </section>
-                </div>
+                </div>}
             </section>
 
             <section className="ei-timeline" data-ei-reveal>

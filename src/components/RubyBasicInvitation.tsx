@@ -3,7 +3,10 @@ import {
     defaultInvitationTemplate,
     defaultWishes,
     InvitationTemplate,
+    loadPreviewInvitationTemplate,
     loadStoredInvitationTemplate,
+    rubyTemplatePreviewStorageKey,
+    rubyTemplateStorageKey,
     Wish,
 } from '../data/invitationTemplates';
 import './RubyBasicInvitation.css';
@@ -11,9 +14,16 @@ import './RubyBasicInvitation.css';
 type RubyBasicInvitationProps = {
     template?: InvitationTemplate;
     preview?: boolean;
+    onImageClick?: (target: string) => void;
 };
 
-const imgFooter = `/img/double-dragon.webp`;
+const rubyFallbackImages = {
+    cover: 'https://felywedding.com/wp-content/uploads/2023/03/100-5.jpg',
+    kiss: 'https://tuart.net/wp-content/uploads/2022/11/315473918_808354887122087_2957267466775816451_n.jpg',
+    studio: 'https://mimosawedding.net/wp-content/uploads/2022/07/chup-anh-cuoi-phong-cach-han-quoc-4-4.jpg',
+    defaultThank: defaultInvitationTemplate.images.thank,
+    thank: '/img/double-dragon.webp',
+};
 
 function getCountdown(targetDate: string) {
     const distance = Math.max(new Date(targetDate).getTime() - Date.now(), 0);
@@ -36,41 +46,67 @@ function RubySectionTitle({ label, title, subtitle }: { label?: string; title: s
     );
 }
 
-function RubyPhoto({ src, alt, className }: { src: string; alt: string; className: string }) {
+function RubyPhoto({ src, alt, className, onClick }: { src: string; alt: string; className: string; onClick?: () => void }) {
+    const hasImage = Boolean(src);
+
     return (
-        <figure className={`rbi-photo ${className}`}>
-            <img src={src} alt={alt} />
+        <figure className={`rbi-photo ${className}${onClick ? ' is-editable' : ''}${!hasImage ? ' is-empty' : ''}`} onClick={onClick}>
+            {hasImage ? <img src={src} alt={alt} /> : <span className="rbi-photo-empty">Chưa có ảnh</span>}
+            {onClick && <span className="rbi-edit-image-hint">Đổi ảnh</span>}
         </figure>
     );
 }
 
-function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationProps) {
-    const invitationData = useMemo(
-        () => template || loadStoredInvitationTemplate() || defaultInvitationTemplate,
-        [template],
-    );
+function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBasicInvitationProps) {
+    const shouldLoadSavedPreview = !template && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
+    const [savedPreviewTemplate, setSavedPreviewTemplate] = useState<InvitationTemplate | null>(null);
+    const invitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultInvitationTemplate : loadStoredInvitationTemplate(rubyTemplateStorageKey)) || defaultInvitationTemplate;
+    const invitationImages = useMemo(() => {
+        if (onImageClick) {
+            return {
+                ...invitationData.images,
+                thank: rubyFallbackImages.thank,
+            };
+        }
+
+        return {
+            ...invitationData.images,
+            cover: invitationData.images.cover || rubyFallbackImages.cover,
+            kiss: invitationData.images.kiss || rubyFallbackImages.kiss,
+            studio: invitationData.images.studio || rubyFallbackImages.studio,
+            thank: !invitationData.images.thank || invitationData.images.thank === rubyFallbackImages.defaultThank ? rubyFallbackImages.thank : invitationData.images.thank,
+        };
+    }, [invitationData.images, onImageClick]);
     const galleryImages = useMemo(() => {
-        const source = invitationData.images.gallery?.filter(Boolean);
+        if (onImageClick) {
+            const editableGallery = invitationImages.gallery || [];
+            return Array.from({ length: Math.max(4, editableGallery.length) }, (_, index) => editableGallery[index] || '');
+        }
+
+        const source = invitationImages.gallery?.filter(Boolean);
         const fallback = [
-            invitationData.images.smile,
-            invitationData.images.kiss,
-            invitationData.images.studio,
-            invitationData.images.cover,
-            invitationData.images.walk,
-            invitationData.images.thank,
+            invitationImages.smile,
+            invitationImages.kiss,
+            invitationImages.studio,
+            invitationImages.cover,
+            invitationImages.walk,
+            invitationImages.thank,
         ];
 
         return (source && source.length ? source : fallback).slice(0, 20);
-    }, [invitationData.images]);
+    }, [invitationImages, onImageClick]);
     const galleryPreview = useMemo(() => galleryImages.slice(0, 4), [galleryImages]);
     const hiddenGalleryCount = Math.max(galleryImages.length - galleryPreview.length, 0);
+    const eventTimeParts = useMemo(() => {
+        const match = invitationData.event.time.match(/^(\d{1,2})\s*(?:giờ|:)\s*(\d{2})$/i);
+
+        return match ? { hour: match[1], minute: match[2] } : null;
+    }, [invitationData.event.time]);
     const [countdown, setCountdown] = useState(() => getCountdown(invitationData.event.date));
     const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
     const [wishStatus, setWishStatus] = useState('');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
-    const ornaments = useMemo(() => Array.from({ length: preview ? 8 : 16 }, (_, index) => index), [preview]);
-
     const pageStyle = {
         '--rbi-red': '#9f2c24',
         '--rbi-red-deep': '#7f1712',
@@ -81,6 +117,23 @@ function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationP
         '--rbi-serif': `'Cormorant Garamond', '${invitationData.design.serifFont}', Georgia, serif`,
         '--rbi-speed': invitationData.design.animationSpeed,
     } as CSSProperties;
+
+    useEffect(() => {
+        if (!shouldLoadSavedPreview) {
+            return undefined;
+        }
+
+        let isActive = true;
+        loadPreviewInvitationTemplate(rubyTemplatePreviewStorageKey).then((previewTemplate) => {
+            if (isActive && previewTemplate) {
+                setSavedPreviewTemplate(previewTemplate);
+            }
+        });
+
+        return () => {
+            isActive = false;
+        };
+    }, [shouldLoadSavedPreview]);
 
     useEffect(() => {
         setCountdown(getCountdown(invitationData.event.date));
@@ -177,57 +230,54 @@ function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationP
 
     return (
         <main className={`rbi-page${preview ? ' rbi-page-preview' : ''}`} id="top" style={pageStyle}>
-            <div className="rbi-ornaments" aria-hidden="true">
-                {ornaments.map((ornament) => (
-                    <span
-                        key={ornament}
-                        style={
-                            {
-                                '--i': ornament,
-                                '--drift': `${((ornament % 5) - 2) * 14}px`,
-                            } as CSSProperties
-                        }
-                    />
-                ))}
-            </div>
-
-            {!preview && <a className="rbi-back-top" href="#top" aria-label="Lên đầu trang">↑</a>}
-
             <section className="rbi-hero">
-                <p className="rbi-hero-kicker" data-rbi-reveal="down">{invitationData.couple.headline}</p>
                 <div className="rbi-envelope" aria-hidden="true">
                     <div className="rbi-envelope-flap" />
-                    <RubyPhoto src={invitationData.images.cover} alt="Ảnh cưới cô dâu chú rể" className="rbi-photo-left" />
-                    <RubyPhoto src={invitationData.images.kiss} alt="Khoảnh khắc cô dâu chú rể" className="rbi-photo-right" />
+                    <RubyPhoto src={invitationImages.cover} alt="Ảnh cưới cô dâu chú rể" className="rbi-photo-left" onClick={onImageClick ? () => onImageClick('images.cover') : undefined} />
+                    <RubyPhoto src={invitationImages.kiss} alt="Khoảnh khắc cô dâu chú rể" className="rbi-photo-right" onClick={onImageClick ? () => onImageClick('images.kiss') : undefined} />
                     <div className="rbi-seal">囍</div>
                 </div>
-                <h1 data-rbi-reveal="up">
-                    {invitationData.couple.groom} <span>&</span> {invitationData.couple.bride}
-                </h1>
-                <div className="rbi-date-lockup" data-rbi-reveal="up">
-                    <strong>{invitationData.event.year}</strong>
-                    <span>{invitationData.event.monthName}</span>
+                <div className="rbi-couple-row">
+                    <article data-rbi-reveal>
+                        <div className="rbi-line-ornament" />
+                        <span>{invitationData.couple.groomRole}</span>
+                        <h2>{invitationData.couple.groom}</h2>
+                    </article>
+                    <div data-rbi-image="right">
+                        <RubyPhoto src={invitationImages.studio} alt="Chân dung cô dâu chú rể" className="rbi-photo-center" onClick={onImageClick ? () => onImageClick('images.studio') : undefined} />
+                    </div>
+                    <article data-rbi-reveal>
+                        <span>{invitationData.couple.brideRole}</span>
+                        <h2>{invitationData.couple.bride}</h2>
+                        <div className="rbi-line-ornament rbi-line-ornament-right" />
+                    </article>
                 </div>
-            </section>
 
-            <section className="rbi-calendar-section" data-rbi-reveal>
-                <div className="rbi-calendar-card">
-                    <div className="rbi-weekdays">
-                        {invitationData.calendar.weekdays.map((weekday) => (
-                            <span key={weekday}>{weekday}</span>
-                        ))}
+                <section className="rbi-invite-card" data-rbi-reveal>
+                    <div className="rbi-band">
+                        <p>Trân trọng kính mời</p>
+                        <h2>Quý khách</h2>
+                        <span>Đến chung vui cùng gia đình chúng tôi trong ngày trọng đại.</span>
                     </div>
-                    <div className="rbi-days">
-                        {Array.from({ length: invitationData.calendar.blanks }, (_, index) => (
-                            <span key={`blank-${index}`} />
-                        ))}
-                        {invitationData.calendar.days.map((day) => (
-                            <span key={day} className={day === Number(invitationData.event.day) ? 'is-wedding-day' : ''}>
-                                {day}
-                            </span>
-                        ))}
+                    <p className="rbi-invite-time">
+                        Vào lúc{' '}
+                        {eventTimeParts ? (
+                            <>
+                                <span>{eventTimeParts.hour}</span> giờ <span>{eventTimeParts.minute}</span>
+                            </>
+                        ) : (
+                            invitationData.event.time
+                        )}
+                    </p>
+                    <p>{invitationData.event.dayName}</p>
+                    <div className="rbi-date-line">
+                        <span>Tháng {invitationData.event.month}</span>
+                        <strong>{invitationData.event.day}</strong>
+                        <span>Năm {invitationData.event.year}</span>
                     </div>
-                </div>
+                    <em>({invitationData.event.lunar})</em>
+
+                </section>
 
                 <div className="rbi-countdown">
                     {[
@@ -243,62 +293,49 @@ function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationP
                     ))}
                 </div>
 
-                <div className="rbi-couple-row">
-                    <article data-rbi-reveal>
-                        <div className="rbi-line-ornament" />
-                        <span>{invitationData.couple.groomRole}</span>
-                        <h2>{invitationData.couple.groom}</h2>
-                    </article>
-                    <div data-rbi-image="right">
-                        <RubyPhoto src={invitationData.images.walk} alt="Chân dung cô dâu chú rể" className="rbi-photo-center" />
+
+
+                <section className="rbi-calendar-section" data-rbi-reveal>
+                    <div className="rbi-calendar-card">
+                        <div className="rbi-weekdays">
+                            {invitationData.calendar.weekdays.map((weekday) => (
+                                <span key={weekday}>{weekday}</span>
+                            ))}
+                        </div>
+
+
+                        <div className="rbi-days">
+                            {Array.from({ length: invitationData.calendar.blanks }, (_, index) => (
+                                <span key={`blank-${index}`} />
+                            ))}
+                            {invitationData.calendar.days.map((day) => (
+                                <span key={day} className={day === Number(invitationData.event.day) ? 'is-wedding-day' : ''}>
+                                    {day}
+                                </span>
+                            ))}
+                        </div>
                     </div>
-                    <article data-rbi-reveal>
-                        <span>{invitationData.couple.brideRole}</span>
-                        <h2>{invitationData.couple.bride}</h2>
-                        <div className="rbi-line-ornament rbi-line-ornament-right" />
-                    </article>
+                </section>
+
+                <div className="rbi-location-card">
+
+                    <h3>Tiệc cưới sẽ diễn ra tại</h3>
+                    <address>{invitationData.event.address}</address>
+                    <a href="#map">Xem chỉ đường</a>
                 </div>
+
+
+                {/* <div className="rbi-date-lockup" data-rbi-reveal="up">
+                    <strong>{invitationData.event.year}</strong>
+                    <span>{invitationData.event.monthName}</span>
+                </div> */}
             </section>
 
-            <section className="rbi-invite-card" data-rbi-reveal>
-                <div className="rbi-band">
-                    <p>Trân trọng kính mời</p>
-                    <h2>Quý khách</h2>
-                    <span>Đến chung vui cùng gia đình chúng tôi trong ngày trọng đại.</span>
-                </div>
-                <p>Vào lúc {invitationData.event.time}</p>
-                <p>{invitationData.event.dayName}</p>
-                <div className="rbi-date-line">
-                    <span>Tháng {invitationData.event.month}</span>
-                    <strong>{invitationData.event.day}</strong>
-                    <span>Năm {invitationData.event.year}</span>
-                </div>
-                <em>({invitationData.event.lunar})</em>
-                <div className="rbi-rings" aria-hidden="true" />
-                <h3>Tại: {invitationData.event.venue}</h3>
-                <address>{invitationData.event.address}</address>
-                <a href="#map">Xem chỉ đường</a>
-            </section>
+
 
             <section className="rbi-map-section" id="map" data-rbi-image="left">
                 <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
             </section>
-
-            <section className="rbi-timeline" data-rbi-reveal>
-                <RubySectionTitle title="Timeline" subtitle="Khoảnh khắc đẹp sẽ bắt đầu từ những điều chỉn chu nhất." />
-                <div className="rbi-timeline-track">
-                    {invitationData.timeline.map((item) => (
-                        <article key={item.time}>
-                            <div className={`rbi-event-icon is-${item.icon}`} />
-                            <strong>{item.time}</strong>
-                            <span>{item.title}</span>
-                        </article>
-                    ))}
-                </div>
-            </section>
-
-
-
             <section className="rbi-gallery" data-rbi-reveal>
                 <RubySectionTitle title="Our Memories" subtitle={invitationData.couple.quote} />
                 <div className="rbi-gallery-grid">
@@ -308,19 +345,20 @@ function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationP
                         return (
                             <button
                                 key={`${image}-${index}`}
-                                className={`rbi-gallery-tile${isOverlayCard ? ' is-overlay' : ''}`}
+                                className={`rbi-gallery-tile${isOverlayCard ? ' is-overlay' : ''}${!image ? ' is-empty' : ''}`}
                                 type="button"
-                                onClick={() => openGalleryAt(index)}
+                                onClick={() => (onImageClick ? onImageClick(`images.gallery.${index}`) : openGalleryAt(index))}
                                 aria-label={`Mở album ảnh cưới, ảnh số ${index + 1}`}
                             >
-                                <img src={image} alt={`Kỷ niệm cưới ${index + 1}`} />
+                                {image ? <img src={image} alt={`Kỷ niệm cưới ${index + 1}`} /> : <span className="rbi-gallery-empty">Chưa có ảnh</span>}
+                                {onImageClick && <span className="rbi-edit-image-hint">Đổi ảnh</span>}
                                 {isOverlayCard && <span>+{hiddenGalleryCount}</span>}
                             </button>
                         );
                     })}
                 </div>
                 <button className="rbi-gallery-open" type="button" onClick={() => openGalleryAt(0)}>
-                    Xem toàn bộ {galleryImages.length} ảnh
+                    Xem toàn bộ <span>{galleryImages.length}</span> ảnh
                 </button>
             </section>
 
@@ -388,7 +426,10 @@ function RubyBasicInvitation({ template, preview = false }: RubyBasicInvitationP
             </section>
 
             <footer className="rbi-thanks" data-rbi-reveal>
-                <img src={imgFooter} alt="Cô dâu chú rể gửi lời cảm ơn" />
+                <img
+                    src={invitationImages.thank}
+                    alt="Cô dâu chú rể gửi lời cảm ơn"
+                />
                 <div>
                     <h2>Thank You</h2>
                     <p>Rất hân hạnh được đón tiếp</p>

@@ -12,18 +12,19 @@ import { useForm } from 'react-hook-form';
 import {
     defaultInvitationTemplate,
     InvitationTemplate,
+    rubyTemplatePreviewStorageKey,
+    rubyTemplateStorageKey,
     savePreviewInvitationTemplate,
-    templateStorageKey,
 } from '../data/invitationTemplates';
-import EmeraldInvitation from './EmeraldInvitationPage';
+import RubyBasicInvitation from './RubyBasicInvitation';
 import './TemplateDashboard.css';
 
 const fontOptions = ['Allura', 'Great Vibes', 'Dancing Script', 'Pacifico'];
 const colorPresets = [
-    { key: 'emerald', primary: '#2d4b45', background: '#f8f8f1', accent: '#c2a113' },
-    { key: 'rose', primary: '#7d3347', background: '#fff7f7', accent: '#c8915b' },
-    { key: 'navy', primary: '#263f63', background: '#f7f8fb', accent: '#b9985b' },
-    { key: 'champagne', primary: '#6a4f3c', background: '#fffaf2', accent: '#b88a3a' },
+    { key: 'ruby-gold', primary: '#9f2c24', background: '#f6e8dc', accent: '#d8b16a' },
+    { key: 'wine-blush', primary: '#7f1d2d', background: '#fff1ec', accent: '#c99255' },
+    { key: 'copper-ivory', primary: '#9b4b24', background: '#fff6e8', accent: '#d6a85a' },
+    { key: 'jade-red', primary: '#2f5b52', background: '#f7f2e8', accent: '#b7332b' },
 ];
 
 type ImageField = 'images.cover' | 'images.kiss' | 'images.walk' | 'images.smile' | 'images.studio' | 'images.thank';
@@ -66,9 +67,21 @@ function getDayName(dateValue: string) {
 function createEditableTemplate(): InvitationTemplate {
     const template = cloneTemplate(defaultInvitationTemplate);
     const today = getTodayDateInput();
+    template.id = 'ruby-basic-99k';
+    template.name = 'Ruby Basic 99k';
+    template.slug = 'thiep-moi-99k';
+    template.templateUrl = '/thiep-moi-99k';
+    template.publicUrl = '/thiep-moi-99k';
+    template.design.primaryColor = '#9f2c24';
+    template.design.backgroundColor = '#f6e8dc';
+    template.design.accentColor = '#d8b16a';
     template.images.cover = '';
     template.images.kiss = '';
     template.images.walk = '';
+    template.images.smile = '';
+    template.images.studio = '';
+    template.images.thank = '';
+    template.images.gallery = [];
     template.event.date = toEventDate(today, '00:00');
     template.event.dayName = getDayName(today);
     template.event.day = today.slice(8, 10);
@@ -94,7 +107,13 @@ function normalizeEditableTemplate(template: InvitationTemplate): InvitationTemp
             next.images[key] = '';
         }
     });
-    next.images.gallery = (next.images.gallery || []).map((image) => (defaultSampleImages.has(image) ? '' : image));
+    (['smile', 'studio', 'thank'] as const).forEach((key) => {
+        if (defaultSampleImages.has(next.images[key])) {
+            next.images[key] = '';
+        }
+    });
+    const gallery = (next.images.gallery || []).filter((image) => image && !defaultSampleImages.has(image));
+    next.images.gallery = gallery;
     return next;
 }
 
@@ -102,7 +121,7 @@ function loadTemplates(): InvitationTemplate[] {
     const fallback = [createEditableTemplate()];
 
     try {
-        const stored = window.localStorage.getItem(templateStorageKey);
+        const stored = window.localStorage.getItem(rubyTemplateStorageKey);
         if (!stored) {
             return fallback;
         }
@@ -115,7 +134,7 @@ function loadTemplates(): InvitationTemplate[] {
 }
 
 function saveTemplates(templates: InvitationTemplate[]) {
-    window.localStorage.setItem(templateStorageKey, JSON.stringify(templates));
+    window.localStorage.setItem(rubyTemplateStorageKey, JSON.stringify(templates));
 }
 
 function formatDateInput(dateValue: string) {
@@ -205,10 +224,10 @@ function toGoogleMapEmbedUrl(value: string) {
 }
 
 function getGallery(template: InvitationTemplate) {
-    return template.images.gallery?.filter((image) => image && !defaultSampleImages.has(image)) || [];
+    return template.images.gallery || [];
 }
 
-function TemplateDashboard() {
+function TemplateDashboard99k() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
     const [templates, setTemplates] = useState<InvitationTemplate[]>(() => loadTemplates());
@@ -256,15 +275,15 @@ function TemplateDashboard() {
 
     const handleOpenPreview = handleSubmit(async (values) => {
         try {
-            await savePreviewInvitationTemplate({ ...values, id: selectedId, status: 'draft' });
-            window.open('/thiep-moi?preview=1', '_blank', 'noopener,noreferrer');
+            await savePreviewInvitationTemplate({ ...values, id: selectedId, status: 'draft' }, rubyTemplatePreviewStorageKey);
+            window.open('/thiep-moi-99k?preview=1', '_blank', 'noopener,noreferrer');
         } catch {
             setSaveStatus('Không thể tạo bản xem trước. Vui lòng thử lại hoặc giảm dung lượng ảnh.');
         }
     });
 
     const handlePublish = handleSubmit((values) => {
-        persistTemplate(values, 'published', 'Đã xuất bản. Trang /thiep-moi sẽ đọc thông tin mới nhất.');
+        persistTemplate(values, 'published', 'Đã xuất bản. Trang /thiep-moi-99k sẽ đọc thông tin mới nhất.');
     });
 
     const handleEventDateChange = (dateValue: string) => {
@@ -353,7 +372,7 @@ function TemplateDashboard() {
             const result = String(reader.result || '');
             if (uploadTarget.startsWith('images.gallery.')) {
                 const index = Number(uploadTarget.split('.').pop());
-                const nextGallery = [...getGallery(getValues())];
+                const nextGallery = [...(getValues('images.gallery') || [])];
                 nextGallery[index] = result;
                 setValue(`images.gallery.${index}` as `images.gallery.${number}`, result, { shouldDirty: true, shouldTouch: true });
                 setValue('images.gallery', nextGallery, { shouldDirty: true, shouldTouch: true });
@@ -367,8 +386,9 @@ function TemplateDashboard() {
     };
 
     const addGalleryImage = () => {
-        const gallery = getGallery(getValues());
-        setUploadTarget(`images.gallery.${gallery.length}`);
+        const gallery = getValues('images.gallery') || [];
+        const emptySlotIndex = gallery.findIndex((image) => !image);
+        setUploadTarget(`images.gallery.${emptySlotIndex >= 0 ? emptySlotIndex : gallery.length}`);
         fileInputRef.current?.click();
     };
 
@@ -378,7 +398,7 @@ function TemplateDashboard() {
 
             <section className="td-canvas">
                 <div className="td-live-preview">
-                    <EmeraldInvitation template={previewTemplate} preview onImageClick={(target) => requestImage(target as UploadTarget)} />
+                    <RubyBasicInvitation template={previewTemplate} preview onImageClick={(target) => requestImage(target as UploadTarget)} />
                 </div>
 
                 <div className="td-floating-colors" aria-label="Chọn màu nhanh">
@@ -495,7 +515,7 @@ function TemplateDashboard() {
 
                     <div className="td-image-row-head">
                         <label>Ảnh</label>
-                        <span>{galleryImages.length} ảnh album</span>
+                        <span>{galleryImages.filter(Boolean).length} ảnh album</span>
                     </div>
                     <div className="td-image-strip">
                         <button type="button" className="td-add-image" onClick={addGalleryImage}>
@@ -504,7 +524,7 @@ function TemplateDashboard() {
                         </button>
                         {galleryImages.map((image, index) => (
                             <button key={`${image}-${index}`} type="button" onClick={() => requestImage(`images.gallery.${index}`)}>
-                                <img src={image} alt={`Album ${index + 1}`} />
+                                {image ? <img src={image} alt={`Album ${index + 1}`} /> : <span>Chưa có ảnh</span>}
                             </button>
                         ))}
                     </div>
@@ -526,7 +546,7 @@ function TemplateDashboard() {
                         <div>
                             {colorPresets.map((preset) => (
                                 <button key={preset.key} type="button" onClick={() => handlePresetColor(preset)}>
-                                    <span style={{ background: `linear-gradient(135deg, ${preset.primary} 0 58%, ${preset.accent} 59%)` }} />
+                                    <span style={{ background: `conic-gradient(from 45deg, ${preset.primary} 0 40%, ${preset.accent} 40% 68%, ${preset.background} 68% 100%)` }} />
                                 </button>
                             ))}
                         </div>
@@ -562,4 +582,4 @@ function TemplateDashboard() {
     );
 }
 
-export default TemplateDashboard;
+export default TemplateDashboard99k;
