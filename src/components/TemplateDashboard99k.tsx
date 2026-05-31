@@ -69,9 +69,9 @@ function createEditableTemplate(): InvitationTemplate {
     const today = getTodayDateInput();
     template.id = 'ruby-basic-99k';
     template.name = 'Ruby Basic 99k';
-    template.slug = 'thiep-moi-99k';
-    template.templateUrl = '/thiep-moi-99k';
-    template.publicUrl = '/thiep-moi-99k';
+    template.slug = 'RubyBasicInvitation';
+    template.templateUrl = '/RubyBasicInvitation';
+    template.publicUrl = '/RubyBasicInvitation';
     template.design.primaryColor = '#9f2c24';
     template.design.backgroundColor = '#f6e8dc';
     template.design.accentColor = '#d8b16a';
@@ -276,14 +276,14 @@ function TemplateDashboard99k() {
     const handleOpenPreview = handleSubmit(async (values) => {
         try {
             await savePreviewInvitationTemplate({ ...values, id: selectedId, status: 'draft' }, rubyTemplatePreviewStorageKey);
-            window.open('/thiep-moi-99k?preview=1', '_blank', 'noopener,noreferrer');
+            window.open('/RubyBasicInvitation?preview=1', '_blank', 'noopener,noreferrer');
         } catch {
             setSaveStatus('Không thể tạo bản xem trước. Vui lòng thử lại hoặc giảm dung lượng ảnh.');
         }
     });
 
     const handlePublish = handleSubmit((values) => {
-        persistTemplate(values, 'published', 'Đã xuất bản. Trang /thiep-moi-99k sẽ đọc thông tin mới nhất.');
+        persistTemplate(values, 'published', 'Đã xuất bản. Trang /RubyBasicInvitation sẽ đọc thông tin mới nhất.');
     });
 
     const handleEventDateChange = (dateValue: string) => {

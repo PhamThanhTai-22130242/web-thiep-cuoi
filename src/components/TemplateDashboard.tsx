@@ -257,14 +257,14 @@ function TemplateDashboard() {
     const handleOpenPreview = handleSubmit(async (values) => {
         try {
             await savePreviewInvitationTemplate({ ...values, id: selectedId, status: 'draft' });
-            window.open('/thiep-moi?preview=1', '_blank', 'noopener,noreferrer');
+            window.open('/EmeraldInvitation?preview=1', '_blank', 'noopener,noreferrer');
         } catch {
             setSaveStatus('Không thể tạo bản xem trước. Vui lòng thử lại hoặc giảm dung lượng ảnh.');
         }
     });
 
     const handlePublish = handleSubmit((values) => {
-        persistTemplate(values, 'published', 'Đã xuất bản. Trang /thiep-moi sẽ đọc thông tin mới nhất.');
+        persistTemplate(values, 'published', 'Đã xuất bản. Trang /EmeraldInvitation sẽ đọc thông tin mới nhất.');
     });
 
     const handleEventDateChange = (dateValue: string) => {

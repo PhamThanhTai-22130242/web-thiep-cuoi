@@ -4,15 +4,11 @@ import AdminDashboard from './components/AdminDashboard';
 import AdminInvitationList from './components/AdminInvitationList';
 import AdminTemplateManager from './components/AdminTemplateManager';
 import AdminUserManager from './components/AdminUserManager';
-import CineLoveTraditionalInvitation from './components/CineLoveTraditionalInvitation';
-import EmeraldInvitation from './components/EmeraldInvitationPage';
 import HomePage from './components/HomePage';
 import MainLayout from './components/MainLayout';
-import RubyBasicInvitation from './components/RubyBasicInvitation';
 import TemplateSelectorPage from './components/TemplateSelectorPage';
-import TemplateDashboard from './components/TemplateDashboard';
-import TemplateDashboard99k from './components/TemplateDashboard99k';
 import WeddingInvitationManager from './components/WeddingInvitationManager';
+import { weddingTemplateConfigs } from './data/weddingTemplateRegistry';
 import { authTokenService } from './services/auth-token.service';
 
 function RequireAuth({ children, adminOnly = false }: { children: ReactNode; adminOnly?: boolean }) {
@@ -37,14 +33,25 @@ function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/chon-mau/:packageKey" element={<TemplateSelectorPage />} />
                     <Route path="/dashboard" element={<RequireAuth><WeddingInvitationManager /></RequireAuth>} />
-                    <Route path="/template-dashboard" element={<TemplateDashboard />} />
-                    <Route path="/template-dashboard-99k" element={<TemplateDashboard99k />} />
+                    {weddingTemplateConfigs.flatMap((template) => {
+                        if (!template.editorComponent) {
+                            return [];
+                        }
+
+                        const EditorComponent = template.editorComponent;
+
+                        return [template.editorPath, ...template.legacyEditorPaths].map((path) => (
+                            <Route key={`editor-${template.code}-${path}`} path={path} element={<EditorComponent />} />
+                        ));
+                    })}
                 </Route>
-                <Route path="/thiep-moi" element={<EmeraldInvitation />} />
-                <Route path="/thiep-cuoi" element={<EmeraldInvitation />} />
-                <Route path="/thiep-moi-99k" element={<RubyBasicInvitation />} />
-                <Route path="/thiep-cuoi-99k" element={<RubyBasicInvitation />} />
-                <Route path="/thiep-do-truyen-thong" element={<CineLoveTraditionalInvitation />} />
+                {weddingTemplateConfigs.flatMap((template) => {
+                    const DisplayComponent = template.displayComponent;
+
+                    return [template.previewPath, ...template.legacyPreviewPaths].map((path) => (
+                        <Route key={`preview-${template.code}-${path}`} path={path} element={<DisplayComponent />} />
+                    ));
+                })}
                 <Route path="/admin-dashboard" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
                 <Route path="/admin-orders" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
                 <Route path="/admin-invitations" element={<RequireAuth adminOnly><AdminInvitationList /></RequireAuth>} />

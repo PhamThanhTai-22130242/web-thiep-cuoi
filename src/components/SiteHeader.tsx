@@ -103,7 +103,7 @@ function SiteHeader() {
                     <ul className="home-nav-links">
                         <li><a href="/#home">Trang chủ</a></li>
                         <li><a href="/#pricing">Bảng giá</a></li>
-                        <li><Link to="/chon-mau/99k">Mẫu thiệp</Link></li>
+                        <li><Link to="/chon-mau/co-ban">Mẫu thiệp</Link></li>
                         <li><a href="/#contact">Liên hệ</a></li>
                     </ul>
 

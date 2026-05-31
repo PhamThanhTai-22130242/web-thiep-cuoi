@@ -54,13 +54,21 @@
   border-color: rgba(255, 255, 255, 0.18);
 }
 
+.main-layout-selector .site-header-shell .home-brand strong {
+  color: #fff7f2;
+}
+
 @media (max-width: 760px) {
   .site-header-shell {
     padding: 0 16px;
   }
 
   .site-header-shell .home-navbar {
-    min-height: 116px;
-    padding: 10px 0 8px;
+    min-height: 68px;
+    padding: 10px 0;
+  }
+
+  .site-header-shell .home-nav-links {
+    display: none;
   }
 }

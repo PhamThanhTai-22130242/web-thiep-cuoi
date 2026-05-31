@@ -291,13 +291,28 @@
   }
 
   .selector-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
+    max-width: 100%;
+    gap: 6px;
+    overflow: visible;
+    padding: 6px;
     border-radius: 8px;
   }
 
   .selector-tabs a {
-    flex: 1 0 auto;
+    min-width: 0;
     justify-content: center;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .selector-tabs span {
+    overflow: hidden;
+    font-size: 0.88rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .selector-grid {

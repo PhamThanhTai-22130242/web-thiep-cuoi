@@ -224,7 +224,7 @@ function WeddingInvitationManager() {
                                 <Pencil size={15} strokeWidth={2.3} />
                                 <span>Chỉnh sửa</span>
                             </button>
-                            <Link to="/thiep-do-truyen-thong">
+                            <Link to="/CineLoveTraditionalInvitation">
                                 <Eye size={15} strokeWidth={2.3} />
                                 <span>Xem trước</span>
                             </Link>

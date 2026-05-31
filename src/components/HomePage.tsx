@@ -134,7 +134,7 @@ function HomePage() {
                 <ul className="home-nav-links">
                     <li><a href="#home">Trang chủ</a></li>
                     <li><a href="#pricing">Bảng giá</a></li>
-                    <li><Link to="/chon-mau/99k">Mẫu thiệp</Link></li>
+                    <li><Link to="/chon-mau/co-ban">Mẫu thiệp</Link></li>
                     <li><a href="#contact">Liên hệ</a></li>
                 </ul>
                 {currentUser ? (
@@ -157,7 +157,7 @@ function HomePage() {
                     </p>
                     <div className="home-hero-actions">
                         <a href="#contact" className="home-btn home-btn-primary">Liên hệ ngay</a>
-                        <Link to="/chon-mau/99k" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
+                        <Link to="/chon-mau/co-ban" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
                     </div>
                 </div>
 
@@ -297,7 +297,7 @@ function HomePage() {
                                 <em>-50%</em>
                             </div>
                         </div>
-                        <Link to="/chon-mau/99k">Lựa mẫu</Link>
+                        <Link to="/chon-mau/co-ban">Lựa mẫu</Link>
                     </article>
                     <article className="is-featured">
                         <div className="home-plan-badge">
@@ -316,13 +316,13 @@ function HomePage() {
                                 <em>-50%</em>
                             </div>
                         </div>
-                        <Link to="/chon-mau/199k">Lựa mẫu</Link>
+                        <Link to="/chon-mau/chuyen-nghiep">Lựa mẫu</Link>
                     </article>
                     <article>
                         <div className="home-plan-icon" aria-hidden="true">
                             <Trophy size={42} strokeWidth={2.35} />
                         </div>
-                        <p>Gói VIP</p>
+                        <p>Gói Thời Thượng</p>
                         <span>Dịch vụ cao cấp nhất, tạo ra thiệp cưới độc đáo và ấn tượng nhất.</span>
                         <div className="home-card-price">
                             <strong>299.000 đ</strong>
@@ -331,7 +331,7 @@ function HomePage() {
                                 <em>-50%</em>
                             </div>
                         </div>
-                        <Link to="/chon-mau/299k">Lựa mẫu</Link>
+                        <Link to="/chon-mau/thoi-thuong">Lựa mẫu</Link>
                     </article>
                 </div>
 
@@ -397,7 +397,7 @@ function HomePage() {
                 <p>Liên hệ ngay để được tư vấn miễn phí và chọn gói dịch vụ phù hợp nhất.</p>
                 <div>
                     <a href="#contact" className="home-ready-primary">Liên hệ tư vấn</a>
-                    <Link to="/chon-mau/99k" className="home-ready-secondary">Xem mẫu thiệp</Link>
+                    <Link to="/chon-mau/co-ban" className="home-ready-secondary">Xem mẫu thiệp</Link>
                 </div>
             </section>
 
