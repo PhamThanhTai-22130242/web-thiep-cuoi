@@ -1,19 +1,24 @@
-import { CSSProperties, FormEvent, useEffect, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import {
     defaultInvitationTemplate,
-    defaultWishes,
     InvitationTemplate,
     loadPreviewInvitationTemplate,
     loadStoredInvitationTemplate,
     Rsvp,
     Wish,
 } from '../data/invitationTemplates';
+import { subscribeToStompTopic } from '../services/stomp.service';
+import { API_CONFIG } from '../config/api.config';
 import './EmeraldInvitation.css';
 
 type EmeraldInvitationProps = {
     template?: InvitationTemplate;
     preview?: boolean;
     onImageClick?: (target: string) => void;
+    initialWishes?: Wish[];
+    wishEndpoint?: string;
+    wishTopic?: string;
 };
 
 type InvitationColorTheme = {
@@ -150,16 +155,49 @@ function getWeddingCalendar(event: InvitationTemplate['event']) {
     }));
 }
 
+function toGoogleMapEmbedUrl(value: string) {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+        return '';
+    }
+
+    try {
+        const url = new URL(trimmedValue);
+
+        if (url.hostname.includes('google.') || url.hostname.includes('goo.gl')) {
+            url.searchParams.set('output', 'embed');
+            return url.toString();
+        }
+
+        return trimmedValue;
+    } catch {
+        return `https://www.google.com/maps?q=${encodeURIComponent(trimmedValue)}&output=embed`;
+    }
+}
+
 async function postWhenConfigured<T>(endpoint: string, payload: T) {
     if (!endpoint) {
         return;
     }
 
-    await fetch(endpoint, {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_CONFIG.BASE_URL}${endpoint}`;
+    const response = await fetch(url, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
+    if (!response.ok) {
+        let message = 'Request failed';
+        try {
+            const errorPayload = await response.json();
+            message = errorPayload.message || message;
+        } catch {
+            // Keep the generic message when the server does not return JSON.
+        }
+        throw new Error(message);
+    }
 }
 
 function SectionTitle({ label, title, subtitle }: { label?: string; title: string; subtitle?: string }) {
@@ -208,8 +246,10 @@ function isDefaultSampleImage(image: string) {
     return samples.includes(image);
 }
 
-function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldInvitationProps) {
+function EmeraldInvitation({ template, preview = false, onImageClick, initialWishes = [], wishEndpoint = '', wishTopic = '' }: EmeraldInvitationProps) {
     const shouldLoadSavedPreview = !template && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
+    const isPreviewMode = preview || shouldLoadSavedPreview;
+    const shouldUseTemplateColors = isPreviewMode || Boolean(template);
     const [savedPreviewTemplate, setSavedPreviewTemplate] = useState<InvitationTemplate | null>(null);
     const invitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultInvitationTemplate : loadStoredInvitationTemplate()) || defaultInvitationTemplate;
     const isLoadingSavedPreview = shouldLoadSavedPreview && !savedPreviewTemplate;
@@ -236,13 +276,17 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
     const countdownTargetDate = getCountdownTargetDate(invitationData.event);
     const weddingCalendar = getWeddingCalendar(invitationData.event);
     const shouldShowVenue = Boolean(invitationData.event.venue?.trim());
+    const mapUrl = toGoogleMapEmbedUrl(invitationData.event.mapUrl || invitationData.event.address || '');
+    const shouldShowMap = shouldShowVenue && Boolean(mapUrl);
     const [countdown, setCountdown] = useState(() => getCountdown(countdownTargetDate));
-    const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
+    const [wishes, setWishes] = useState<Wish[]>(initialWishes);
     const [wishStatus, setWishStatus] = useState('');
     const [rsvpStatus, setRsvpStatus] = useState('');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
     const [activeThemeKey, setActiveThemeKey] = useState(invitationColorThemes[0].key);
+    const lastSubmittedWishRef = useRef<Wish | null>(null);
+    const lastSubmittedWishDeliveredRef = useRef(false);
     const activeTheme = invitationColorThemes.find((theme) => theme.key === activeThemeKey) || invitationColorThemes[0];
 
     useEffect(() => {
@@ -262,7 +306,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
         };
     }, [shouldLoadSavedPreview]);
 
-    const themeColors = preview
+    const themeColors = shouldUseTemplateColors
         ? {
             primary: invitationData.design.primaryColor,
             primaryDark: invitationData.design.primaryColor,
@@ -305,6 +349,38 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
     }, [countdownTargetDate]);
 
     useEffect(() => {
+        setWishes(initialWishes);
+    }, [initialWishes]);
+
+    useEffect(() => {
+        if (!wishTopic || isPreviewMode) {
+            return undefined;
+        }
+
+        const subscription = subscribeToStompTopic<Wish & { guestName?: string }>(wishTopic, (incomingWish) => {
+            const wish = {
+                name: incomingWish.name || incomingWish.guestName || '',
+                message: incomingWish.message,
+            };
+            const submittedWish = lastSubmittedWishRef.current;
+            if (submittedWish && submittedWish.name === wish.name && submittedWish.message === wish.message) {
+                lastSubmittedWishDeliveredRef.current = true;
+                setWishStatus('Dâu rể đã nhận được lời chúc của bạn.');
+            }
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === wish.name && item.message === wish.message);
+                return exists ? current : [wish, ...current];
+            });
+        });
+
+        return () => subscription.unsubscribe();
+    }, [isPreviewMode, wishTopic]);
+
+    useEffect(() => {
+        if (isLoadingSavedPreview) {
+            return undefined;
+        }
+
         const elements = document.querySelectorAll<HTMLElement>('[data-ei-reveal], [data-ei-image-reveal]');
         const observer = new IntersectionObserver(
             (entries) => {
@@ -319,7 +395,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
 
         elements.forEach((element) => observer.observe(element));
         return () => observer.disconnect();
-    }, [invitationData.id]);
+    }, [invitationData.id, isLoadingSavedPreview]);
 
     useEffect(() => {
         if (!isGalleryOpen) {
@@ -352,7 +428,8 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
 
     const handleWish = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const form = new FormData(event.currentTarget);
+        const formElement = event.currentTarget;
+        const form = new FormData(formElement);
         const nextWish = {
             name: String(form.get('name') || '').trim(),
             message: String(form.get('message') || '').trim(),
@@ -363,10 +440,26 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
             return;
         }
 
-        setWishes((current) => [nextWish, ...current]);
-        setWishStatus('Dâu rể đã nhận được lời chúc của bạn.');
-        event.currentTarget.reset();
-        await postWhenConfigured(invitationData.api.wishEndpoint, nextWish);
+        try {
+            lastSubmittedWishRef.current = nextWish;
+            lastSubmittedWishDeliveredRef.current = false;
+            await postWhenConfigured(wishEndpoint || invitationData.api.wishEndpoint, nextWish);
+            if (!wishEndpoint && !invitationData.api.wishEndpoint) {
+                setWishes((current) => [nextWish, ...current]);
+            }
+            setWishStatus('Dâu rể đã nhận được lời chúc của bạn.');
+            formElement.reset();
+        } catch {
+            if (lastSubmittedWishDeliveredRef.current) {
+                setWishStatus('Dâu rể đã nhận được lời chúc của bạn.');
+                formElement.reset();
+                return;
+            }
+
+            setWishStatus('Không thể gửi lời chúc. Vui lòng thử lại.');
+        } finally {
+            lastSubmittedWishRef.current = null;
+        }
     };
 
     const handleRsvp = async (event: FormEvent<HTMLFormElement>) => {
@@ -403,7 +496,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
 
     return (
         <>
-            {!preview && (
+            {!shouldUseTemplateColors && (
                 <aside className="ei-color-dock" aria-label="Lá»±a chá»n mÃ u thiá»‡p">
                     {invitationColorThemes.map((theme) => (
                         <button
@@ -421,7 +514,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
                     ))}
                 </aside>
             )}
-            <main className={`ei-page${preview ? ' ei-page-preview' : ''}`} id="top" style={pageStyle}>
+            <main className={`ei-page${isPreviewMode ? ' ei-page-preview' : ''}`} id="top" style={pageStyle}>
                 <section className="ei-hero">
                     <div className="ei-envelope" aria-hidden="true">
                         <div className="ei-envelope-flap" />
@@ -497,13 +590,13 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
                         <h3>Tiệc cưới sẽ diễn ra tại</h3>
                         <strong>{invitationData.event.venue}</strong>
                         <address>{invitationData.event.address}</address>
-                        <a href="#map">Xem chỉ đường</a>
+                        {shouldShowMap && <a href="#map">Xem chỉ đường</a>}
                     </div>}
 
                 </section>
 
-                {shouldShowVenue && <section className="ei-map-section ei-layout-map" id="map" data-ei-image-reveal="left">
-                    <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
+                {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map" data-ei-image-reveal="left">
+                    <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
                 </section>}
 
                 <section className="ei-gallery" data-ei-reveal>
@@ -547,8 +640,9 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
                                         {activeGalleryIndex + 1}/{galleryImages.length}
                                     </strong>
                                 </div>
-                                <button type="button" onClick={() => setIsGalleryOpen(false)}>
-                                    Đóng
+                                <button className="ei-gallery-close-icon" type="button" aria-label="Quay lại thiệp cưới" onClick={() => setIsGalleryOpen(false)}>
+                                    <ArrowLeft size={22} strokeWidth={2.5} />
+                                    <span>Quay lại</span>
                                 </button>
                             </div>
                             <div className="ei-gallery-viewer">
@@ -595,19 +689,21 @@ function EmeraldInvitation({ template, preview = false, onImageClick }: EmeraldI
                         subtitle="Mỗi lời chúc, mỗi sự hiện diện đều là điều đáng quý mà chúng tôi luôn trân trọng."
                     />
                     <form onSubmit={handleWish}>
-                        <input name="name" placeholder="Tên của bạn" />
-                        <textarea name="message" placeholder="Lời chúc" rows={4} />
+                        <input name="name" placeholder="Tên của bạn" maxLength={30} />
+                        <textarea name="message" placeholder="Lời chúc" rows={4} maxLength={300} />
                         <button type="submit">Gửi</button>
                     </form>
                     {wishStatus && <p className="ei-status">{wishStatus}</p>}
-                    <div className="ei-wish-list">
-                        {wishes.map((wish) => (
-                            <article key={`${wish.name}-${wish.message}`}>
-                                <strong>{wish.name}</strong>
-                                <p>{wish.message}</p>
-                            </article>
-                        ))}
-                    </div>
+                    {wishes.length > 0 && (
+                        <div className="ei-wish-list">
+                            {wishes.map((wish) => (
+                                <article key={`${wish.name}-${wish.message}`}>
+                                    <strong>{wish.name}</strong>
+                                    <p>{wish.message}</p>
+                                </article>
+                            ))}
+                        </div>
+                    )}
                 </section>
 
                 <section className="ei-rsvp" data-ei-reveal>

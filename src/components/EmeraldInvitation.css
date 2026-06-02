@@ -1234,6 +1234,7 @@
 
 .ei-wish-list {
   overflow-y: auto;
+  overflow-x: hidden;
   display: grid;
   max-height: 276px;
   gap: 10px;
@@ -1261,6 +1262,9 @@
 }
 
 .ei-wish-list article {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   border-left: 3px solid var(--ei-green);
   border-radius: 10px;
   padding: 10px 12px;
@@ -1272,6 +1276,8 @@
 
 .ei-wish-list strong {
   display: block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   margin-bottom: 5px;
   color: var(--ei-green);
   font-size: 0.82rem;
@@ -1281,6 +1287,9 @@
 
 .ei-wish-list p {
   margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
   font-size: 0.9rem;
   line-height: 1.42;
 }
@@ -1494,6 +1503,31 @@
   font-weight: 700;
 }
 
+.ei-gallery-panel-head .ei-gallery-close-icon {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  left: max(18px, env(safe-area-inset-left));
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+}
+
+.ei-gallery-panel-head .ei-gallery-close-icon:hover,
+.ei-gallery-panel-head .ei-gallery-close-icon:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
 .ei-gallery-viewer {
   display: grid;
   grid-template-columns: 56px minmax(0, 1fr) 56px;
@@ -1663,6 +1697,12 @@
 [data-ei-image-reveal].is-visible {
   opacity: 1;
   transform: translateX(0);
+}
+
+.ei-hero [data-ei-reveal],
+.ei-hero [data-ei-image-reveal] {
+  opacity: 1;
+  transform: none;
 }
 
 .ei-couple-row .ei-polaroid,
@@ -2510,6 +2550,18 @@
     min-height: 36px;
     padding: 0 14px;
     font-size: 0.9rem;
+  }
+
+  .ei-gallery-panel-head .ei-gallery-close-icon {
+    top: max(10px, env(safe-area-inset-top));
+    left: max(10px, env(safe-area-inset-left));
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0 12px;
+  }
+
+  .ei-gallery-panel-head .ei-gallery-close-icon span {
+    display: none;
   }
 
   .ei-gallery-viewer {

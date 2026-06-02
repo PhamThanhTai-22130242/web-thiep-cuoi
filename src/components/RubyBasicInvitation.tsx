@@ -108,10 +108,10 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
     const pageStyle = {
-        '--rbi-red': '#9f2c24',
-        '--rbi-red-deep': '#7f1712',
-        '--rbi-gold': '#d8b16a',
-        '--rbi-paper': '#f6e8dc',
+        '--rbi-red': invitationData.design.primaryColor || '#9f2c24',
+        '--rbi-red-deep': invitationData.design.primaryColor || '#7f1712',
+        '--rbi-gold': invitationData.design.accentColor || '#d8b16a',
+        '--rbi-paper': invitationData.design.backgroundColor || '#f6e8dc',
         '--rbi-paper-strong': '#fbf4ee',
         '--rbi-script': `'${invitationData.design.scriptFont}', 'Great Vibes', cursive`,
         '--rbi-serif': `'Cormorant Garamond', '${invitationData.design.serifFont}', Georgia, serif`,
@@ -145,6 +145,10 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     }, [invitationData.event.date]);
 
     useEffect(() => {
+        if (shouldLoadSavedPreview && !savedPreviewTemplate) {
+            return undefined;
+        }
+
         const elements = document.querySelectorAll<HTMLElement>('[data-rbi-reveal], [data-rbi-image]');
         const observer = new IntersectionObserver(
             (entries) => {
@@ -159,7 +163,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
 
         elements.forEach((element) => observer.observe(element));
         return () => observer.disconnect();
-    }, [invitationData.id]);
+    }, [invitationData.id, savedPreviewTemplate, shouldLoadSavedPreview]);
 
     useEffect(() => {
         if (!isGalleryOpen) {
@@ -410,8 +414,8 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                     subtitle="Mỗi lời chúc đều là một dấu ấn đẹp mà cô dâu chú rể luôn trân trọng."
                 />
                 <form onSubmit={handleWish}>
-                    <input name="name" placeholder="Tên của bạn" />
-                    <textarea name="message" placeholder="Lời chúc" rows={4} />
+                    <input name="name" placeholder="Tên của bạn" maxLength={30} />
+                    <textarea name="message" placeholder="Lời chúc" rows={4} maxLength={300} />
                     <button type="submit">Gửi</button>
                 </form>
                 {wishStatus && <p className="rbi-status">{wishStatus}</p>}

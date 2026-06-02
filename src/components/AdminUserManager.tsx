@@ -8,6 +8,7 @@ import {
     Home,
     LayoutTemplate,
     LockKeyhole,
+    LockOpen,
     MoreVertical,
     Package,
     Search,
@@ -19,12 +20,10 @@ import {
     Users,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
-import { authTokenService } from '../services/auth-token.service';
+import { API_ENDPOINTS } from '../config/api.config';
+import { ApiError, httpRequest } from '../services/http.service';
 import './AdminDashboard.css';
 import './AdminUserManager.css';
-
-const ADMIN_USERS_API = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMIN.USERS}`;
 
 interface AdminUser {
     id: number;
@@ -34,20 +33,6 @@ interface AdminUser {
     status: 'ACTIVE' | 'BLOCKED' | 'LOCKED' | 'INACTIVE' | string;
     createdAt: string;
     updateAt: string;
-}
-
-interface AdminUsersResponse {
-    code: number;
-    data: AdminUser[];
-    message: string;
-    timestamp: string;
-}
-
-interface AdminUserResponse {
-    code: number;
-    data: AdminUser;
-    message: string;
-    timestamp: string;
 }
 
 const navItems = [
@@ -101,6 +86,10 @@ function getStatusLabel(status: string) {
     return status || 'Không rõ';
 }
 
+function isLockedStatus(status: string) {
+    return status === 'BLOCKED' || status === 'LOCKED';
+}
+
 function AdminUserManager() {
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -108,8 +97,8 @@ function AdminUserManager() {
     const [query, setQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [blockingUserId, setBlockingUserId] = useState<number | null>(null);
-    const [blockError, setBlockError] = useState('');
+    const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
+    const [statusError, setStatusError] = useState('');
 
     useEffect(() => {
         let isMounted = true;
@@ -119,21 +108,7 @@ function AdminUserManager() {
             setErrorMessage('');
 
             try {
-                const accessToken = authTokenService.getAccessToken();
-                const response = await fetch(ADMIN_USERS_API, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-                    },
-                });
-
-                const payload = await response.json() as AdminUsersResponse;
-
-                if (!response.ok || payload.code < 200 || payload.code >= 300) {
-                    throw new Error(payload.message || 'Không thể tải danh sách người dùng.');
-                }
+                const payload = await httpRequest<AdminUser[]>(API_ENDPOINTS.ADMIN.USERS, { auth: true });
 
                 if (isMounted) {
                     setUsers(Array.isArray(payload.data) ? payload.data : []);
@@ -176,7 +151,7 @@ function AdminUserManager() {
     }, [query, roleFilter, statusFilter, users]);
 
     const activeCount = users.filter((user) => user.status === 'ACTIVE').length;
-    const lockedCount = users.filter((user) => user.status === 'BLOCKED' || user.status === 'LOCKED').length;
+    const lockedCount = users.filter((user) => isLockedStatus(user.status)).length;
     const newUserCount = users.filter((user) => {
         const createdAt = new Date(user.createdAt);
         const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -191,44 +166,56 @@ function AdminUserManager() {
         { label: 'Tài khoản bị khóa', value: String(lockedCount), note: 'Đã bị khóa', icon: LockKeyhole, tone: 'red' },
     ];
 
-    const handleBlockUser = async (userId: number) => {
-        setBlockingUserId(userId);
-        setBlockError('');
+    const handleToggleUserLock = async (targetUser: AdminUser) => {
+        if (updatingUserId !== null) {
+            return;
+        }
+
+        const isLocked = isLockedStatus(targetUser.status);
+        const actionLabel = isLocked ? 'mở khóa' : 'khóa';
+        const shouldUpdate = window.confirm(
+            isLocked
+                ? `Mở khóa tài khoản ${targetUser.email}? Người dùng này sẽ có thể đăng nhập lại.`
+                : `Khóa tài khoản ${targetUser.email}? Người dùng này sẽ không thể đăng nhập cho đến khi được mở khóa.`
+        );
+
+        if (!shouldUpdate) {
+            return;
+        }
+
+        setUpdatingUserId(targetUser.id);
+        setStatusError('');
 
         try {
-            const accessToken = authTokenService.getAccessToken();
-            const response = await fetch(`${ADMIN_USERS_API}/${userId}/block`, {
+            const payload = await httpRequest<AdminUser>(`${API_ENDPOINTS.ADMIN.USERS}/${targetUser.id}/${isLocked ? 'unlock' : 'lock'}`, {
                 method: 'PATCH',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-                },
+                auth: true,
             });
-            const payload = await response.json() as AdminUserResponse;
 
-            if (!response.ok || payload.code < 200 || payload.code >= 300 || !payload.data) {
-                throw new Error(payload.message || 'Block user thất bại.');
+            if (!payload.data) {
+                throw new Error(`Không nhận được dữ liệu tài khoản sau khi ${actionLabel}.`);
             }
 
+            const updatedUser = payload.data;
+
             setUsers((currentUsers) => currentUsers.map((user) => (
-                user.id === userId ? payload.data : user
+                user.id === updatedUser.id ? updatedUser : user
             )));
-        } catch {
-            setBlockError('Xảy ra lỗi');
+        } catch (error) {
+            setStatusError(error instanceof ApiError || error instanceof Error ? error.message : `Không thể ${actionLabel} người dùng. Vui lòng thử lại.`);
         } finally {
-            setBlockingUserId(null);
+            setUpdatingUserId(null);
         }
     };
 
     return (
         <main className="admin-dashboard admin-users-page">
-            {blockError && (
+            {statusError && (
                 <div className="admin-users-error-popup" role="alertdialog" aria-modal="true">
                     <div>
-                        <strong>{blockError}</strong>
-                        <p>Không thể khóa người dùng. Vui lòng thử lại.</p>
-                        <button type="button" onClick={() => setBlockError('')}>Đóng</button>
+                        <strong>Không thể cập nhật tài khoản</strong>
+                        <p>{statusError}</p>
+                        <button type="button" onClick={() => setStatusError('')}>Đóng</button>
                     </div>
                 </div>
             )}
@@ -363,14 +350,27 @@ function AdminUserManager() {
                                                 <div className="admin-users-actions">
                                                     <button type="button" aria-label="Xem"><Eye size={15} /></button>
                                                     <button type="button" aria-label="Chỉnh sửa"><Edit3 size={15} /></button>
-                                                    <button
-                                                        type="button"
-                                                        aria-label="Khóa người dùng"
-                                                        disabled={blockingUserId === user.id || user.status === 'BLOCKED' || user.status === 'LOCKED'}
-                                                        onClick={() => handleBlockUser(user.id)}
-                                                    >
-                                                        <LockKeyhole size={15} />
-                                                    </button>
+                                                    {isLockedStatus(user.status) ? (
+                                                        <button
+                                                            type="button"
+                                                            aria-label="Mở khóa tài khoản"
+                                                            title="Mở khóa tài khoản"
+                                                            disabled={updatingUserId === user.id}
+                                                            onClick={() => handleToggleUserLock(user)}
+                                                        >
+                                                            <LockOpen size={15} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            aria-label="Khóa tài khoản"
+                                                            title="Khóa tài khoản"
+                                                            disabled={updatingUserId === user.id}
+                                                            onClick={() => handleToggleUserLock(user)}
+                                                        >
+                                                            <LockKeyhole size={15} />
+                                                        </button>
+                                                    )}
                                                     <button type="button" aria-label="Thêm"><MoreVertical size={15} /></button>
                                                 </div>
                                             </td>

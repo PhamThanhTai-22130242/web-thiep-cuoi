@@ -862,6 +862,7 @@
 
 .rbi-wish-list {
   overflow-y: auto;
+  overflow-x: hidden;
   display: grid;
   gap: 10px;
   max-height: 268px;
@@ -894,6 +895,9 @@
 }
 
 .rbi-wish-list article {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   border-left: 3px solid var(--rbi-red);
   border-radius: 7px;
   padding: 10px 12px;
@@ -903,6 +907,8 @@
 
 .rbi-wish-list strong {
   display: block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   margin-bottom: 5px;
   color: var(--rbi-red);
   font-size: 0.82rem;
@@ -913,6 +919,9 @@
 
 .rbi-wish-list p {
   margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
   font-size: 0.9rem;
   line-height: 1.42;
 }

@@ -5,10 +5,11 @@ import RubyBasicInvitation from '../components/RubyBasicInvitation';
 import TemplateDashboard from '../components/TemplateDashboard';
 import TemplateDashboard99k from '../components/TemplateDashboard99k';
 
-type WeddingTemplateConfig = {
+export type WeddingTemplateConfig = {
     id: number;
     code: string;
     name: string;
+    description: string;
     previewPath: string;
     editorPath: string;
     legacyPreviewPaths: string[];
@@ -21,7 +22,8 @@ export const weddingTemplateRegistry = {
     EmeraldInvitation: {
         id: 1,
         code: 'EmeraldInvitation',
-        name: 'Emerald Classic',
+        name: 'Hỷ Sắc Vu Quy',
+        description: 'Tông xanh sang, ảnh nổi bật, hợp với phong cách nhẹ nhàng và tinh tế.',
         previewPath: '/EmeraldInvitation',
         editorPath: '/EmeraldInvitation/edit',
         legacyPreviewPaths: [],
@@ -32,7 +34,8 @@ export const weddingTemplateRegistry = {
     RubyBasicInvitation: {
         id: 2,
         code: 'RubyBasicInvitation',
-        name: 'Song Long Đỏ',
+        name: 'Bến Tình Trăm Năm',
+        description: 'Sắc đỏ truyền thống, bố cục rực rỡ và đậm chất ngày cưới Việt.',
         previewPath: '/RubyBasicInvitation',
         editorPath: '/RubyBasicInvitation/edit',
         legacyPreviewPaths: [],
@@ -43,7 +46,8 @@ export const weddingTemplateRegistry = {
     CineLoveTraditionalInvitation: {
         id: 3,
         code: 'CineLoveTraditionalInvitation',
-        name: 'Hỷ Sự Truyền Thống',
+        name: 'Duyên Thắm Miệt Vườn',
+        description: 'Sắc đỏ trang trọng, bố cục điện ảnh và chi tiết song hỷ dành cho lễ cưới truyền thống.',
         previewPath: '/CineLoveTraditionalInvitation',
         editorPath: '/CineLoveTraditionalInvitation/edit',
         legacyPreviewPaths: [],

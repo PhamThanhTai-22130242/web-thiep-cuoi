@@ -35,6 +35,14 @@ function isSuccessCode(code: number) {
     return code >= 200 && code < 300;
 }
 
+function redirectToUnauthorizedPage() {
+    authTokenService.clearSession();
+
+    if (window.location.pathname !== '/401') {
+        window.location.assign('/401');
+    }
+}
+
 async function parseJsonResponse<T>(response: Response): Promise<ApiResponse<T>> {
     const text = await response.text();
 
@@ -62,7 +70,7 @@ async function refreshAccessToken() {
     const statusCode = Number(payload.code || response.status);
 
     if (!isSuccessCode(statusCode) || !payload.data?.accessToken) {
-        authTokenService.clearSession();
+        redirectToUnauthorizedPage();
         throw new ApiError(payload.message || 'Phiên đăng nhập đã hết hạn.', response.status, statusCode, payload.data);
     }
 
@@ -108,6 +116,10 @@ export async function httpRequest<TResponse, TBody = unknown>(
         }
 
         if (!isSuccessCode(statusCode)) {
+            if (statusCode === 401 && options.auth) {
+                redirectToUnauthorizedPage();
+            }
+
             throw new ApiError(payload.message || 'Request failed', response.status, statusCode, payload.data);
         }
 

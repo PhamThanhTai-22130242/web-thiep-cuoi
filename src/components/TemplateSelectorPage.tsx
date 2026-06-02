@@ -8,14 +8,12 @@ type PackageKey = 'co-ban' | 'chuyen-nghiep' | 'thoi-thuong';
 
 type TemplateSample = {
     templateCode: WeddingTemplateCode;
-    name: string;
-    note: string;
-    image: string;
 };
 
 type TemplatePackage = {
     label: string;
     price: string;
+    originalPrice?: string;
     title: string;
     description: string;
     accent: string;
@@ -31,43 +29,37 @@ const packageTabs: Array<{ key: PackageKey; label: string }> = [
 const templatePackages: Record<PackageKey, TemplatePackage> = {
     'co-ban': {
         label: 'Gói Cơ Bản',
-        price: '99.000 đ',
+        price: '99.000đ',
+        originalPrice: '199.000đ',
         title: 'Chọn mẫu thiệp cưới phù hợp với câu chuyện của bạn',
         description: 'Các mẫu trong gói này tập trung vào bố cục sáng, dễ đọc, tải nhanh và đủ đầy những phần quan trọng cho một thiệp cưới online.',
         accent: '#b96a2c',
         samples: [
             {
                 templateCode: 'EmeraldInvitation',
-                name: 'Emerald Classic',
-                note: 'Tông xanh sang, ảnh nổi bật, hợp với phong cách nhẹ nhàng và tinh tế.',
-                image: '/img/mockup-thiep-cuoi-online-1.webp',
             },
             {
                 templateCode: 'RubyBasicInvitation',
-                name: 'Song Long Đỏ',
-                note: 'Sắc đỏ truyền thống, bố cục rực rỡ và đậm chất ngày cưới Việt.',
-                image: '/img/double-dragon.webp',
             },
         ],
     },
     'chuyen-nghiep': {
         label: 'Gói Chuyên Nghiệp',
-        price: '199.000 đ',
+        price: '199.000đ',
+        originalPrice: '299.000đ',
         title: 'Bộ mẫu nâng cấp đang được hoàn thiện',
         description: 'Khu vực này đã sẵn sàng để gắn thêm các mẫu nhiều hiệu ứng, nhiều section và trải nghiệm cá nhân hóa hơn.',
         accent: '#1f756d',
         samples: [
             {
                 templateCode: 'CineLoveTraditionalInvitation',
-                name: 'Hỷ Sự Truyền Thống',
-                note: 'Sắc đỏ trang trọng, bố cục điện ảnh và chi tiết song hỷ dành cho lễ cưới truyền thống.',
-                image: '/img/double-dragon.webp',
             },
         ],
     },
     'thoi-thuong': {
         label: 'Gói Thời Thượng',
-        price: '299.000 đ',
+        price: '299.000đ',
+        originalPrice: '399.000đ',
         title: 'Không gian cho những mẫu thiệp cao cấp',
         description: 'Gói Thời Thượng sẽ dành cho các mẫu có chuyển động đặc biệt, phối cảnh ảnh lớn và các chi tiết thiết kế riêng theo cặp đôi.',
         accent: '#7a3fb2',
@@ -182,7 +174,7 @@ function TemplateSelectorPage() {
                                             frameRefs.current[index] = node;
                                         }}
                                         src={templateConfig.previewPath}
-                                        title={`Preview ${sample.name}`}
+                                        title={`Preview ${templateConfig.name}`}
                                         loading="lazy"
                                         scrolling="no"
                                         tabIndex={-1}
@@ -192,8 +184,12 @@ function TemplateSelectorPage() {
 
                             <div className="selector-card-copy">
                                 <div>
-                                    <h2>{sample.name}</h2>
-                                    <p>{sample.note}</p>
+                                    <div className="selector-card-price">
+                                        {selectedPackage.originalPrice && <del>{selectedPackage.originalPrice}</del>}
+                                        <strong>{selectedPackage.price}</strong>
+                                    </div>
+                                    <h2>{templateConfig.name}</h2>
+                                    <p>{templateConfig.description}</p>
                                 </div>
 
                                 <div className="selector-actions">

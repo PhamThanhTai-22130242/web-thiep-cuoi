@@ -307,6 +307,60 @@
   gap: 18px;
 }
 
+.wim-message {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 14px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #76524a;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.wim-message.is-error {
+  border-color: rgba(160, 24, 19, 0.26);
+  background: rgba(255, 246, 244, 0.84);
+  color: #a01813;
+}
+
+.wim-message.is-success {
+  border-color: rgba(25, 135, 84, 0.22);
+  background: rgba(236, 252, 244, 0.88);
+  color: #17633d;
+}
+
+.wim-toast {
+  position: fixed;
+  right: max(22px, env(safe-area-inset-right));
+  bottom: max(22px, env(safe-area-inset-bottom));
+  z-index: 5000;
+  max-width: min(360px, calc(100vw - 44px));
+  border: 1px solid rgba(25, 135, 84, 0.2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #ecfcf4;
+  color: #17633d;
+  font-size: 0.9rem;
+  font-weight: 850;
+  line-height: 1.45;
+  box-shadow: 0 18px 42px rgba(31, 90, 69, 0.16);
+  animation: wim-toast-in 0.22s ease-out;
+}
+
+@keyframes wim-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .wim-card {
   display: grid;
   grid-template-columns: 128px minmax(0, 1fr);
@@ -361,6 +415,21 @@
   font-weight: 700;
 }
 
+.wim-card-slug {
+  display: inline-flex;
+  max-width: 100%;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(94, 69, 48, 0.08);
+  color: #5e4530;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .wim-card-meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -398,26 +467,60 @@
   color: #666;
 }
 
-.wim-feature-list {
+.wim-unlock-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  border: 1px solid rgba(160, 24, 19, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255, 238, 235, 0.98), rgba(255, 250, 248, 0.92));
 }
 
-.wim-feature-list span {
+.wim-unlock-card > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: #8f1b16;
+  font-size: 0.74rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.wim-unlock-card svg {
+  flex: 0 0 auto;
+  color: #a01813;
+}
+
+.wim-unlock-card button {
+  min-height: 32px;
+  flex: 0 0 auto;
+  max-width: 150px;
+  border: 1px solid rgba(160, 24, 19, 0.22);
   border-radius: 8px;
-  padding: 5px 8px;
-  background: rgba(124, 22, 15, 0.06);
-  color: #76524a;
+  padding: 0 11px;
+  background: #a01813;
+  color: #fffaf6;
+  cursor: pointer;
+  font: inherit;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
+  white-space: normal;
+  box-shadow: 0 10px 22px rgba(160, 24, 19, 0.16);
+}
+
+.wim-unlock-card button:hover {
+  background: #7c160f;
+  color: #fffaf6;
 }
 
 .wim-card-actions {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid rgba(124, 22, 15, 0.1);
 }
 
@@ -454,6 +557,364 @@
 
 .wim-card-actions > :last-child {
   border-right: 0;
+}
+
+.wim-comment-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  background: rgba(31, 18, 14, 0.38);
+  backdrop-filter: blur(8px);
+}
+
+.wim-comment-panel {
+  width: min(680px, 100%);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow: hidden;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 22px;
+  background: #fffaf6;
+  box-shadow: 0 30px 90px rgba(44, 20, 14, 0.24);
+}
+
+.wim-comment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid rgba(124, 22, 15, 0.1);
+  padding: 22px 24px 18px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(198, 154, 74, 0.18), transparent 36%),
+    linear-gradient(135deg, #fffdf9 0%, #fff3ea 100%);
+}
+
+.wim-comment-head p,
+.wim-comment-head h2,
+.wim-comment-head span {
+  margin: 0;
+}
+
+.wim-comment-head p {
+  color: #9a2a24;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wim-comment-head h2 {
+  margin-top: 6px;
+  color: #7c160f;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  line-height: 1.1;
+}
+
+.wim-comment-head span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #7b5a51;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.wim-comment-head button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.84);
+  color: #6b433b;
+  cursor: pointer;
+}
+
+.wim-comment-head button:hover {
+  background: #7c160f;
+  color: #fffaf6;
+}
+
+.wim-comment-state {
+  margin: 18px 24px 24px;
+  border: 1px solid rgba(124, 22, 15, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #76524a;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.wim-comment-state.is-error {
+  border-color: rgba(160, 24, 19, 0.26);
+  background: rgba(255, 246, 244, 0.88);
+  color: #a01813;
+}
+
+.wim-comment-list {
+  display: grid;
+  max-height: min(540px, calc(100vh - 190px));
+  gap: 12px;
+  overflow: auto;
+  padding: 18px 24px 24px;
+}
+
+.wim-comment-item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  border: 1px solid rgba(124, 22, 15, 0.11);
+  border-radius: 18px;
+  padding: 17px 18px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(84, 31, 20, 0.06);
+}
+
+.wim-comment-item.is-hidden {
+  border-color: rgba(94, 69, 48, 0.12);
+  background: rgba(246, 241, 237, 0.92);
+}
+
+.wim-comment-item strong,
+.wim-comment-item p {
+  margin: 0;
+}
+
+.wim-comment-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wim-comment-item strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: #9a2a24;
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wim-comment-item p {
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+  color: #493028;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.wim-comment-meta span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #e9fbf1;
+  color: #17633d;
+  font-size: 0.72rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.wim-comment-item.is-hidden .wim-comment-meta span {
+  background: #f3e8e5;
+  color: #8d1f17;
+}
+
+.wim-comment-item button {
+  justify-self: end;
+  min-width: 92px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: #7c160f;
+  color: #fffaf6;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(124, 22, 15, 0.18);
+}
+
+.wim-comment-item.is-hidden button {
+  background: #1f5a45;
+  box-shadow: 0 12px 24px rgba(31, 90, 69, 0.16);
+}
+
+.wim-comment-item button:disabled {
+  cursor: wait;
+  opacity: 0.64;
+}
+
+.wim-activation-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4200;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  background: rgba(31, 18, 14, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.wim-activation-panel {
+  position: relative;
+  width: min(560px, 100%);
+  border: 1px solid rgba(160, 24, 19, 0.28);
+  border-radius: 22px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(160, 24, 19, 0.2), transparent 34%),
+    linear-gradient(135deg, #fff8f6 0%, #ffe8e4 100%);
+  color: #3f241e;
+  box-shadow: 0 30px 90px rgba(44, 20, 14, 0.26);
+}
+
+.wim-activation-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.84);
+  color: #6b433b;
+  cursor: pointer;
+}
+
+.wim-activation-close:hover {
+  background: #7c160f;
+  color: #fffaf6;
+}
+
+.wim-activation-panel h2,
+.wim-activation-note p {
+  margin: 0;
+}
+
+.wim-activation-panel h2 {
+  max-width: 430px;
+  padding-top: 34px;
+  color: #4b241d;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.18;
+}
+
+.wim-activation-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 12px;
+  align-items: center;
+  margin-top: 22px;
+  border: 1px solid rgba(160, 24, 19, 0.24);
+  border-radius: 14px;
+  padding: 13px 14px;
+  background: rgba(255, 246, 244, 0.92);
+}
+
+.wim-activation-copy span {
+  color: #8f6f65;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wim-activation-copy strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #a01813;
+  font-size: 1rem;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wim-activation-copy button {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(160, 24, 19, 0.2);
+  border-radius: 10px;
+  background: #fff7f5;
+  color: #a01813;
+  cursor: pointer;
+}
+
+.wim-activation-copy button:hover {
+  background: #a01813;
+  color: #fffaf6;
+}
+
+.wim-activation-note {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  border: 1px solid rgba(160, 24, 19, 0.16);
+  border-radius: 14px;
+  padding: 16px;
+  background: rgba(255, 246, 244, 0.84);
+  color: #6d2e28;
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.wim-activation-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.wim-activation-actions a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(160, 24, 19, 0.18);
+  border-radius: 8px;
+  background: #a01813;
+  color: #fffaf6;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 16px 30px rgba(160, 24, 19, 0.16);
+}
+
+.wim-activation-actions img {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border-radius: 5px;
+  object-fit: contain;
+}
+
+.wim-activation-actions a + a {
+  border-color: rgba(124, 22, 15, 0.3);
+  background: #7c160f;
+  color: #fffaf6;
+  box-shadow: 0 16px 30px rgba(124, 22, 15, 0.16);
+}
+
+.wim-activation-actions a:hover {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 1180px) {
@@ -498,7 +959,29 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .wim-card-actions button,
+  .wim-card-actions a {
+    min-height: 42px;
+  }
+
   .wim-card-actions .is-more {
     grid-column: 1 / -1;
+  }
+
+  .wim-comment-meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .wim-comment-item button {
+    justify-self: stretch;
+  }
+
+  .wim-activation-panel {
+    padding: 24px 18px;
+  }
+
+  .wim-activation-actions {
+    grid-template-columns: 1fr;
   }
 }

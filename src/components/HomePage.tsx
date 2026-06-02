@@ -164,14 +164,14 @@ function HomePage() {
                 <div className="home-hero-visual">
                     <div className="home-hero-mockups" aria-label="Mockup thiệp cưới online">
                         <img
-                            src="/img/mockup-thiep-cuoi-online-2.webp"
+                            src="/img/home1 (1).png"
                             alt="Mockup thiệp cưới online Harmony"
                             width="400"
                             height="500"
                             className="home-mockup-card home-mockup-card-left"
                         />
                         <img
-                            src="/img/mockup-thiep-cuoi-online-1.webp"
+                            src="/img/home2 (1).png"
                             alt="Mockup thiệp cưới online trên điện thoại"
                             width="400"
                             height="500"

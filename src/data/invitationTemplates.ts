@@ -224,7 +224,17 @@ function readPreviewFromDatabase(storageKey = templatePreviewStorageKey) {
 }
 
 export async function savePreviewInvitationTemplate(template: InvitationTemplate, storageKey = templatePreviewStorageKey) {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
     await writePreviewToDatabase(template, storageKey);
+
+    try {
+        window.localStorage.setItem(storageKey, JSON.stringify(template));
+    } catch {
+        // IndexedDB is the source of truth. The localStorage copy is only a small-data fallback.
+    }
 }
 
 export async function loadPreviewInvitationTemplate(storageKey = templatePreviewStorageKey) {
@@ -233,8 +243,19 @@ export async function loadPreviewInvitationTemplate(storageKey = templatePreview
     }
 
     try {
-        return await readPreviewFromDatabase(storageKey);
+        const storedPreview = await readPreviewFromDatabase(storageKey);
+        if (storedPreview) {
+            return storedPreview;
+        }
     } catch {
+        // Fall back to the localStorage mirror below.
+    }
+
+    try {
+        const stored = window.localStorage.getItem(storageKey);
+        return stored ? JSON.parse(stored) as InvitationTemplate : null;
+    } catch {
+        window.localStorage.removeItem(storageKey);
         return null;
     }
 }

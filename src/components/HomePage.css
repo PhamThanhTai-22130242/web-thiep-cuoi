@@ -6,7 +6,7 @@
     radial-gradient(circle at 8% 10%, rgba(255, 255, 255, 0.16), transparent 15%),
     radial-gradient(circle at 92% 8%, rgba(255, 232, 194, 0.14), transparent 19%),
     linear-gradient(115deg, rgba(255, 250, 243, 0.08) 0 12%, transparent 12% 100%),
-    linear-gradient(180deg, #8b0000 0%, #700000 42%, #550000 100%);
+    linear-gradient(180deg, #9d0a06 0%, #850400 42%, #6d0500 100%);
   color: #fff7f2;
   overflow: hidden;
 }

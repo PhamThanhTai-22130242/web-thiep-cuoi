@@ -299,8 +299,8 @@ function CineLoveTraditionalInvitation() {
                 </div>
 
                 <form className="clv-wish-form" onSubmit={handleWishSubmit}>
-                    <input name="wishName" type="text" placeholder="Tên của bạn" />
-                    <textarea name="wishMessage" placeholder="Lời chúc" rows={5} />
+                    <input name="wishName" type="text" placeholder="Tên của bạn" maxLength={30} />
+                    <textarea name="wishMessage" placeholder="Lời chúc" rows={5} maxLength={300} />
                     <button type="submit">Gửi</button>
                 </form>
 

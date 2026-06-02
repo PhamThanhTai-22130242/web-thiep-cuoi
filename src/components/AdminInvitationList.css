@@ -124,6 +124,7 @@
 .admin-invitation-export,
 .admin-invitation-add {
   display: inline-flex;
+  min-height: 42px;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -132,6 +133,7 @@
   font: inherit;
   font-size: 0.78rem;
   font-weight: 900;
+  text-decoration: none;
 }
 
 .admin-invitation-export {
@@ -156,11 +158,12 @@
 
 .admin-invitation-table-wrap {
   overflow-x: auto;
+  overflow-y: visible;
 }
 
 .admin-invitation-table {
   width: 100%;
-  min-width: 1060px;
+  min-width: 1120px;
   border-collapse: collapse;
   color: #4d362f;
   font-size: 0.78rem;
@@ -188,13 +191,39 @@
   font-weight: 900;
 }
 
-.admin-invitation-thumb {
-  width: 44px;
-  height: 54px;
-  display: block;
-  border-radius: 7px;
-  object-fit: cover;
-  box-shadow: 0 6px 12px rgba(89, 45, 26, 0.12);
+.admin-invitation-slug {
+  display: inline-flex;
+  max-width: 220px;
+  overflow: hidden;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(124, 22, 15, 0.06);
+  color: #6b433b;
+  font-weight: 850;
+  text-overflow: ellipsis;
+}
+
+.admin-invitation-owner {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-invitation-owner strong,
+.admin-invitation-owner span {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-invitation-owner strong {
+  color: #4d362f;
+  font-weight: 850;
+}
+
+.admin-invitation-owner span {
+  color: #92766b;
+  font-size: 0.7rem;
 }
 
 .admin-invitation-status {
@@ -224,10 +253,12 @@
 
 .admin-invitation-actions {
   display: inline-flex;
+  align-items: center;
   gap: 8px;
 }
 
-.admin-invitation-actions button {
+.admin-invitation-actions button,
+.admin-invitation-actions a {
   display: grid;
   width: 34px;
   height: 34px;
@@ -237,10 +268,72 @@
   background: #fffaf6;
   color: #6c5148;
   cursor: pointer;
+  text-decoration: none;
 }
 
-.admin-invitation-actions button:hover {
+.admin-invitation-actions button:hover,
+.admin-invitation-actions a:hover {
   background: #f8efe8;
+  color: #a11612;
+}
+
+.admin-invitation-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.admin-invitation-action-menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.admin-invitation-status-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 178px;
+  overflow: hidden;
+  border: 1px solid #ead8cd;
+  border-radius: 8px;
+  background: #fffdfb;
+  box-shadow: 0 14px 28px rgba(96, 50, 31, 0.12);
+}
+
+.admin-invitation-status-menu button {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  justify-content: flex-start;
+  gap: 8px;
+  border: 0;
+  border-radius: 0;
+  padding: 0 11px;
+  background: #fffdfb;
+  color: #634a42;
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.admin-invitation-status-menu button:hover:not(:disabled) {
+  background: #fbf1ea;
+  color: #a11612;
+}
+
+.admin-invitation-status-menu button:disabled {
+  background: #f7f2ef;
+  color: #a28c84;
+}
+
+.admin-invitation-empty {
+  padding: 24px 18px;
+  color: #80675f;
+  font-weight: 850;
+  text-align: center;
+}
+
+.admin-invitation-empty.is-error {
   color: #a11612;
 }
 
@@ -261,6 +354,12 @@
   gap: 8px;
 }
 
+.admin-invitation-page-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .admin-invitation-pages button {
   min-width: 34px;
   height: 34px;
@@ -270,6 +369,11 @@
   color: #6d5148;
   cursor: pointer;
   font-weight: 850;
+}
+
+.admin-invitation-pages button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .admin-invitation-pages button.is-active {

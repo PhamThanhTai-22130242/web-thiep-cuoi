@@ -1,10 +1,15 @@
+import { useEffect, useMemo, useState } from 'react';
 import {
     CreditCard,
+    MessageCircle,
     Download,
     Edit3,
     Eye,
+    FileText,
+    CheckCircle2,
     Home,
     LayoutTemplate,
+    LockKeyhole,
     MoreVertical,
     Package,
     Plus,
@@ -12,10 +17,53 @@ import {
     Settings,
     Smartphone,
     Users,
+    type LucideIcon,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
+import { authTokenService } from '../services/auth-token.service';
 import './AdminDashboard.css';
 import './AdminInvitationList.css';
+
+const ADMIN_INVITATIONS_API = `${API_CONFIG.BASE_URL}${API_ENDPOINTS.ADMIN.INVITATIONS}`;
+
+type InvitationStatus = 'active' | 'draft' | 'locked' | string;
+
+interface AdminInvitation {
+    weddingId: number;
+    groomName?: string;
+    brideName?: string;
+    slug: string;
+    creatorId: number;
+    creatorName?: string;
+    creatorEmail?: string;
+    status: InvitationStatus;
+    createdAt?: string;
+    viewCount?: number;
+    previewImg?: string;
+}
+
+interface AdminInvitationPage {
+    items: AdminInvitation[];
+    totalItems: number;
+    page: number;
+    size: number;
+    totalPages: number;
+}
+
+interface AdminInvitationPageResponse {
+    code: number;
+    data: AdminInvitationPage;
+    message: string;
+    timestamp: string;
+}
+
+interface AdminInvitationStatusResponse {
+    code: number;
+    data: AdminInvitation;
+    message: string;
+    timestamp: string;
+}
 
 const navItems = [
     { label: 'Tổng quan', icon: Home, path: '/admin-dashboard' },
@@ -27,70 +75,221 @@ const navItems = [
     { label: 'Cài đặt', icon: Settings, path: '/admin-settings' },
 ];
 
-const invitations = [
-    {
-        orderCode: 'ORD0001',
-        couple: 'Thanh Huy & Phương Thúy',
-        owner: 'Nguyễn Văn A',
-        plan: 'Premium',
-        status: 'Đang hoạt động',
-        created: '31/05/2025',
-        views: '2.345',
-        image: '/img/double-dragon.webp',
-    },
-    {
-        orderCode: 'ORD0002',
-        couple: 'Hoàng Nam & Thanh Tú',
-        owner: 'Lê Thu Hương',
-        plan: 'Standard',
-        status: 'Đang hoạt động',
-        created: '30/05/2025',
-        views: '1.980',
-        image: '/img/mockup-thiep-cuoi-online-1.webp',
-    },
-    {
-        orderCode: 'ORD0003',
-        couple: 'Bảo Ngọc & Anh',
-        owner: 'Phạm Quốc Bảo',
-        plan: 'Standard',
-        status: 'Bản nháp',
-        created: '29/05/2025',
-        views: '320',
-        image: '/img/mockup-thiep-cuoi-online-2.webp',
-    },
-    {
-        orderCode: 'ORD0004',
-        couple: 'Minh Đức & Hà My',
-        owner: 'Nguyễn Hoài An',
-        plan: 'Basic',
-        status: 'Bản nháp',
-        created: '28/05/2025',
-        views: '154',
-        image: '/img/footer.png',
-    },
-    {
-        orderCode: 'ORD0005',
-        couple: 'Quang Huy & Thu Trang',
-        owner: 'Đặng Văn Khoa',
-        plan: 'Premium',
-        status: 'Đang hoạt động',
-        created: '28/05/2025',
-        views: '2.876',
-        image: '/img/header.png',
-    },
-    {
-        orderCode: 'ORD0006',
-        couple: 'Duy Khánh & Lan Anh',
-        owner: 'Ngô Thị Hạnh',
-        plan: 'Basic',
-        status: 'Đã khóa',
-        created: '27/05/2025',
-        views: '98',
-        image: '/img/background.png',
-    },
+const statusTabs = [
+    { label: 'Tất cả', value: 'all' },
+    { label: 'Đang hoạt động', value: 'active' },
+    { label: 'Bản nháp', value: 'draft' },
+    { label: 'Đã khóa', value: 'locked' },
 ];
 
+const statusActions: Array<{ label: string; value: InvitationStatus; icon: LucideIcon }> = [
+    { label: 'Chuyển active', value: 'active', icon: CheckCircle2 },
+    { label: 'Chuyển draft', value: 'draft', icon: FileText },
+    { label: 'Lock thiệp', value: 'locked', icon: LockKeyhole },
+];
+
+function getCoupleName(invitation: AdminInvitation) {
+    const groom = invitation.groomName?.trim() || 'Chú rể';
+    const bride = invitation.brideName?.trim() || 'Cô dâu';
+    return `${groom} & ${bride}`;
+}
+
+function getCreatorName(invitation: AdminInvitation) {
+    return invitation.creatorName?.trim() || invitation.creatorEmail || `User #${invitation.creatorId}`;
+}
+
+function formatDate(value?: string) {
+    if (!value) {
+        return '-';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(date);
+}
+
+function formatViews(value?: number) {
+    return new Intl.NumberFormat('vi-VN').format(value || 0);
+}
+
+function getStatusLabel(status: string) {
+    if (status === 'active') {
+        return 'Đang hoạt động';
+    }
+
+    if (status === 'draft') {
+        return 'Bản nháp';
+    }
+
+    if (status === 'locked' || status === 'blocked') {
+        return 'Đã khóa';
+    }
+
+    return status || 'Không rõ';
+}
+
+function getStatusClass(status: string) {
+    if (status === 'active') {
+        return 'is-active';
+    }
+
+    if (status === 'draft') {
+        return 'is-draft';
+    }
+
+    return 'is-locked';
+}
+
+function createPages(currentPage: number, totalPages: number) {
+    const pages = new Set<number>([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    return Array.from(pages)
+        .filter((page) => page >= 1 && page <= totalPages)
+        .sort((left, right) => left - right);
+}
+
 function AdminInvitationList() {
+    const [invitations, setInvitations] = useState<AdminInvitation[]>([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [query, setQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [userFilter, setUserFilter] = useState('all');
+    const [sort, setSort] = useState('created_desc');
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [openActionMenuId, setOpenActionMenuId] = useState<number | null>(null);
+    const [updatingStatusId, setUpdatingStatusId] = useState<number | null>(null);
+
+    const creatorOptions = useMemo(() => {
+        const map = new Map<number, string>();
+        invitations.forEach((invitation) => {
+            map.set(invitation.creatorId, getCreatorName(invitation));
+        });
+        return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    }, [invitations]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        async function fetchInvitations() {
+            setIsLoading(true);
+            setErrorMessage('');
+
+            try {
+                const params = new URLSearchParams({
+                    page: String(page),
+                    size: String(pageSize),
+                    query,
+                    status: statusFilter,
+                    sort,
+                });
+                if (userFilter !== 'all') {
+                    params.set('userId', userFilter);
+                }
+
+                const accessToken = authTokenService.getAccessToken();
+                const response = await fetch(`${ADMIN_INVITATIONS_API}?${params.toString()}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+                    },
+                });
+                const payload = await response.json() as AdminInvitationPageResponse;
+
+                if (!response.ok || payload.code < 200 || payload.code >= 300 || !payload.data) {
+                    throw new Error(payload.message || 'Không thể tải danh sách thiệp cưới.');
+                }
+
+                if (isMounted) {
+                    setInvitations(Array.isArray(payload.data.items) ? payload.data.items : []);
+                    setTotalItems(payload.data.totalItems || 0);
+                    setTotalPages(Math.max(1, payload.data.totalPages || 1));
+                }
+            } catch (error) {
+                if (isMounted) {
+                    setInvitations([]);
+                    setTotalItems(0);
+                    setTotalPages(1);
+                    setErrorMessage(error instanceof Error ? error.message : 'Không thể tải danh sách thiệp cưới.');
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        fetchInvitations();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [page, pageSize, query, sort, statusFilter, userFilter]);
+
+    async function updateInvitationStatus(invitation: AdminInvitation, status: InvitationStatus) {
+        if (invitation.status === status || updatingStatusId !== null) {
+            return;
+        }
+
+        setUpdatingStatusId(invitation.weddingId);
+        setErrorMessage('');
+
+        try {
+            const accessToken = authTokenService.getAccessToken();
+            const response = await fetch(`${ADMIN_INVITATIONS_API}/${invitation.weddingId}/status`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+                },
+                body: JSON.stringify({ status }),
+            });
+            const payload = await response.json() as AdminInvitationStatusResponse;
+
+            if (!response.ok || payload.code < 200 || payload.code >= 300 || !payload.data) {
+                throw new Error(payload.message || 'Không thể cập nhật trạng thái thiệp cưới.');
+            }
+
+            setInvitations((currentInvitations) => {
+                const nextInvitations = currentInvitations.map((currentInvitation) =>
+                    currentInvitation.weddingId === invitation.weddingId ? payload.data : currentInvitation,
+                );
+
+                if (statusFilter !== 'all' && payload.data.status !== statusFilter) {
+                    return nextInvitations.filter((currentInvitation) => currentInvitation.weddingId !== invitation.weddingId);
+                }
+
+                return nextInvitations;
+            });
+
+            if (statusFilter !== 'all' && payload.data.status !== statusFilter) {
+                setTotalItems((currentTotal) => Math.max(0, currentTotal - 1));
+            }
+
+            setOpenActionMenuId(null);
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Không thể cập nhật trạng thái thiệp cưới.');
+        } finally {
+            setUpdatingStatusId(null);
+        }
+    }
+
+    const firstItem = totalItems === 0 ? 0 : (page - 1) * pageSize + 1;
+    const lastItem = Math.min(page * pageSize, totalItems);
+    const pages = createPages(page, totalPages);
+
     return (
         <main className="admin-dashboard admin-invitation-page">
             <aside className="admin-sidebar">
@@ -121,29 +320,58 @@ function AdminInvitationList() {
 
                     <section className="admin-invitation-toolbar" aria-label="Bộ lọc danh sách thiệp cưới">
                         <label className="admin-invitation-search">
-                            <input placeholder="Tìm tên cặp đôi, mã thiệp..." />
+                            <input
+                                value={query}
+                                onChange={(event) => {
+                                    setQuery(event.target.value);
+                                    setPage(1);
+                                }}
+                                placeholder="Tìm tên cặp đôi, slug..."
+                            />
                             <Search size={16} />
                         </label>
 
                         <div className="admin-invitation-tabs">
-                            {['Tất cả', 'Đang hoạt động', 'Bản nháp', 'Đã khóa'].map((item, index) => (
-                                <button className={index === 0 ? 'is-active' : ''} type="button" key={item}>
-                                    {item}
+                            {statusTabs.map((item) => (
+                                <button
+                                    className={statusFilter === item.value ? 'is-active' : ''}
+                                    type="button"
+                                    key={item.value}
+                                    onClick={() => {
+                                        setStatusFilter(item.value);
+                                        setPage(1);
+                                    }}
+                                >
+                                    {item.label}
                                 </button>
                             ))}
                         </div>
 
-                        <select aria-label="Người dùng">
-                            <option>Tất cả người dùng</option>
-                            <option>Premium</option>
-                            <option>Standard</option>
-                            <option>Basic</option>
+                        <select
+                            aria-label="Người dùng"
+                            value={userFilter}
+                            onChange={(event) => {
+                                setUserFilter(event.target.value);
+                                setPage(1);
+                            }}
+                        >
+                            <option value="all">Tất cả người dùng</option>
+                            {creatorOptions.map((creator) => (
+                                <option value={creator.id} key={creator.id}>{creator.name}</option>
+                            ))}
                         </select>
 
-                        <select aria-label="Sắp xếp">
-                            <option>Sắp xếp: Mới cập nhật</option>
-                            <option>Lượt xem cao</option>
-                            <option>Ngày tạo mới nhất</option>
+                        <select
+                            aria-label="Sắp xếp"
+                            value={sort}
+                            onChange={(event) => {
+                                setSort(event.target.value);
+                                setPage(1);
+                            }}
+                        >
+                            <option value="created_desc">Sắp xếp: Ngày tạo mới nhất</option>
+                            <option value="created_asc">Ngày tạo cũ nhất</option>
+                            <option value="views_desc">Lượt xem cao</option>
                         </select>
 
                         <button className="admin-invitation-export" type="button">
@@ -151,10 +379,10 @@ function AdminInvitationList() {
                             Xuất Excel
                         </button>
 
-                        <button className="admin-invitation-add" type="button">
+                        <Link className="admin-invitation-add" to="/chon-mau/basic">
                             <Plus size={17} />
                             Thêm thiệp
-                        </button>
+                        </Link>
                     </section>
 
                     <section className="admin-invitation-table-card">
@@ -162,11 +390,10 @@ function AdminInvitationList() {
                             <table className="admin-invitation-table">
                                 <thead>
                                     <tr>
-                                        <th>Mã đơn hàng</th>
-                                        <th>Ảnh xem trước</th>
+                                        <th>ID</th>
                                         <th>Tên cặp đôi</th>
+                                        <th>Slug</th>
                                         <th>Người tạo</th>
-                                        <th>Gói</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày tạo</th>
                                         <th>Lượt xem</th>
@@ -174,29 +401,81 @@ function AdminInvitationList() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {invitations.map((invitation) => (
-                                        <tr key={invitation.orderCode}>
+                                    {isLoading && (
+                                        <tr>
+                                            <td colSpan={8} className="admin-invitation-empty">Đang tải danh sách thiệp cưới...</td>
+                                        </tr>
+                                    )}
+                                    {!isLoading && errorMessage && (
+                                        <tr>
+                                            <td colSpan={8} className="admin-invitation-empty is-error">{errorMessage}</td>
+                                        </tr>
+                                    )}
+                                    {!isLoading && !errorMessage && invitations.length === 0 && (
+                                        <tr>
+                                            <td colSpan={8} className="admin-invitation-empty">Chưa có thiệp cưới phù hợp.</td>
+                                        </tr>
+                                    )}
+                                    {!isLoading && !errorMessage && invitations.map((invitation) => (
+                                        <tr key={invitation.weddingId}>
                                             <td>
-                                                <strong className="admin-invitation-code">{invitation.orderCode}</strong>
+                                                <strong className="admin-invitation-code">#{invitation.weddingId}</strong>
+                                            </td>
+                                            <td>{getCoupleName(invitation)}</td>
+                                            <td>
+                                                <span className="admin-invitation-slug">/{invitation.slug}</span>
                                             </td>
                                             <td>
-                                                <img className="admin-invitation-thumb" src={invitation.image} alt={invitation.couple} />
+                                                <div className="admin-invitation-owner">
+                                                    <strong>{getCreatorName(invitation)}</strong>
+                                                    {invitation.creatorEmail && <span>{invitation.creatorEmail}</span>}
+                                                </div>
                                             </td>
-                                            <td>{invitation.couple}</td>
-                                            <td>{invitation.owner}</td>
-                                            <td>{invitation.plan}</td>
                                             <td>
-                                                <span className={`admin-invitation-status ${invitation.status === 'Đang hoạt động' ? 'is-active' : invitation.status === 'Bản nháp' ? 'is-draft' : 'is-locked'}`}>
-                                                    {invitation.status}
+                                                <span className={`admin-invitation-status ${getStatusClass(invitation.status)}`}>
+                                                    {getStatusLabel(invitation.status)}
                                                 </span>
                                             </td>
-                                            <td>{invitation.created}</td>
-                                            <td>{invitation.views}</td>
+                                            <td>{formatDate(invitation.createdAt)}</td>
+                                            <td>{formatViews(invitation.viewCount)}</td>
                                             <td>
                                                 <div className="admin-invitation-actions">
-                                                    <button type="button" aria-label="Xem trước"><Eye size={15} /></button>
-                                                    <button type="button" aria-label="Chỉnh sửa"><Edit3 size={15} /></button>
-                                                    <button type="button" aria-label="Thao tác khác"><MoreVertical size={15} /></button>
+                                                    <Link to={`/thiep/${invitation.slug}`} aria-label="Xem thiệp">
+                                                        <Eye size={15} />
+                                                    </Link>
+                                                    <Link to={`/EmeraldInvitation/edit?weddingId=${invitation.weddingId}`} aria-label="Chỉnh sửa">
+                                                        <Edit3 size={15} />
+                                                    </Link>
+                                                    <Link to={`/quan-li-binh-luan/${invitation.slug}`} aria-label="Quản lí bình luận">
+                                                        <MessageCircle size={15} />
+                                                    </Link>
+                                                    <div className="admin-invitation-action-menu">
+                                                        <button
+                                                            type="button"
+                                                            aria-label="Đổi trạng thái thiệp"
+                                                            aria-expanded={openActionMenuId === invitation.weddingId}
+                                                            onClick={() => setOpenActionMenuId((currentId) => currentId === invitation.weddingId ? null : invitation.weddingId)}
+                                                            disabled={updatingStatusId === invitation.weddingId}
+                                                        >
+                                                            <MoreVertical size={15} />
+                                                        </button>
+                                                        {openActionMenuId === invitation.weddingId && (
+                                                            <div className="admin-invitation-status-menu" role="menu">
+                                                                {statusActions.map(({ label, value, icon: Icon }) => (
+                                                                    <button
+                                                                        type="button"
+                                                                        role="menuitem"
+                                                                        key={value}
+                                                                        disabled={invitation.status === value || updatingStatusId === invitation.weddingId}
+                                                                        onClick={() => updateInvitationStatus(invitation, value)}
+                                                                    >
+                                                                        <Icon size={14} />
+                                                                        <span>{invitation.status === value ? `${label} hiện tại` : label}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -206,22 +485,37 @@ function AdminInvitationList() {
                         </div>
 
                         <footer className="admin-invitation-footer">
-                            <span>Hiển thị 1 đến 6 trong tổng số 1.284 thiệp</span>
+                            <span>Hiển thị {firstItem} đến {lastItem} trong tổng số {totalItems} thiệp</span>
                             <div className="admin-invitation-pages">
-                                <button type="button">‹</button>
-                                <button className="is-active" type="button">1</button>
-                                <button type="button">2</button>
-                                <button type="button">3</button>
-                                <button type="button">4</button>
-                                <button type="button">5</button>
-                                <span>...</span>
-                                <button type="button">215</button>
-                                <button type="button">›</button>
+                                <button type="button" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>‹</button>
+                                {pages.map((pageNumber, index) => {
+                                    const previousPage = pages[index - 1];
+                                    return (
+                                        <span className="admin-invitation-page-item" key={pageNumber}>
+                                            {previousPage && pageNumber - previousPage > 1 && <span>...</span>}
+                                            <button
+                                                className={pageNumber === page ? 'is-active' : ''}
+                                                type="button"
+                                                onClick={() => setPage(pageNumber)}
+                                            >
+                                                {pageNumber}
+                                            </button>
+                                        </span>
+                                    );
+                                })}
+                                <button type="button" disabled={page >= totalPages} onClick={() => setPage((current) => Math.min(totalPages, current + 1))}>›</button>
                             </div>
-                            <select aria-label="Số dòng mỗi trang">
-                                <option>10 / trang</option>
-                                <option>20 / trang</option>
-                                <option>50 / trang</option>
+                            <select
+                                aria-label="Số dòng mỗi trang"
+                                value={pageSize}
+                                onChange={(event) => {
+                                    setPageSize(Number(event.target.value));
+                                    setPage(1);
+                                }}
+                            >
+                                <option value={10}>10 / trang</option>
+                                <option value={20}>20 / trang</option>
+                                <option value={50}>50 / trang</option>
                             </select>
                         </footer>
                     </section>
