@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Great+Vibes&family=Playfair+Display:wght@500;600;700&display=swap');
+
+.cdi-classic-skin {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.cdi-classic-skin .pwi-page {
+  --pwi-pink: #d7c18f;
+  --pwi-pink-soft: #eadcb8;
+  --pwi-pink-strong: #c85b4b;
+  --pwi-ink: #231916;
+  --pwi-muted: #59483a;
+  background:
+    linear-gradient(rgba(239, 228, 201, 0.38), rgba(216, 196, 146, 0.46)),
+    url('../../public/img/fontGiay.png') center top / cover;
+  color: var(--pwi-ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  box-shadow: 0 0 54px rgba(34, 25, 15, 0.2);
+}
+
+.cdi-classic-skin .pwi-page::before {
+  background-image: radial-gradient(circle, rgba(65, 45, 24, 0.11) 0 1px, transparent 1.4px);
+  background-size: 32px 32px;
+  opacity: 0.42;
+}
+
+.cdi-classic-skin .pwi-cover,
+.cdi-classic-skin .pwi-save-photo,
+.cdi-classic-skin .pwi-family,
+.cdi-classic-skin .pwi-letter,
+.cdi-classic-skin .pwi-ceremony,
+.cdi-classic-skin .pwi-calendar,
+.cdi-classic-skin .pwi-location,
+.cdi-classic-skin .pwi-gallery,
+.cdi-classic-skin .pwi-actions,
+.cdi-classic-skin .pwi-rsvp {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.26), rgba(234, 220, 184, 0.7) 42%, rgba(85, 52, 25, 0.08)),
+    url('../../public/img/fontGiay.png') center / cover;
+}
+
+.cdi-classic-skin .pwi-save-heading > span,
+.cdi-classic-skin .pwi-section-title h2,
+.cdi-classic-skin .pwi-person-row h2,
+.cdi-classic-skin .pwi-location-info h3,
+.cdi-classic-skin .pwi-gift-title h2,
+.cdi-classic-skin .pwi-gift-card h3 {
+  color: #c85b4b;
+  font-family: 'Great Vibes', cursive;
+  font-weight: 400;
+}
+
+.cdi-classic-skin .pwi-save-heading h2,
+.cdi-classic-skin .pwi-person-row span,
+.cdi-classic-skin .pwi-person-row strong,
+.cdi-classic-skin .pwi-ceremony h2,
+.cdi-classic-skin .pwi-date-lockup,
+.cdi-classic-skin .pwi-party-card h3,
+.cdi-classic-skin .pwi-calendar-card h3,
+.cdi-classic-skin .pwi-calendar-card span,
+.cdi-classic-skin .pwi-actions button,
+.cdi-classic-skin .pwi-rsvp button {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.cdi-classic-skin .pwi-person-row figure,
+.cdi-classic-skin .pwi-letter-gallery figure,
+.cdi-classic-skin .pwi-gallery-grid figure,
+.cdi-classic-skin .pwi-party-card,
+.cdi-classic-skin .pwi-calendar-card,
+.cdi-classic-skin .pwi-location-info,
+.cdi-classic-skin .pwi-wish-card,
+.cdi-classic-skin .pwi-gift-card {
+  border-color: rgba(70, 48, 23, 0.55);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.24), rgba(234, 220, 184, 0.72) 42%, rgba(85, 52, 25, 0.08)),
+    url('../../public/img/fontGiay.png') center / cover;
+  box-shadow: 0 16px 32px rgba(45, 32, 16, 0.16);
+}
+
+.cdi-classic-skin .pwi-save-time strong,
+.cdi-classic-skin .pwi-save-time span,
+.cdi-classic-skin .pwi-save-time b,
+.cdi-classic-skin .pwi-save-time em {
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+.cdi-classic-skin .pwi-save-time b,
+.cdi-classic-skin .pwi-date-lockup b,
+.cdi-classic-skin .pwi-calendar-card .is-wedding-day {
+  color: #c85b4b;
+}
+
+.cdi-classic-skin .pwi-save-time b {
+  border-left-color: rgba(35, 25, 22, 0.72);
+}
+
+.cdi-classic-skin .pwi-music-button,
+.cdi-classic-skin .pwi-actions button,
+.cdi-classic-skin .pwi-rsvp button,
+.cdi-classic-skin .pwi-gift-close {
+  background: #231916;
+}
+
+.cdi-classic-skin .pwi-music-button.is-playing {
+  background: #c85b4b;
+}
+
+.cdi-classic-skin .pwi-cover-text strong,
+.cdi-classic-skin .pwi-date-lockup,
+.cdi-classic-skin .pwi-calendar-card .is-wedding-day::before,
+.cdi-classic-skin .pwi-calendar-card .is-wedding-day::after {
+  border-color: #c85b4b;
+}
+
+.cdi-classic-skin input,
+.cdi-classic-skin textarea {
+  background: rgba(255, 250, 233, 0.72);
+  border-color: rgba(70, 48, 23, 0.38);
+  font-family: 'Playfair Display', Georgia, serif;
+}

@@ -4,6 +4,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AdminInvitationList from './components/AdminInvitationList';
 import AdminTemplateManager from './components/AdminTemplateManager';
 import AdminUserManager from './components/AdminUserManager';
+import CoDienInvitation from './components/CoDienInvitation';
 import HomePage from './components/HomePage';
 import MainLayout from './components/MainLayout';
 import MyWeddingCardPreviewPage from './components/MyWeddingCardPreviewPage';
@@ -11,6 +12,7 @@ import NotFoundPage from './components/NotFoundPage';
 import PinkWeddingInvitation from './components/PinkWeddingInvitation';
 import PublicCommentManagerPage from './components/PublicCommentManagerPage';
 import PublicWeddingCardPage from './components/PublicWeddingCardPage';
+import QuiphaiInvitation from './components/QuiphaiInvitation';
 import TemplateSelectorPage from './components/TemplateSelectorPage';
 import WeddingInvitationManager from './components/WeddingInvitationManager';
 import { weddingTemplateConfigs } from './data/weddingTemplateRegistry';
@@ -59,7 +61,9 @@ function App() {
                         <Route key={`preview-${template.code}-${path}`} path={path} element={<DisplayComponent />} />
                     ));
                 })}
+                <Route path="/quiphai" element={<QuiphaiInvitation />} />
                 <Route path="/THIEPMAUHONG" element={<PinkWeddingInvitation />} />
+                <Route path="/CODIEN" element={<CoDienInvitation />} />
                 <Route path="/thiep/:slug" element={<PublicWeddingCardPage />} />
                 <Route path="/preview-wedding-card/:weddingId" element={<RequireAuth><MyWeddingCardPreviewPage /></RequireAuth>} />
                 <Route path="/admin-dashboard" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
