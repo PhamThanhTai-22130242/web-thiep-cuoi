@@ -1,0 +1,523 @@
+(node:7460) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:7460) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:11:35
+TS2307: Cannot find module './components/PinkWeddingInvitation' or its corresponding type declarations.
+  [0m [90m  9 |[39m [36mimport[39m [33mMyWeddingCardPreviewPage[39m [36mfrom[39m [32m'./components/MyWeddingCardPreviewPage'[39m[33m;[39m
+   [90m 10 |[39m [36mimport[39m [33mNotFoundPage[39m [36mfrom[39m [32m'./components/NotFoundPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m [33mPinkWeddingInvitation[39m [36mfrom[39m [32m'./components/PinkWeddingInvitation'[39m[33m;[39m
+   [90m    |[39m                                   [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 12 |[39m [36mimport[39m [33mPublicCommentManagerPage[39m [36mfrom[39m [32m'./components/PublicCommentManagerPage'[39m[33m;[39m
+   [90m 13 |[39m [36mimport[39m [33mPublicWeddingCardPage[39m [36mfrom[39m [32m'./components/PublicWeddingCardPage'[39m[33m;[39m
+   [90m 14 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m[0m
+

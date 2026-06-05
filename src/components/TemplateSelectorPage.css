@@ -174,12 +174,44 @@
   padding: 16px;
 }
 
+.selector-card-price {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(167, 15, 15, 0.18);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background:
+    linear-gradient(135deg, rgba(167, 15, 15, 0.12), rgba(255, 246, 235, 0.9)),
+    #fff8ef;
+  box-shadow: 0 12px 26px rgba(134, 21, 21, 0.1);
+}
+
+.selector-card-price del {
+  color: #9a7869;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.selector-card-price strong {
+  color: #a70f0f;
+  font-size: 1.45rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
 .selector-card-copy h2 {
   margin: 0 0 8px;
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.5rem, 2.1vw, 1.95rem);
-  line-height: 1.02;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: clamp(1.1rem, 1.35vw, 1.32rem);
+  font-weight: 950;
+  line-height: 1.18;
   letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .selector-card-copy p {
@@ -291,13 +323,28 @@
   }
 
   .selector-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
+    max-width: 100%;
+    gap: 6px;
+    overflow: visible;
+    padding: 6px;
     border-radius: 8px;
   }
 
   .selector-tabs a {
-    flex: 1 0 auto;
+    min-width: 0;
     justify-content: center;
+    padding: 10px 6px;
+    text-align: center;
+  }
+
+  .selector-tabs span {
+    overflow: hidden;
+    font-size: 0.88rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .selector-grid {

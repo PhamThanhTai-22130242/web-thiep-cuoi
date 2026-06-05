@@ -12,5 +12,10 @@ export const API_ENDPOINTS = {
     },
     ADMIN: {
         USERS: '/api/admin/users',
+        INVITATIONS: '/api/admin/invitations',
+    },
+    MY_WEDDING_CARDS: '/api/my-wedding-cards',
+    UPLOADS: {
+        CLOUDINARY: '/api/uploads/cloudinary',
     },
 } as const;

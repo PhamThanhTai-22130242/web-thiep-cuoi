@@ -6,7 +6,7 @@
     radial-gradient(circle at 8% 10%, rgba(255, 255, 255, 0.16), transparent 15%),
     radial-gradient(circle at 92% 8%, rgba(255, 232, 194, 0.14), transparent 19%),
     linear-gradient(115deg, rgba(255, 250, 243, 0.08) 0 12%, transparent 12% 100%),
-    linear-gradient(180deg, #8b0000 0%, #700000 42%, #550000 100%);
+    linear-gradient(180deg, #9d0a06 0%, #850400 42%, #6d0500 100%);
   color: #fff7f2;
   overflow: hidden;
 }
@@ -567,6 +567,9 @@
 .home-pricing-table {
   overflow-x: auto;
   overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: #ffd28f rgba(106, 25, 12, 0.22);
+  scrollbar-width: thin;
   border: 1px solid rgba(255, 210, 143, 0.5);
   border-radius: 24px;
   background:
@@ -576,6 +579,21 @@
   box-shadow:
     0 34px 80px rgba(43, 0, 0, 0.3),
     0 0 0 6px rgba(255, 200, 107, 0.08);
+}
+
+.home-pricing-table::-webkit-scrollbar {
+  height: 12px;
+}
+
+.home-pricing-table::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(106, 25, 12, 0.16);
+}
+
+.home-pricing-table::-webkit-scrollbar-thumb {
+  border: 3px solid rgba(255, 244, 224, 0.96);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd28f, #b24724);
 }
 
 .home-pricing-row {
@@ -1145,10 +1163,10 @@
 .home-footer-brand h2 {
   color: #3a3431;
   font-family: 'Great Vibes', 'Dancing Script', cursive;
-  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  font-size: clamp(2.15rem, 3.8vw, 3.1rem);
   font-weight: 400;
   letter-spacing: 0;
-  line-height: 0.95;
+  line-height: 1;
 }
 
 .home-footer-brand p {
@@ -1874,7 +1892,13 @@
 
   .home-pricing-table {
     margin-right: -16px;
+    padding-bottom: 10px;
     border-radius: 18px 0 0 18px;
+    scrollbar-width: auto;
+  }
+
+  .home-pricing-table::-webkit-scrollbar {
+    height: 14px;
   }
 
   .home-pricing-row {
@@ -1941,6 +1965,10 @@
 
   .home-footer-brand {
     grid-column: auto;
+  }
+
+  .home-footer-brand h2 {
+    font-size: 2.25rem;
   }
 
   .home-floating-contact {

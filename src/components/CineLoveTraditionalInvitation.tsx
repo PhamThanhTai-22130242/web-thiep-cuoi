@@ -171,11 +171,6 @@ function CineLoveTraditionalInvitation() {
     return (
         <main className="clv-page">
             <section className="clv-hero">
-                <div className="clv-hero__top">
-                    <p className="clv-save">Save The Date</p>
-                    <p className="clv-date-small">16 .11 .2025</p>
-                </div>
-
                 <h1>Thanh Huy - Phương Thúy</h1>
                 <img className="clv-hero__couple" src='https://i.pinimg.com/736x/0a/0b/a6/0a0ba6a2118e4fd2f686ff876efb80b8.jpg' alt="Thanh Huy và Phương Thúy" />
             </section>
@@ -304,8 +299,8 @@ function CineLoveTraditionalInvitation() {
                 </div>
 
                 <form className="clv-wish-form" onSubmit={handleWishSubmit}>
-                    <input name="wishName" type="text" placeholder="Tên của bạn" />
-                    <textarea name="wishMessage" placeholder="Lời chúc" rows={5} />
+                    <input name="wishName" type="text" placeholder="Tên của bạn" maxLength={30} />
+                    <textarea name="wishMessage" placeholder="Lời chúc" rows={5} maxLength={300} />
                     <button type="submit">Gửi</button>
                 </form>
 

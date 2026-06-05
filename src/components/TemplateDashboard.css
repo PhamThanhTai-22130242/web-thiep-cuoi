@@ -471,12 +471,48 @@
 }
 
 .td-save-status {
+  position: relative;
   margin: 0 0 18px;
-  border-radius: 8px;
-  padding: 12px;
-  background: rgba(45, 75, 69, 0.08);
+  border: 1px solid rgba(45, 75, 69, 0.14);
+  border-radius: 14px;
+  padding: 14px 16px 14px 44px;
+  background: linear-gradient(135deg, rgba(45, 75, 69, 0.1), rgba(255, 255, 255, 0.9));
   color: #2d4b45;
   font-weight: 800;
+  line-height: 1.45;
+  box-shadow: 0 14px 28px rgba(45, 75, 69, 0.08);
+}
+
+.td-save-status::before {
+  content: '✓';
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border-radius: 50%;
+  background: #2d4b45;
+  color: #fffaf2;
+  font-size: 0.72rem;
+  transform: translateY(-50%);
+}
+
+.td-save-status.is-error {
+  border-color: rgba(177, 46, 41, 0.28);
+  background:
+    linear-gradient(135deg, rgba(255, 247, 244, 0.98), rgba(255, 238, 232, 0.94)),
+    repeating-linear-gradient(135deg, rgba(177, 46, 41, 0.06) 0 8px, transparent 8px 16px);
+  color: #8f211c;
+  box-shadow: 0 16px 36px rgba(177, 46, 41, 0.14);
+}
+
+.td-save-status.is-error::before {
+  content: '!';
+  background: #b12e29;
+  color: #fff;
+  font-weight: 950;
 }
 
 .td-editor-panel form,
@@ -502,6 +538,13 @@
   font-size: 0.86rem;
   font-weight: 750;
   letter-spacing: 0.01em;
+}
+
+.td-field small {
+  margin-top: -6px;
+  color: rgba(82, 107, 101, 0.72);
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 .td-check-label {
@@ -570,6 +613,47 @@
 .td-field select:focus {
   border-color: rgba(45, 75, 69, 0.42);
   box-shadow: 0 0 0 4px rgba(45, 75, 69, 0.08);
+}
+
+.td-field input.is-error {
+  border-color: #b12e29;
+  background: #fff8f6;
+  color: #6f1713;
+  box-shadow:
+    0 0 0 4px rgba(177, 46, 41, 0.12),
+    inset 0 0 0 1px rgba(177, 46, 41, 0.12);
+}
+
+.td-field input.is-error:focus {
+  border-color: #b12e29;
+  box-shadow:
+    0 0 0 4px rgba(177, 46, 41, 0.18),
+    0 12px 24px rgba(177, 46, 41, 0.1);
+}
+
+.td-field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: -2px;
+  color: #9b2520;
+  font-size: 0.8rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.td-field-error::before {
+  content: '!';
+  display: grid;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  place-items: center;
+  border-radius: 50%;
+  background: #b12e29;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 950;
 }
 
 .td-field input:disabled {
@@ -794,7 +878,20 @@
   grid-auto-flow: column;
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 4px 4px 8px;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.td-image-strip.is-error {
+  border-color: rgba(177, 46, 41, 0.26);
+  background: rgba(255, 248, 246, 0.78);
+  box-shadow: 0 0 0 4px rgba(177, 46, 41, 0.08);
+}
+
+.td-image-error {
+  margin-top: -4px;
 }
 
 .td-image-strip button {
@@ -818,6 +915,59 @@
   border-color: rgba(45, 75, 69, 0.46) !important;
   background: #fffdf8 !important;
   color: #2d4b45;
+}
+
+.td-saving-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.24), transparent 32%),
+    rgba(14, 20, 18, 0.62);
+  backdrop-filter: blur(12px);
+}
+
+.td-saving-dialog {
+  width: min(92vw, 420px);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 8px;
+  padding: 30px 28px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 24px 70px rgba(17, 26, 23, 0.28);
+  color: #213f39;
+  text-align: center;
+}
+
+.td-saving-dialog strong {
+  font-size: 1.14rem;
+  line-height: 1.35;
+}
+
+.td-saving-dialog p {
+  margin: 0;
+  color: rgba(33, 63, 57, 0.72);
+  font-size: 0.94rem;
+}
+
+.td-saving-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(45, 75, 69, 0.16);
+  border-top-color: #c9182b;
+  border-radius: 50%;
+  animation: td-saving-spin 0.78s linear infinite;
+}
+
+@keyframes td-saving-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .td-add-image span {

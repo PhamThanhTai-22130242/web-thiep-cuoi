@@ -1,82 +1,81 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight, Eye } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
+import { WeddingTemplateCode, weddingTemplateRegistry } from '../data/weddingTemplateRegistry';
 import './TemplateSelectorPage.css';
 
-type PackageKey = '99k' | '199k' | '299k';
+type PackageKey = 'co-ban' | 'chuyen-nghiep' | 'thoi-thuong';
 
 type TemplateSample = {
-    name: string;
-    path: string;
-    note: string;
-    image: string;
+    templateCode: WeddingTemplateCode;
 };
 
 type TemplatePackage = {
     label: string;
     price: string;
+    originalPrice?: string;
     title: string;
     description: string;
     accent: string;
     samples: TemplateSample[];
 };
 
-const packageTabs: Array<{ key: PackageKey; label: string; price: string }> = [
-    { key: '99k', label: 'Cơ bản', price: '99.000 đ' },
-    { key: '199k', label: 'Chuyên nghiệp', price: '199.000 đ' },
-    { key: '299k', label: 'VIP', price: '299.000 đ' },
+const packageTabs: Array<{ key: PackageKey; label: string }> = [
+    { key: 'co-ban', label: 'Cơ bản' },
+    { key: 'chuyen-nghiep', label: 'Chuyên nghiệp' },
+    { key: 'thoi-thuong', label: 'Thời thượng' },
 ];
 
 const templatePackages: Record<PackageKey, TemplatePackage> = {
-    '99k': {
+    'co-ban': {
         label: 'Gói Cơ Bản',
-        price: '99.000 đ',
+        price: '99.000đ',
+        originalPrice: '199.000đ',
         title: 'Chọn mẫu thiệp cưới phù hợp với câu chuyện của bạn',
         description: 'Các mẫu trong gói này tập trung vào bố cục sáng, dễ đọc, tải nhanh và đủ đầy những phần quan trọng cho một thiệp cưới online.',
         accent: '#b96a2c',
         samples: [
             {
-                name: 'Emerald Classic',
-                path: '/thiep-moi',
-                note: 'Tông xanh sang, ảnh nổi bật, hợp với phong cách nhẹ nhàng và tinh tế.',
-                image: '/img/mockup-thiep-cuoi-online-1.webp',
+                templateCode: 'EmeraldInvitation',
             },
             {
-                name: 'Song Long Đỏ',
-                path: '/thiep-moi-99k',
-                note: 'Sắc đỏ truyền thống, bố cục rực rỡ và đậm chất ngày cưới Việt.',
-                image: '/img/double-dragon.webp',
+                templateCode: 'RubyBasicInvitation',
             },
         ],
     },
-    '199k': {
+    'chuyen-nghiep': {
         label: 'Gói Chuyên Nghiệp',
-        price: '199.000 đ',
+        price: '199.000đ',
+        originalPrice: '299.000đ',
         title: 'Bộ mẫu nâng cấp đang được hoàn thiện',
         description: 'Khu vực này đã sẵn sàng để gắn thêm các mẫu nhiều hiệu ứng, nhiều section và trải nghiệm cá nhân hóa hơn.',
         accent: '#1f756d',
         samples: [
             {
-                name: 'Hỷ Sự Truyền Thống',
-                path: '/thiep-do-truyen-thong',
-                note: 'Sắc đỏ trang trọng, bố cục điện ảnh và chi tiết song hỷ dành cho lễ cưới truyền thống.',
-                image: '/img/double-dragon.webp',
+                templateCode: 'CineLoveTraditionalInvitation',
             },
         ],
     },
-    '299k': {
-        label: 'Gói VIP',
-        price: '299.000 đ',
+    'thoi-thuong': {
+        label: 'Gói Thời Thượng',
+        price: '299.000đ',
+        originalPrice: '399.000đ',
         title: 'Không gian cho những mẫu thiệp cao cấp',
-        description: 'Gói VIP sẽ dành cho các mẫu có chuyển động đặc biệt, phối cảnh ảnh lớn và các chi tiết thiết kế riêng theo cặp đôi.',
+        description: 'Gói Thời Thượng sẽ dành cho các mẫu có chuyển động đặc biệt, phối cảnh ảnh lớn và các chi tiết thiết kế riêng theo cặp đôi.',
         accent: '#7a3fb2',
         samples: [],
     },
 };
 
 function TemplateSelectorPage() {
-    const { packageKey } = useParams<{ packageKey: PackageKey }>();
-    const currentPackageKey = ((packageKey || '99k') in templatePackages ? packageKey : '99k') as PackageKey;
+    const { packageKey } = useParams<{ packageKey: string }>();
+    const legacyPackageKeys: Record<string, PackageKey> = {
+        '99k': 'co-ban',
+        '199k': 'chuyen-nghiep',
+        '299k': 'thoi-thuong',
+    };
+    const normalizedPackageKey = packageKey ? legacyPackageKeys[packageKey] || packageKey : 'co-ban';
+    const currentPackageKey = (normalizedPackageKey in templatePackages ? normalizedPackageKey : 'co-ban') as PackageKey;
     const selectedPackage = templatePackages[currentPackageKey];
     const frameRefs = useRef<Array<HTMLIFrameElement | null>>([]);
     const animationRefs = useRef<number[]>([]);
@@ -156,15 +155,17 @@ function TemplateSelectorPage() {
                         to={`/chon-mau/${tab.key}`}
                     >
                         <span>{tab.label}</span>
-                        <strong>{tab.price}</strong>
                     </Link>
                 ))}
             </nav>
 
             {selectedPackage.samples.length > 0 ? (
                 <section className="selector-grid" aria-label="Danh sách mẫu thiệp cưới">
-                    {selectedPackage.samples.map((sample, index) => (
-                        <article key={sample.path} className="selector-card">
+                    {selectedPackage.samples.map((sample, index) => {
+                        const templateConfig = weddingTemplateRegistry[sample.templateCode];
+
+                        return (
+                        <article key={sample.templateCode} className="selector-card">
                             <div className="selector-preview-wrap">
                                 <div className="selector-preview-glow" />
                                 <div className="selector-phone" aria-hidden="true">
@@ -172,8 +173,8 @@ function TemplateSelectorPage() {
                                         ref={(node) => {
                                             frameRefs.current[index] = node;
                                         }}
-                                        src={sample.path}
-                                        title={`Preview ${sample.name}`}
+                                        src={templateConfig.previewPath}
+                                        title={`Preview ${templateConfig.name}`}
                                         loading="lazy"
                                         scrolling="no"
                                         tabIndex={-1}
@@ -183,28 +184,34 @@ function TemplateSelectorPage() {
 
                             <div className="selector-card-copy">
                                 <div>
-                                    <h2>{sample.name}</h2>
-                                    <p>{sample.note}</p>
+                                    <div className="selector-card-price">
+                                        {selectedPackage.originalPrice && <del>{selectedPackage.originalPrice}</del>}
+                                        <strong>{selectedPackage.price}</strong>
+                                    </div>
+                                    <h2>{templateConfig.name}</h2>
+                                    <p>{templateConfig.description}</p>
                                 </div>
 
                                 <div className="selector-actions">
-                                    <Link className="selector-primary-action" to={sample.path}>
+                                    <Link className="selector-primary-action" to={templateConfig.previewPath}>
                                         <Eye size={18} />
                                         Xem mẫu này
                                     </Link>
-                                    <Link className="selector-secondary-action" to={sample.path === '/thiep-moi-99k' ? '/template-dashboard-99k' : '/template-dashboard'}>
-                                        Tùy chỉnh <ArrowRight size={17} />
-                                    </Link>
+                                    {templateConfig.editorComponent && (
+                                        <Link className="selector-secondary-action" to={templateConfig.editorPath}>
+                                            Tùy chỉnh <ArrowRight size={17} />
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </article>
-                    ))}
+                    )})}
                 </section>
             ) : (
                 <section className="selector-empty">
                     <h2>Mẫu của {selectedPackage.label} đang được cập nhật</h2>
                     <p>Sắp cập nhập</p>
-                    <Link to="/chon-mau/99k">Xem mẫu đang có <ArrowRight size={17} /></Link>
+                    <Link to="/chon-mau/co-ban">Xem mẫu đang có <ArrowRight size={17} /></Link>
                 </section>
             )}
         </main>

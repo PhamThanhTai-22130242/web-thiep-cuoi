@@ -365,8 +365,8 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                     subtitle="Mỗi lời chúc, mỗi sự hiện diện đều là điều đáng quý mà chúng tôi luôn trân trọng."
                 />
                 <form onSubmit={handleWish}>
-                    <input name="name" placeholder="Tên của bạn" />
-                    <input name="message" placeholder="Lời chúc" />
+                    <input name="name" placeholder="Tên của bạn" maxLength={30} />
+                    <input name="message" placeholder="Lời chúc" maxLength={300} />
                     <button type="submit">Gửi</button>
                 </form>
                 {wishStatus && <p className="ei-status">{wishStatus}</p>}

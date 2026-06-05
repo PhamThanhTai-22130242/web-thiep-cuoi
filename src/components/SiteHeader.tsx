@@ -1,5 +1,5 @@
-import { FormEvent, useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { FormEvent, MouseEvent, useCallback, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthUserBadge from './AuthUserBadge';
 import GoogleLoginButton from './GoogleLoginButton';
 import { authService } from '../services/auth.service';
@@ -12,6 +12,7 @@ type AuthMode = 'login' | 'register';
 
 function SiteHeader() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [authMode, setAuthMode] = useState<AuthMode | null>(null);
     const [authMessage, setAuthMessage] = useState('');
     const [authMessageType, setAuthMessageType] = useState<'success' | 'error'>('success');
@@ -89,11 +90,20 @@ function SiteHeader() {
         setCurrentUser(null);
     };
 
+    const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
+        if (!location.pathname.endsWith('/edit')) {
+            return;
+        }
+
+        event.preventDefault();
+        window.location.assign('/');
+    };
+
     return (
         <>
             <header className="site-header-shell">
                 <nav className="home-navbar">
-                    <Link to="/" className="home-brand">
+                    <Link to="/" className="home-brand" onClick={handleBrandClick}>
                         <img className="home-brand-mark" src="/img/logo.png" alt="" />
                         <div>
                             <strong>Gòi Xong Cưới</strong>
@@ -103,7 +113,7 @@ function SiteHeader() {
                     <ul className="home-nav-links">
                         <li><a href="/#home">Trang chủ</a></li>
                         <li><a href="/#pricing">Bảng giá</a></li>
-                        <li><Link to="/chon-mau/99k">Mẫu thiệp</Link></li>
+                        <li><Link to="/chon-mau/co-ban">Mẫu thiệp</Link></li>
                         <li><a href="/#contact">Liên hệ</a></li>
                     </ul>
 
