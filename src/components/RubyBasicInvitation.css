@@ -1,6 +1,6 @@
 :root {
-  --rbi-red: #9f2c24;
-  --rbi-red-deep: #7f1712;
+  --rbi-red: #952535;
+  --rbi-red-deep: #7a1e2b;
   --rbi-gold: #d8b16a;
   --rbi-paper: #f6e8dc;
   --rbi-paper-strong: #fbf4ee;
@@ -137,42 +137,48 @@
   width: min(100%, 492px);
   height: 470px;
   margin: 0 auto 30px;
+  perspective: 900px;
 }
 
 .rbi-envelope::before {
   content: '';
   position: absolute;
+  z-index: 0;
   left: 24px;
   right: 24px;
   bottom: 38px;
   height: 252px;
   background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
-  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
   box-shadow: 0 24px 44px rgba(90, 19, 14, 0.18);
-  animation: rbi-envelope-settle calc(3.4s * var(--rbi-speed)) 0.3s ease-in-out both;
+  animation: rbi-envelope-breathe calc(9s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-envelope::after {
   content: '';
   position: absolute;
+  z-index: 1;
   left: 24px;
   right: 24px;
   bottom: 38px;
   height: 252px;
   border: 1px solid rgba(255, 255, 255, 0.26);
+  background: linear-gradient(180deg, rgba(90, 19, 14, 0.02), rgba(90, 19, 14, 0.12));
   clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
+  animation: rbi-envelope-breathe calc(9s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-envelope-flap {
   position: absolute;
+  z-index: 2;
   left: 24px;
   right: 24px;
-  bottom: 168px;
-  height: 160px;
-  background: linear-gradient(180deg, #b73a2f, #8a2319);
+  bottom: 288px;
+  height: 132px;
+  background: linear-gradient(180deg, var(--rbi-red), var(--rbi-red-deep));
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
   transform-origin: bottom;
-  animation: rbi-flap-open calc(2.4s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08) both;
+  transform-style: preserve-3d;
+  animation: rbi-envelope-breathe calc(9s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-photo {
@@ -250,9 +256,8 @@
   top: 86px;
   width: 248px;
   height: 246px;
-  transform: translateX(-74px) rotate(-8deg);
-  animation: rbi-photo-left calc(2.5s * var(--rbi-speed)) 0.34s cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
-    rbi-photo-float-left calc(11s * var(--rbi-speed)) 2.8s ease-in-out infinite;
+  transform: rotate(-8deg);
+  animation: rbi-photo-float-left calc(11s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-photo-right {
@@ -260,9 +265,11 @@
   top: 38px;
   width: 220px;
   height: 266px;
-  transform: translateX(74px) rotate(8deg);
-  animation: rbi-photo-right calc(2.6s * var(--rbi-speed)) 0.52s cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
-    rbi-photo-float-right calc(11.5s * var(--rbi-speed)) 3s ease-in-out infinite;
+  transform-origin: 0 100%;
+  transform: rotate(8deg);
+  animation:
+    rbi-photo-right-wiggle-in calc(1.35s * var(--rbi-speed)) 0.25s cubic-bezier(0.2, 0.82, 0.28, 1.08) both,
+    rbi-photo-float-right calc(11.5s * var(--rbi-speed)) 1.8s ease-in-out infinite;
 }
 
 .rbi-photo-center {
@@ -291,8 +298,9 @@
   font-weight: 700;
   box-shadow: inset 0 0 0 8px rgba(255, 245, 213, 0.2), 0 10px 24px rgba(87, 23, 17, 0.28);
   transform: translateX(-50%);
-  animation: rbi-seal-pop calc(1.4s * var(--rbi-speed)) 1.4s ease both,
-    rbi-seal-glow calc(8s * var(--rbi-speed)) 3s ease-in-out infinite;
+  animation:
+    rbi-seal-stamp calc(1.25s * var(--rbi-speed)) 0.45s cubic-bezier(0.2, 0.82, 0.28, 1.15) both,
+    rbi-seal-glow calc(8s * var(--rbi-speed)) 1.9s ease-in-out infinite;
 }
 
 .rbi-hero h1,
@@ -345,6 +353,18 @@
 .rbi-thanks {
   position: relative;
   padding: 36px 28px;
+}
+
+.rbi-gallery {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%),
+    var(--rbi-paper);
+}
+
+.rbi-wishes {
+  background:
+    linear-gradient(180deg, var(--rbi-paper) 0%, color-mix(in srgb, var(--rbi-red) 8%, var(--rbi-paper)) 100%);
+  border-top: 1px solid rgba(128, 29, 43, 0.12);
 }
 
 .rbi-calendar-card {
@@ -1380,15 +1400,43 @@
   }
 }
 
-@keyframes rbi-seal-pop {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.56) rotate(-18deg);
+@keyframes rbi-envelope-breathe {
+
+  0%,
+  100% {
+    filter: brightness(1);
   }
 
-  to {
+  50% {
+    filter: brightness(1.045);
+  }
+}
+
+@keyframes rbi-seal-stamp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-128px) scale(1.18) rotate(-10deg);
+    filter: brightness(1.08);
+  }
+
+  54% {
     opacity: 1;
-    transform: translateX(-50%) scale(1) rotate(0);
+    transform: translateX(-50%) translateY(8px) scale(0.88) rotate(2deg);
+    filter: brightness(0.95);
+    box-shadow:
+      inset 0 0 0 8px rgba(255, 245, 213, 0.2),
+      0 4px 10px rgba(87, 23, 17, 0.34);
+  }
+
+  72% {
+    transform: translateX(-50%) translateY(-5px) scale(1.04) rotate(-1deg);
+    filter: brightness(1.03);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1) rotate(0);
+    filter: brightness(1);
   }
 }
 
@@ -1441,6 +1489,31 @@
 
   50% {
     transform: translateY(7px) rotate(7deg);
+  }
+}
+
+@keyframes rbi-photo-right-wiggle-in {
+  0% {
+    opacity: 0;
+    transform: rotate(22deg);
+  }
+
+  42% {
+    opacity: 1;
+    transform: rotate(5deg);
+  }
+
+  62% {
+    transform: rotate(11deg);
+  }
+
+  80% {
+    transform: rotate(7deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotate(8deg);
   }
 }
 
@@ -1612,7 +1685,23 @@
   }
 
   .rbi-envelope {
+    width: min(100%, 380px);
     height: 430px;
+  }
+
+  .rbi-envelope::before,
+  .rbi-envelope::after {
+    left: 20px;
+    right: 20px;
+    bottom: 34px;
+    height: 210px;
+  }
+
+  .rbi-envelope-flap {
+    left: 20px;
+    right: 20px;
+    bottom: 242px;
+    height: 110px;
   }
 
   .rbi-photo-left {

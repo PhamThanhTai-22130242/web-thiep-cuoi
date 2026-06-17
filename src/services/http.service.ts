@@ -35,6 +35,16 @@ function isSuccessCode(code: number) {
     return code >= 200 && code < 300;
 }
 
+export function shouldRedirectToServerErrorPage(status?: number) {
+    return status === 0 || status === 408 || Boolean(status && status >= 500);
+}
+
+export function redirectToServerErrorPage() {
+    if (window.location.pathname !== '/500') {
+        window.location.assign('/500');
+    }
+}
+
 function redirectToUnauthorizedPage() {
     authTokenService.clearSession();
 
@@ -70,7 +80,11 @@ async function refreshAccessToken() {
     const statusCode = Number(payload.code || response.status);
 
     if (!isSuccessCode(statusCode) || !payload.data?.accessToken) {
-        redirectToUnauthorizedPage();
+        if (statusCode === 401) {
+            redirectToUnauthorizedPage();
+        } else if (shouldRedirectToServerErrorPage(statusCode || response.status)) {
+            redirectToServerErrorPage();
+        }
         throw new ApiError(payload.message || 'Phiên đăng nhập đã hết hạn.', response.status, statusCode, payload.data);
     }
 
@@ -118,6 +132,8 @@ export async function httpRequest<TResponse, TBody = unknown>(
         if (!isSuccessCode(statusCode)) {
             if (statusCode === 401 && options.auth) {
                 redirectToUnauthorizedPage();
+            } else if (shouldRedirectToServerErrorPage(statusCode || response.status)) {
+                redirectToServerErrorPage();
             }
 
             throw new ApiError(payload.message || 'Request failed', response.status, statusCode, payload.data);
@@ -125,11 +141,20 @@ export async function httpRequest<TResponse, TBody = unknown>(
 
         return payload;
     } catch (error) {
+        if (!(error instanceof ApiError)) {
+            redirectToServerErrorPage();
+        }
+
         if (error instanceof ApiError) {
+            if (shouldRedirectToServerErrorPage(error.status) || shouldRedirectToServerErrorPage(error.code)) {
+                redirectToServerErrorPage();
+            }
+
             throw error;
         }
 
         if (error instanceof DOMException && error.name === 'AbortError') {
+            redirectToServerErrorPage();
             throw new ApiError('Request timeout. Vui lòng thử lại.', 408);
         }
 

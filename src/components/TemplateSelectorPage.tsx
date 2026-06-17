@@ -47,12 +47,18 @@ const templatePackages: Record<PackageKey, TemplatePackage> = {
         label: 'Gói Chuyên Nghiệp',
         price: '199.000đ',
         originalPrice: '299.000đ',
-        title: 'Bộ mẫu nâng cấp đang được hoàn thiện',
-        description: 'Khu vực này đã sẵn sàng để gắn thêm các mẫu nhiều hiệu ứng, nhiều section và trải nghiệm cá nhân hóa hơn.',
+        title: 'Mẫu thiệp chuyên nghiệp đa dạng phong cách',
+        description: 'Các mẫu thiệp chuyên nghiệp nổi bật với đầy đủ tính năng hiện đại, sổ lưu bút chúc mừng, hộp quà mừng cưới và cổng xác nhận tham dự.',
         accent: '#1f756d',
         samples: [
             {
                 templateCode: 'CineLoveTraditionalInvitation',
+            },
+            {
+                templateCode: 'ElegantInvitation',
+            },
+            {
+                templateCode: 'PinkWeddingInvitation',
             },
         ],
     },
@@ -166,20 +172,32 @@ function TemplateSelectorPage() {
 
                         return (
                         <article key={sample.templateCode} className="selector-card">
-                            <div className="selector-preview-wrap">
+                            <div
+                                className={`selector-preview-wrap${templateConfig.thumbnailPath ? ' has-thumbnail' : ''}`}
+                                style={templateConfig.previewBgColor ? { background: templateConfig.previewBgColor } : undefined}
+                            >
                                 <div className="selector-preview-glow" />
-                                <div className="selector-phone" aria-hidden="true">
-                                    <iframe
-                                        ref={(node) => {
-                                            frameRefs.current[index] = node;
-                                        }}
-                                        src={templateConfig.previewPath}
-                                        title={`Preview ${templateConfig.name}`}
+                                {templateConfig.thumbnailPath ? (
+                                    <img
+                                        className="selector-template-image"
+                                        src={templateConfig.thumbnailPath}
+                                        alt={templateConfig.name}
                                         loading="lazy"
-                                        scrolling="no"
-                                        tabIndex={-1}
                                     />
-                                </div>
+                                ) : (
+                                    <div className="selector-phone" aria-hidden="true">
+                                        <iframe
+                                            ref={(node) => {
+                                                frameRefs.current[index] = node;
+                                            }}
+                                            src={templateConfig.previewPath}
+                                            title={`Preview ${templateConfig.name}`}
+                                            loading="lazy"
+                                            scrolling="no"
+                                            tabIndex={-1}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="selector-card-copy">

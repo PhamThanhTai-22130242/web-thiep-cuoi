@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { defaultInvitationTemplate, InvitationTemplate } from '../data/invitationTemplates';
+import { defaultInvitationTemplate, defaultRubyInvitationTemplate, InvitationTemplate } from '../data/invitationTemplates';
 import { MyWeddingCardResponse } from '../models/wedding-card.model';
 import { weddingCardService } from '../services/wedding-card.service';
 import EmeraldInvitation from './EmeraldInvitationPage';
 import RubyBasicInvitation from './RubyBasicInvitation';
+import CineLoveTraditionalInvitation, {
+    CineLoveInvitationData,
+    defaultCineLoveInvitationData,
+} from './CineLoveTraditionalInvitation';
 import './PublicWeddingCardPage.css';
 
 function getDayName(dateValue: string) {
@@ -19,7 +23,8 @@ function toEventDate(dateValue: string, timeValue: string) {
 }
 
 function mapMyCardToTemplate(card: MyWeddingCardResponse): InvitationTemplate {
-    const template = JSON.parse(JSON.stringify(defaultInvitationTemplate)) as InvitationTemplate;
+    const baseTemplate = card.template.code === 'RubyBasicInvitation' ? defaultRubyInvitationTemplate : defaultInvitationTemplate;
+    const template = JSON.parse(JSON.stringify(baseTemplate)) as InvitationTemplate;
     const groom = card.people.find((person) => person.role === 'groom');
     const bride = card.people.find((person) => person.role === 'bride');
     const event = card.events[0];
@@ -58,6 +63,39 @@ function mapMyCardToTemplate(card: MyWeddingCardResponse): InvitationTemplate {
         .map((item) => item.imgUrl);
 
     return template;
+}
+
+function mapMyCardToCineLoveData(card: MyWeddingCardResponse): CineLoveInvitationData {
+    const data = JSON.parse(JSON.stringify(defaultCineLoveInvitationData)) as CineLoveInvitationData;
+    const groom = card.people.find((person) => person.role === 'groom');
+    const bride = card.people.find((person) => person.role === 'bride');
+    const event = card.events[0];
+    const mediaBySlot = new Map(card.media.map((item) => [item.slotKey, item.imgUrl]));
+    const gallery = card.media
+        .filter((item) => item.slotKey?.startsWith('images.gallery.'))
+        .sort((left, right) => (left.number || 0) - (right.number || 0))
+        .map((item) => item.imgUrl);
+
+    data.groomName = groom?.shortName || groom?.fullName || data.groomName;
+    data.brideName = bride?.shortName || bride?.fullName || data.brideName;
+    data.groomIntroName = groom?.fullName || groom?.shortName || data.groomIntroName;
+    data.brideIntroName = bride?.fullName || bride?.shortName || data.brideIntroName;
+    data.groomFamilyLabel = groom?.familyLable || data.groomFamilyLabel;
+    data.brideFamilyLabel = bride?.familyLable || data.brideFamilyLabel;
+    data.inviteText = event?.inviteText || data.inviteText;
+    data.eventDate = event?.eventDate || data.eventDate;
+    data.eventTime = (event?.eventTime || data.eventTime).slice(0, 5);
+    data.venueName = event?.venueName || data.venueName;
+    data.address = event?.address || data.address;
+    data.mapUrl = event?.linkMap || data.mapUrl;
+    data.images.hero = mediaBySlot.get('images.hero') || data.images.hero;
+    data.images.groom = mediaBySlot.get('images.groom') || data.images.groom;
+    data.images.bride = mediaBySlot.get('images.bride') || data.images.bride;
+    data.images.groomQr = mediaBySlot.get('images.groomQr') || data.images.groomQr;
+    data.images.brideQr = mediaBySlot.get('images.brideQr') || data.images.brideQr;
+    data.images.gallery = gallery.length ? gallery : data.images.gallery;
+
+    return data;
 }
 
 function MyWeddingCardPreviewPage() {
@@ -110,6 +148,10 @@ function MyWeddingCardPreviewPage() {
 
     if (card.template.code === 'RubyBasicInvitation') {
         return <RubyBasicInvitation template={template} preview />;
+    }
+
+    if (card.template.code === 'CineLoveTraditionalInvitation') {
+        return <CineLoveTraditionalInvitation data={mapMyCardToCineLoveData(card)} />;
     }
 
     if (card.template.code !== 'EmeraldInvitation') {

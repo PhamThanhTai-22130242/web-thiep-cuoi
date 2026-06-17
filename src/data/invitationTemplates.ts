@@ -161,6 +161,23 @@ export const defaultInvitationTemplate: InvitationTemplate = {
     },
 };
 
+export const defaultRubyInvitationTemplate: InvitationTemplate = {
+    ...defaultInvitationTemplate,
+    id: 'ruby-basic-99k',
+    name: 'Ruby Basic 99k',
+    slug: 'ruby-basic',
+    templateUrl: '/RubyBasicInvitation',
+    publicUrl: '/RubyBasicInvitation',
+    design: {
+        ...defaultInvitationTemplate.design,
+        primaryColor: '#952535',
+        backgroundColor: '#f6e8dc',
+        accentColor: '#d8b16a',
+        scriptFont: 'Great Vibes',
+        serifFont: 'Cormorant Garamond',
+    },
+};
+
 export const defaultWishes: Wish[] = [
     { name: 'Nguyễn Minh Tân', message: 'Tuyệt vời, chúc hai bạn một đời an yên.' },
     { name: 'Sơn Tùng', message: 'Chúc vợ chồng trăm năm hạnh phúc.' },
@@ -171,6 +188,8 @@ export const templateStorageKey = 'harmony.invitationTemplates';
 export const templatePreviewStorageKey = 'harmony.invitationPreviewTemplate';
 export const rubyTemplateStorageKey = 'harmony.invitationTemplates.99k';
 export const rubyTemplatePreviewStorageKey = 'harmony.invitationPreviewTemplate.99k';
+export const cineLovePreviewStorageKey = 'harmony.invitationPreviewTemplate.cineLove';
+export const elegantPreviewStorageKey = 'harmony.invitationPreviewTemplate.elegant';
 const templatePreviewDatabaseName = 'harmonyInvitationPreview';
 const templatePreviewStoreName = 'templates';
 
@@ -237,6 +256,81 @@ export async function savePreviewInvitationTemplate(template: InvitationTemplate
     }
 }
 
+export async function saveCineLovePreview(data: unknown, storageKey = cineLovePreviewStorageKey) {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    await writePreviewToDatabase(data as InvitationTemplate, storageKey);
+
+    try {
+        window.localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+        // IndexedDB is the source of truth. localStorage is only a fallback.
+    }
+}
+
+export async function loadCineLovePreview(storageKey = cineLovePreviewStorageKey): Promise<unknown | null> {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        const stored = await readPreviewFromDatabase(storageKey);
+        if (stored) {
+            return stored;
+        }
+    } catch {
+        // Fall back to localStorage below.
+    }
+
+    try {
+        const raw = window.localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        window.localStorage.removeItem(storageKey);
+        return null;
+    }
+}
+
+export async function saveElegantPreview(data: unknown, storageKey = elegantPreviewStorageKey) {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    await writePreviewToDatabase(data as InvitationTemplate, storageKey);
+
+    try {
+        window.localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+        // IndexedDB is the source of truth. localStorage is only a fallback.
+    }
+}
+
+export async function loadElegantPreview(storageKey = elegantPreviewStorageKey): Promise<unknown | null> {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        const stored = await readPreviewFromDatabase(storageKey);
+        if (stored) {
+            return stored;
+        }
+    } catch {
+        // Fall back to localStorage below.
+    }
+
+    try {
+        const raw = window.localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        window.localStorage.removeItem(storageKey);
+        return null;
+    }
+}
+
+
 export async function loadPreviewInvitationTemplate(storageKey = templatePreviewStorageKey) {
     if (typeof window === 'undefined') {
         return null;
@@ -260,20 +354,20 @@ export async function loadPreviewInvitationTemplate(storageKey = templatePreview
     }
 }
 
-export function loadStoredInvitationTemplate(storageKey = templateStorageKey) {
+export function loadStoredInvitationTemplate(storageKey = templateStorageKey, fallbackTemplate = defaultInvitationTemplate) {
     if (typeof window === 'undefined') {
-        return defaultInvitationTemplate;
+        return fallbackTemplate;
     }
 
     try {
         const stored = window.localStorage.getItem(storageKey);
         if (!stored) {
-            return defaultInvitationTemplate;
+            return fallbackTemplate;
         }
 
         const templates = JSON.parse(stored) as InvitationTemplate[];
-        return templates.find((template) => template.status === 'published') || templates[0] || defaultInvitationTemplate;
+        return templates.find((template) => template.status === 'published') || templates[0] || fallbackTemplate;
     } catch {
-        return defaultInvitationTemplate;
+        return fallbackTemplate;
     }
 }

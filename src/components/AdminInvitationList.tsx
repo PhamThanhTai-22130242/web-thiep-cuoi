@@ -22,6 +22,7 @@ import {
 import { Link } from 'react-router-dom';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
 import { authTokenService } from '../services/auth-token.service';
+import { redirectToServerErrorPage, shouldRedirectToServerErrorPage } from '../services/http.service';
 import './AdminDashboard.css';
 import './AdminInvitationList.css';
 
@@ -91,7 +92,7 @@ const statusActions: Array<{ label: string; value: InvitationStatus; icon: Lucid
 function getCoupleName(invitation: AdminInvitation) {
     const groom = invitation.groomName?.trim() || 'Chú rể';
     const bride = invitation.brideName?.trim() || 'Cô dâu';
-    return `${groom} & ${bride}`;
+    return `${groom} - ${bride}`;
 }
 
 function getCreatorName(invitation: AdminInvitation) {
@@ -206,8 +207,13 @@ function AdminInvitationList() {
                     },
                 });
                 const payload = await response.json() as AdminInvitationPageResponse;
+                const statusCode = Number(payload.code || response.status);
 
-                if (!response.ok || payload.code < 200 || payload.code >= 300 || !payload.data) {
+                if (!response.ok || statusCode < 200 || statusCode >= 300 || !payload.data) {
+                    if (shouldRedirectToServerErrorPage(statusCode || response.status)) {
+                        redirectToServerErrorPage();
+                    }
+
                     throw new Error(payload.message || 'Không thể tải danh sách thiệp cưới.');
                 }
 
@@ -217,6 +223,10 @@ function AdminInvitationList() {
                     setTotalPages(Math.max(1, payload.data.totalPages || 1));
                 }
             } catch (error) {
+                if (error instanceof TypeError || error instanceof SyntaxError) {
+                    redirectToServerErrorPage();
+                }
+
                 if (isMounted) {
                     setInvitations([]);
                     setTotalItems(0);
@@ -257,8 +267,13 @@ function AdminInvitationList() {
                 body: JSON.stringify({ status }),
             });
             const payload = await response.json() as AdminInvitationStatusResponse;
+            const statusCode = Number(payload.code || response.status);
 
-            if (!response.ok || payload.code < 200 || payload.code >= 300 || !payload.data) {
+            if (!response.ok || statusCode < 200 || statusCode >= 300 || !payload.data) {
+                if (shouldRedirectToServerErrorPage(statusCode || response.status)) {
+                    redirectToServerErrorPage();
+                }
+
                 throw new Error(payload.message || 'Không thể cập nhật trạng thái thiệp cưới.');
             }
 
@@ -280,6 +295,10 @@ function AdminInvitationList() {
 
             setOpenActionMenuId(null);
         } catch (error) {
+            if (error instanceof TypeError || error instanceof SyntaxError) {
+                redirectToServerErrorPage();
+            }
+
             setErrorMessage(error instanceof Error ? error.message : 'Không thể cập nhật trạng thái thiệp cưới.');
         } finally {
             setUpdatingStatusId(null);

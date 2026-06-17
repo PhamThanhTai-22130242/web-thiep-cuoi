@@ -58,7 +58,6 @@ function PinkSectionTitle({ title, eyebrow }: { title: string; eyebrow?: string 
 }
 
 function PinkWeddingInvitation() {
-    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
     const [isGiftOpen, setIsGiftOpen] = useState(false);
     const [wishes, setWishes] = useState(wishesSeed);
     const [wishStatus, setWishStatus] = useState('');
@@ -99,15 +98,6 @@ function PinkWeddingInvitation() {
 
     return (
         <main className="pwi-page">
-            <button
-                className={`pwi-music-button${isMusicPlaying ? ' is-playing' : ''}`}
-                type="button"
-                onClick={() => setIsMusicPlaying((current) => !current)}
-                aria-label={isMusicPlaying ? 'Tạm dừng nhạc' : 'Phát nhạc'}
-                title={isMusicPlaying ? 'Tạm dừng nhạc' : 'Phát nhạc'}
-            >
-                {isMusicPlaying ? <Pause size={18} /> : <Music2 size={18} />}
-            </button>
 
             {false && (
             <section className="pwi-cover">

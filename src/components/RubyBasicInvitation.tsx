@@ -1,6 +1,7 @@
 import { CSSProperties, FormEvent, useEffect, useMemo, useState } from 'react';
 import {
     defaultInvitationTemplate,
+    defaultRubyInvitationTemplate,
     defaultWishes,
     InvitationTemplate,
     loadPreviewInvitationTemplate,
@@ -9,6 +10,7 @@ import {
     rubyTemplateStorageKey,
     Wish,
 } from '../data/invitationTemplates';
+import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './RubyBasicInvitation.css';
 
 type RubyBasicInvitationProps = {
@@ -60,7 +62,18 @@ function RubyPhoto({ src, alt, className, onClick }: { src: string; alt: string;
 function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBasicInvitationProps) {
     const shouldLoadSavedPreview = !template && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     const [savedPreviewTemplate, setSavedPreviewTemplate] = useState<InvitationTemplate | null>(null);
-    const invitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultInvitationTemplate : loadStoredInvitationTemplate(rubyTemplateStorageKey)) || defaultInvitationTemplate;
+    const rawInvitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultRubyInvitationTemplate : loadStoredInvitationTemplate(rubyTemplateStorageKey, defaultRubyInvitationTemplate)) || defaultRubyInvitationTemplate;
+    const invitationData = rawInvitationData.design.primaryColor === defaultInvitationTemplate.design.primaryColor
+        ? {
+            ...rawInvitationData,
+            design: {
+                ...rawInvitationData.design,
+                primaryColor: defaultRubyInvitationTemplate.design.primaryColor,
+                backgroundColor: defaultRubyInvitationTemplate.design.backgroundColor,
+                accentColor: defaultRubyInvitationTemplate.design.accentColor,
+            },
+        }
+        : rawInvitationData;
     const invitationImages = useMemo(() => {
         if (onImageClick) {
             return {
@@ -97,6 +110,16 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     }, [invitationImages, onImageClick]);
     const galleryPreview = useMemo(() => galleryImages.slice(0, 4), [galleryImages]);
     const hiddenGalleryCount = Math.max(galleryImages.length - galleryPreview.length, 0);
+    const isLoadingSavedPreview = shouldLoadSavedPreview && !savedPreviewTemplate;
+    const imageLoadTargets = [
+        invitationImages.cover,
+        invitationImages.kiss,
+        invitationImages.studio,
+        invitationImages.smile,
+        invitationImages.walk,
+        invitationImages.thank,
+        ...galleryImages,
+    ];
     const eventTimeParts = useMemo(() => {
         const match = invitationData.event.time.match(/^(\d{1,2})\s*(?:giờ|:)\s*(\d{2})$/i);
 
@@ -107,9 +130,10 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     const [wishStatus, setWishStatus] = useState('');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+    const areImagesLoading = useInvitationImagePreload(onImageClick ? [] : imageLoadTargets, isLoadingSavedPreview);
     const pageStyle = {
-        '--rbi-red': invitationData.design.primaryColor || '#9f2c24',
-        '--rbi-red-deep': invitationData.design.primaryColor || '#7f1712',
+        '--rbi-red': invitationData.design.primaryColor || '#952535',
+        '--rbi-red-deep': invitationData.design.primaryColor || '#7a1e2b',
         '--rbi-gold': invitationData.design.accentColor || '#d8b16a',
         '--rbi-paper': invitationData.design.backgroundColor || '#f6e8dc',
         '--rbi-paper-strong': '#fbf4ee',
@@ -145,7 +169,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     }, [invitationData.event.date]);
 
     useEffect(() => {
-        if (shouldLoadSavedPreview && !savedPreviewTemplate) {
+        if (areImagesLoading) {
             return undefined;
         }
 
@@ -163,7 +187,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
 
         elements.forEach((element) => observer.observe(element));
         return () => observer.disconnect();
-    }, [invitationData.id, savedPreviewTemplate, shouldLoadSavedPreview]);
+    }, [areImagesLoading, invitationData.id]);
 
     useEffect(() => {
         if (!isGalleryOpen) {
@@ -231,6 +255,10 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     const showNextGalleryImage = () => {
         setActiveGalleryIndex((current) => (current + 1) % galleryImages.length);
     };
+
+    if (areImagesLoading) {
+        return <InvitationLoadingScreen className="rbi-page" style={pageStyle} />;
+    }
 
     return (
         <main className={`rbi-page${preview ? ' rbi-page-preview' : ''}`} id="top" style={pageStyle}>

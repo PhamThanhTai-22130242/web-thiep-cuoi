@@ -1,8 +1,11 @@
-import { CSSProperties, FormEvent, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './CineLoveTraditionalInvitation.css';
-import { defaultInvitationTemplate } from '../data/invitationTemplates';
+import { defaultInvitationTemplate, loadCineLovePreview } from '../data/invitationTemplates';
+import { subscribeToStompTopic } from '../services/stomp.service';
+import { httpRequest } from '../services/http.service';
 
-const assetBase = 'https://img.cinelove.me/templates/assets/7e64b0eb-9b5b-497f-b09e-3d3024571dfa';
+
 const thiepMoiImages = defaultInvitationTemplate.images;
 const thiepMoiGallery = [
     ...(thiepMoiImages.gallery ?? []),
@@ -15,42 +18,224 @@ const thiepMoiGallery = [
 ].filter(Boolean);
 const memoryGalleryImages = (thiepMoiImages.gallery?.filter(Boolean).length ? thiepMoiImages.gallery : thiepMoiGallery).filter(Boolean);
 
-const images = {
-    hero: 'https://sadesign.vn/wp-content/uploads/2023/02/Anh-album-mau-AM074_9.jpg',
-    groom: `${assetBase}/c22c2c02-e235-4b12-b586-30ff0aa282e9.jpeg`,
-    bride: thiepMoiImages.cover,
-    inviteLeft: thiepMoiGallery[1] ?? thiepMoiImages.kiss,
-    inviteCenter: thiepMoiGallery[2] ?? thiepMoiImages.walk,
-    inviteRight: thiepMoiGallery[3] ?? thiepMoiImages.smile,
+type WeddingWish = {
+    name: string;
+    message: string;
 };
 
-const groomName = 'Nguyễn Thanh Huy';
-const brideName = 'Trịnh Phương Thúy';
+const initialWishes: WeddingWish[] = [];
 
-const initialWishes = [
-    { name: 'Nguyễn Minh Tân', message: 'Tuyệt vời, chúc hai bạn một đời an yên.' },
-    { name: 'Sơn Tùng', message: 'Chúc vợ chồng trăm năm hạnh phúc.' },
-    { name: 'Người em đáng ghét', message: 'Ngày cưới thật đẹp, cười thật nhiều nha.' },
-];
+export type CineLoveInvitationImages = {
+    hero: string;
+    groom: string;
+    bride: string;
+    gallery: string[];
+    groomQr: string;
+    brideQr: string;
+};
 
-const giftRecipients = [
-    {
-        title: 'Mừng cưới đến chú rể',
-        bank: 'Vietcombank',
-        accountName: 'Phạm Hà Đô',
-        accountNumber: '9383216200',
-        qr: 'https://img.vietqr.io/image/VCB-9383216200-compact2.png?amount=0&addInfo=Mung%20cuoi%20chu%20re&accountName=Pham%20Ha%20Do',
+export type CineLoveInvitationData = {
+    groomName: string;
+    brideName: string;
+    groomIntroName: string;
+    brideIntroName: string;
+    groomFamilyLabel: string;
+    brideFamilyLabel: string;
+    groomFather: string;
+    groomMother: string;
+    brideFather: string;
+    brideMother: string;
+    inviteText: string;
+    guestName: string;
+    eventDate: string;
+    eventTime: string;
+    venueName: string;
+    address: string;
+    mapUrl: string;
+    showGiftSection?: boolean;
+    showGroomGift: boolean;
+    showBrideGift: boolean;
+    groomGiftTitle: string;
+    brideGiftTitle: string;
+    images: CineLoveInvitationImages;
+    slug?: string;
+};
+
+type EditableImageTarget =
+    | 'images.hero'
+    | 'images.groom'
+    | 'images.bride'
+    | `images.gallery.${number}`
+    | 'images.groomQr'
+    | 'images.brideQr';
+
+type CineLoveTraditionalInvitationProps = {
+    data?: CineLoveInvitationData;
+    editable?: boolean;
+    onImageClick?: (target: EditableImageTarget, mode?: 'replace' | 'insert') => void;
+    initialWishes?: WeddingWish[];
+    wishEndpoint?: string;
+    wishTopic?: string;
+    rsvpEndpoint?: string;
+};
+
+export const defaultCineLoveInvitationData: CineLoveInvitationData = {
+    slug: '',
+    groomName: 'Nguyễn Thanh Huy',
+    brideName: 'Trịnh Phương Thúy',
+    groomIntroName: 'Nguyễn Thanh Huy',
+    brideIntroName: 'Trịnh Phương Thúy',
+    groomFamilyLabel: 'Nhà trai',
+    brideFamilyLabel: 'Nhà gái',
+    groomFather: 'Ông Nguyễn Viết Minh',
+    groomMother: 'Bà Trịnh Thị Lan',
+    brideFather: 'Ông Trịnh Văn Huy',
+    brideMother: 'Bà Ngô Mai Hoàn',
+    inviteText: 'Trân Trọng Kính Mời',
+    guestName: 'Anh Dũng',
+    eventDate: '2026-11-16',
+    eventTime: '12:00',
+    venueName: 'Nhà hàng Dinamond Palace',
+    address: 'Hai Bà Trưng, Hà Nội',
+    mapUrl: 'https://maps.google.com/maps?q=Tr%E1%BB%91ng%20%C4%90%E1%BB%93ng%20Palace%20C%E1%BA%A3nh%20H%E1%BB%93%2C%20173B%20%C4%90.%20Tr%C6%B0%E1%BB%9Dng%20Chinh%2C%20H%C3%A0%20N%E1%BB%99i&t=&z=14&ie=UTF8&iwloc=&output=embed',
+    showGroomGift: true,
+    showBrideGift: true,
+    groomGiftTitle: 'QR Đến Chú Rể',
+    brideGiftTitle: 'QR Đến Cô Dâu',
+    images: {
+        hero: 'https://i.pinimg.com/736x/0a/0b/a6/0a0ba6a2118e4fd2f686ff876efb80b8.jpg',
+        groom: 'https://tse2.mm.bing.net/th/id/OIP.c189c5Yzun-CiAX_cxmYagHaJm?w=600&h=778&rs=1&pid=ImgDetMain&o=7&rm=3',
+        bride: 'https://afamilycdn.com/150157425591193600/2021/11/25/photo-1-16378362373871156703010-1637841966879-1637841967004902439285.jpg',
+        gallery: memoryGalleryImages,
+        groomQr: 'https://img.vietqr.io/image/VCB-9383216200-compact2.png?amount=0&addInfo=Mung%20cuoi%20chu%20re&accountName=Pham%20Ha%20Do',
+        brideQr: 'https://img.vietqr.io/image/MB-1001652007-compact2.png?amount=0&addInfo=Mung%20cuoi%20co%20dau&accountName=Nguyen%20Thi%20Giang%20Thanh',
     },
-    {
-        title: 'Mừng cưới đến cô dâu',
-        bank: 'MBBank',
-        accountName: 'Nguyễn Thị Giang Thanh',
-        accountNumber: '1001652007',
-        qr: 'https://img.vietqr.io/image/MB-1001652007-compact2.png?amount=0&addInfo=Mung%20cuoi%20co%20dau&accountName=Nguyen%20Thi%20Giang%20Thanh',
-    },
-];
+};
 
-type WeddingWish = (typeof initialWishes)[number];
+function getCurrentDateInput() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
+function getCurrentTimeInput() {
+    const now = new Date();
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+
+    return `${hour}:${minute}`;
+}
+
+function createEmptyEditableData(): CineLoveInvitationData {
+    return {
+        ...defaultCineLoveInvitationData,
+        eventDate: getCurrentDateInput(),
+        eventTime: getCurrentTimeInput(),
+        images: {
+            hero: '',
+            groom: '',
+            bride: '',
+            gallery: ['', '', '', ''],
+            groomQr: '',
+            brideQr: '',
+        },
+    };
+}
+
+export const emptyCineLoveInvitationData = createEmptyEditableData();
+
+function formatMonthLabel(dateValue: string) {
+    const [, month, year] = dateValue.match(/^(\d{4})-(\d{2})-\d{2}$/) || [];
+    return month && year ? `${month}.${year}` : '11.2026';
+}
+
+function getEventParts(dateValue: string) {
+    const date = new Date(`${dateValue || defaultCineLoveInvitationData.eventDate}T00:00:00+07:00`);
+    if (Number.isNaN(date.getTime())) {
+        return { dayName: 'Thứ Hai', day: '16', month: 'Tháng 11', year: '2026', activeDay: 16 };
+    }
+
+    const dayName = new Intl.DateTimeFormat('vi-VN', { weekday: 'long' }).format(date);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = `Tháng ${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+    return {
+        dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
+        day,
+        month,
+        year: String(date.getFullYear()),
+        activeDay: date.getDate(),
+    };
+}
+
+function getCountdownTarget(dateValue: string, timeValue: string) {
+    const date = dateValue || defaultCineLoveInvitationData.eventDate;
+    const timeMatch = (timeValue || defaultCineLoveInvitationData.eventTime).match(/^(\d{1,2}):(\d{2})/);
+    const hour = (timeMatch?.[1] || '00').padStart(2, '0');
+    const minute = (timeMatch?.[2] || '00').padStart(2, '0');
+    const target = new Date(`${date}T${hour}:${minute}:00+07:00`);
+
+    if (Number.isNaN(target.getTime())) {
+        return new Date(`${defaultCineLoveInvitationData.eventDate}T${defaultCineLoveInvitationData.eventTime}:00+07:00`);
+    }
+
+    return target;
+}
+
+function getCountdown(targetDate: Date) {
+    const distance = Math.max(0, targetDate.getTime() - Date.now());
+
+    return {
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((distance / (1000 * 60)) % 60),
+        seconds: Math.floor((distance / 1000) % 60),
+    };
+}
+
+function formatCountdownPart(value: number) {
+    return String(value).padStart(2, '0');
+}
+
+function EditablePhoto({
+    src,
+    alt,
+    target,
+    editable,
+    className = '',
+    onImageClick,
+}: {
+    src: string;
+    alt: string;
+    target: EditableImageTarget;
+    editable?: boolean;
+    className?: string;
+    onImageClick?: (target: EditableImageTarget, mode?: 'replace' | 'insert') => void;
+}) {
+    if (!editable) {
+        return <img className={className || undefined} src={src} alt={alt} />;
+    }
+
+    return (
+        <button
+            className={`clv-editable-image${className ? ` ${className}` : ''}${src ? '' : ' is-empty'}`}
+            type="button"
+            onClick={() => onImageClick?.(target)}
+            aria-label={`Đổi ${alt}`}
+        >
+            {src ? <img src={src} alt={alt} /> : <span className="clv-image-placeholder">Thêm ảnh</span>}
+            {src && (
+                <span className="clv-change-image-badge">
+                    <b>+</b>
+                    Đổi ảnh
+                </span>
+            )}
+        </button>
+    );
+}
 
 function scriptNameStyle(name: string): CSSProperties {
     const length = Array.from(name).length;
@@ -76,7 +261,21 @@ function SplitScriptName({ name }: { name: string }) {
     );
 }
 
-function CineLoveTraditionalInvitation() {
+const DEFAULT_INITIAL_WISHES: WeddingWish[] = [];
+
+function CineLoveTraditionalInvitation({
+    data,
+    editable = false,
+    onImageClick,
+    initialWishes = DEFAULT_INITIAL_WISHES,
+    wishEndpoint = '',
+    wishTopic = '',
+    rsvpEndpoint = '',
+}: CineLoveTraditionalInvitationProps) {
+    const [searchParams] = useSearchParams();
+    const isPreviewMode = searchParams.get('preview') === '1';
+    const [previewData, setPreviewData] = useState<CineLoveInvitationData | null>(null);
+    const [isLoadingPreview, setIsLoadingPreview] = useState(isPreviewMode && !data);
     const [submitted, setSubmitted] = useState(false);
     const [isRsvpOpen, setIsRsvpOpen] = useState(false);
     const [isGiftOpen, setIsGiftOpen] = useState(false);
@@ -85,10 +284,85 @@ function CineLoveTraditionalInvitation() {
     const [galleryDirection, setGalleryDirection] = useState<'next' | 'prev'>('next');
     const [wishes, setWishes] = useState<WeddingWish[]>(initialWishes);
     const [wishStatus, setWishStatus] = useState('');
+    const lastSubmittedWishRef = useRef<WeddingWish | null>(null);
+    const lastSubmittedWishDeliveredRef = useRef(false);
+    const lastInitialWishesRef = useRef<WeddingWish[]>(initialWishes);
 
+    const invitationData = data ?? previewData ?? defaultCineLoveInvitationData;
+    
     const calendarDays = useMemo(() => Array.from({ length: 30 }, (_, index) => index + 1), []);
-    const galleryPreview = useMemo(() => memoryGalleryImages.slice(0, 4), []);
-    const hiddenGalleryCount = Math.max(memoryGalleryImages.length - galleryPreview.length, 0);
+    const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
+    const countdownTarget = useMemo(
+        () => getCountdownTarget(invitationData.eventDate, invitationData.eventTime),
+        [invitationData.eventDate, invitationData.eventTime],
+    );
+    const [countdown, setCountdown] = useState(() => getCountdown(countdownTarget));
+
+    useEffect(() => {
+        if (!isPreviewMode || data) {
+            return;
+        }
+
+        setIsLoadingPreview(true);
+        loadCineLovePreview()
+            .then((stored) => {
+                if (stored && typeof stored === 'object') {
+                    setPreviewData(stored as CineLoveInvitationData);
+                }
+            })
+            .catch(() => {
+                // Fallback to default if storage read fails
+            })
+            .finally(() => {
+                setIsLoadingPreview(false);
+            });
+    }, [isPreviewMode, data]);
+
+    useEffect(() => {
+        setCountdown(getCountdown(countdownTarget));
+
+        const timer = window.setInterval(() => {
+            setCountdown(getCountdown(countdownTarget));
+        }, 1000);
+
+        return () => window.clearInterval(timer);
+    }, [countdownTarget]);
+
+    useEffect(() => {
+        const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
+            initialWishes.every((w, i) => 
+                w.name === lastInitialWishesRef.current[i]?.name && 
+                w.message === lastInitialWishesRef.current[i]?.message
+            );
+        if (!isSame) {
+            lastInitialWishesRef.current = initialWishes;
+            setWishes(initialWishes);
+        }
+    }, [initialWishes]);
+
+    useEffect(() => {
+        if (!wishTopic || isPreviewMode) {
+            return undefined;
+        }
+
+        const subscription = subscribeToStompTopic<WeddingWish & { guestName?: string }>(wishTopic, (incomingWish) => {
+            const wish = {
+                name: incomingWish.name || incomingWish.guestName || '',
+                message: incomingWish.message,
+            };
+            const submittedWish = lastSubmittedWishRef.current;
+            if (submittedWish && submittedWish.name === wish.name && submittedWish.message === wish.message) {
+                lastSubmittedWishDeliveredRef.current = true;
+                setWishStatus('Cảm ơn bạn, lời chúc đã được gửi đến cô dâu chú rể.');
+            }
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === wish.name && item.message === wish.message);
+                return exists ? current : [wish, ...current];
+            });
+        });
+
+        return () => subscription.unsubscribe();
+    }, [isPreviewMode, wishTopic]);
 
     useEffect(() => {
         const revealItems = document.querySelectorAll<HTMLElement>(
@@ -128,15 +402,53 @@ function CineLoveTraditionalInvitation() {
         return () => observer.disconnect();
     }, []);
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setSubmitted(true);
-        setIsRsvpOpen(false);
-    };
+    if (isLoadingPreview) {
+        return (
+            <main className="clv-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
+                <p style={{ fontFamily: 'system-ui', color: '#888', fontSize: '1rem' }}>Đang tải bản xem trước...</p>
+            </main>
+        );
+    }
 
-    const handleWishSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const galleryImages = invitationData.images.gallery.filter(Boolean);
+    const galleryPreview = editable ? invitationData.images.gallery.slice(0, 4) : galleryImages.slice(0, 4);
+    const hiddenGalleryCount = Math.max(galleryImages.length - galleryPreview.filter(Boolean).length, 0);
+    const giftRecipients = [
+        ...(invitationData.showGroomGift ? [{ title: invitationData.groomGiftTitle, qr: invitationData.images.groomQr, target: 'images.groomQr' as const }] : []),
+        ...(invitationData.showBrideGift ? [{ title: invitationData.brideGiftTitle, qr: invitationData.images.brideQr, target: 'images.brideQr' as const }] : []),
+    ];
+
+
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
+        const name = String(form.get('guestName') || '').trim();
+        const attending = String(form.get('attendance') || 'yes');
+
+        if (!name) {
+            alert('Vui lòng nhập tên của bạn trước khi gửi xác nhận.');
+            return;
+        }
+
+        setSubmitted(true);
+        setIsRsvpOpen(false);
+
+        if (rsvpEndpoint) {
+            try {
+                await httpRequest(rsvpEndpoint, {
+                    method: 'POST',
+                    body: { name, attending },
+                });
+            } catch (error) {
+                console.error('Failed to submit RSVP:', error);
+            }
+        }
+    };
+
+    const handleWishSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formElement = event.currentTarget;
+        const form = new FormData(formElement);
         const nextWish = {
             name: String(form.get('wishName') || '').trim(),
             message: String(form.get('wishMessage') || '').trim(),
@@ -147,9 +459,35 @@ function CineLoveTraditionalInvitation() {
             return;
         }
 
-        setWishes((current) => [nextWish, ...current]);
-        setWishStatus('Cảm ơn bạn, lời chúc đã được gửi đến cô dâu chú rể.');
-        event.currentTarget.reset();
+        try {
+            lastSubmittedWishRef.current = nextWish;
+            lastSubmittedWishDeliveredRef.current = false;
+
+            if (wishEndpoint) {
+                await httpRequest(wishEndpoint, {
+                    method: 'POST',
+                    body: nextWish,
+                });
+            }
+
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === nextWish.name && item.message === nextWish.message);
+                return exists ? current : [nextWish, ...current];
+            });
+
+            setWishStatus('Cảm ơn bạn, lời chúc đã được gửi đến cô dâu chú rể.');
+            formElement.reset();
+        } catch {
+            if (lastSubmittedWishDeliveredRef.current) {
+                setWishStatus('Cảm ơn bạn, lời chúc đã được gửi đến cô dâu chú rể.');
+                formElement.reset();
+                return;
+            }
+
+            setWishStatus('Không thể gửi lời chúc. Vui lòng thử lại.');
+        } finally {
+            lastSubmittedWishRef.current = null;
+        }
     };
 
     const openGalleryAt = (index: number) => {
@@ -160,19 +498,30 @@ function CineLoveTraditionalInvitation() {
 
     const showPreviousGalleryImage = () => {
         setGalleryDirection('prev');
-        setActiveGalleryIndex((current) => (current - 1 + memoryGalleryImages.length) % memoryGalleryImages.length);
+        setActiveGalleryIndex((current) => (current - 1 + galleryImages.length) % galleryImages.length);
     };
 
     const showNextGalleryImage = () => {
         setGalleryDirection('next');
-        setActiveGalleryIndex((current) => (current + 1) % memoryGalleryImages.length);
+        setActiveGalleryIndex((current) => (current + 1) % galleryImages.length);
     };
 
     return (
-        <main className="clv-page">
+        <main className={`clv-page${editable ? ' is-editing' : ''}`}>
             <section className="clv-hero">
-                <h1>Thanh Huy - Phương Thúy</h1>
-                <img className="clv-hero__couple" src='https://i.pinimg.com/736x/0a/0b/a6/0a0ba6a2118e4fd2f686ff876efb80b8.jpg' alt="Thanh Huy và Phương Thúy" />
+                <h1 className="clv-hero__names">
+                    <span className="clv-hero__name is-groom">{invitationData.groomName}</span>
+                    <span className="clv-hero__amp">-</span>
+                    <span className="clv-hero__name is-bride">{invitationData.brideName}</span>
+                </h1>
+                <EditablePhoto
+                    className="clv-hero__couple"
+                    src={invitationData.images.hero}
+                    alt={`${invitationData.groomName} và ${invitationData.brideName}`}
+                    target="images.hero"
+                    editable={editable}
+                    onImageClick={onImageClick}
+                />
             </section>
 
             <section className="clv-intro clv-cream-panel">
@@ -182,32 +531,49 @@ function CineLoveTraditionalInvitation() {
 
                 <div className="clv-family-grid">
                     <article>
-                        <h3>Nhà trai</h3>
-                        <p>Ông Nguyễn Viết Minh</p>
-                        <p>Bà Trịnh Thị Lan</p>
+                        <h3>{invitationData.groomFamilyLabel}</h3>
+                        <p>{invitationData.groomFather}</p>
+                        <p>{invitationData.groomMother}</p>
                         <div className="clv-portrait">
-                            <img src='https://tse2.mm.bing.net/th/id/OIP.c189c5Yzun-CiAX_cxmYagHaJm?w=600&h=778&rs=1&pid=ImgDetMain&o=7&rm=3' alt="Chú rể Nguyễn Thanh Huy" />
+                            <EditablePhoto
+                                src={invitationData.images.groom}
+                                alt={`Chú rể ${invitationData.groomName}`}
+                                target="images.groom"
+                                editable={editable}
+                                onImageClick={onImageClick}
+                            />
                         </div>
-                        <SplitScriptName name={groomName} />
+                        <SplitScriptName name={invitationData.groomIntroName} />
                     </article>
 
                     <span className="clv-amp">&amp;</span>
 
                     <article>
-                        <h3>Nhà gái</h3>
-                        <p>Ông Trịnh Văn Huy</p>
-                        <p>Bà Ngô Mai Hoàn</p>
+                        <h3>{invitationData.brideFamilyLabel}</h3>
+                        <p>{invitationData.brideFather}</p>
+                        <p>{invitationData.brideMother}</p>
                         <div className="clv-portrait">
-                            <img src='https://afamilycdn.com/150157425591193600/2021/11/25/photo-1-16378362373871156703010-1637841966879-1637841967004902439285.jpg' alt="Cô dâu Trịnh Phương Thúy" />
+                            <EditablePhoto
+                                src={invitationData.images.bride}
+                                alt={`Cô dâu ${invitationData.brideName}`}
+                                target="images.bride"
+                                editable={editable}
+                                onImageClick={onImageClick}
+                            />
                         </div>
-                        <SplitScriptName name={brideName} />
+                        <SplitScriptName name={invitationData.brideIntroName} />
                     </article>
                 </div>
 
                 <div className="clv-countdown" aria-label="Đếm ngược ngày cưới">
-                    {['NGÀY', 'GIỜ', 'PHÚT', 'GIÂY'].map((label) => (
-                        <div key={label}>
-                            <strong>00</strong>
+                    {[
+                        ['days', 'NGÀY', countdown.days],
+                        ['hours', 'GIỜ', countdown.hours],
+                        ['minutes', 'PHÚT', countdown.minutes],
+                        ['seconds', 'GIÂY', countdown.seconds],
+                    ].map(([key, label, value]) => (
+                        <div key={key}>
+                            <strong key={value}>{formatCountdownPart(Number(value))}</strong>
                             <span>{label}</span>
                         </div>
                     ))}
@@ -215,23 +581,23 @@ function CineLoveTraditionalInvitation() {
             </section>
 
             <section className="clv-invite clv-bordered-panel">
-                <p className="clv-event-title">Trân Trọng Kính Mời</p>
-                <p className="clv-at">Anh Dũng</p>
+                <p className="clv-event-title">{invitationData.inviteText}</p>
+                {/* <p className="clv-at">{invitationData.guestName}</p> */}
 
                 <div className="clv-time-row">
-                    <span>12:00</span>
+                    <span>{invitationData.eventTime}</span>
                     <strong>
-                        <span className="clv-time-row__label">Chủ Nhật</span>
-                        <em>16</em>
-                        <span className="clv-time-row__label">Tháng 11</span>
+                        <span className="clv-time-row__label">{eventParts.dayName}</span>
+                        <em>{eventParts.day}</em>
+                        <span className="clv-time-row__label">{eventParts.month}</span>
                     </strong>
-                    <span>2025</span>
+                    <span>{eventParts.year}</span>
                 </div>
 
                 <div className="clv-calendar">
-                    <div className="clv-calendar__head">11.2025</div>
+                    <div className="clv-calendar__head">{formatMonthLabel(invitationData.eventDate)}</div>
                     <div className="clv-calendar__body">
-                        <span className="clv-year-watermark">2025</span>
+                        <span className="clv-year-watermark">{eventParts.year}</span>
                         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
                             <strong key={day}>{day}</strong>
                         ))}
@@ -239,7 +605,7 @@ function CineLoveTraditionalInvitation() {
                             <span key={`empty-${index}`} />
                         ))}
                         {calendarDays.map((day) => (
-                            <span className={day === 16 ? 'clv-calendar__active' : ''} key={day}>
+                            <span className={day === eventParts.activeDay ? 'clv-calendar__active' : ''} key={day}>
                                 {day}
                             </span>
                         ))}
@@ -250,16 +616,34 @@ function CineLoveTraditionalInvitation() {
             <section className="clv-location clv-bordered-panel">
                 <h2>Địa Điểm Tổ Chức</h2>
                 <p>
-                    Nhà hàng Dinamond Palace,
-                    <br />
-                    Hai Bà Trưng, Hà Nội
+                    {invitationData.venueName}
+                    {invitationData.venueName && invitationData.address && (
+                        <>
+                            ,
+                            <br />
+                        </>
+                    )}
+                    {invitationData.address}
                 </p>
-                <iframe
-                    title="Bản đồ địa điểm tổ chức tiệc cưới"
-                    src="https://maps.google.com/maps?q=Tr%E1%BB%91ng%20%C4%90%E1%BB%93ng%20Palace%20C%E1%BA%A3nh%20H%E1%BB%93%2C%20173B%20%C4%90.%20Tr%C6%B0%E1%BB%9Dng%20Chinh%2C%20H%C3%A0%20N%E1%BB%99i&t=&z=14&ie=UTF8&iwloc=&output=embed"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                />
+                {invitationData.mapUrl && (invitationData.mapUrl.includes('embed') || invitationData.mapUrl.includes('maps.google.com/maps?q=')) ? (
+                    <iframe
+                        title="Bản đồ địa điểm tổ chức tiệc cưới"
+                        src={invitationData.mapUrl}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    />
+                ) : invitationData.mapUrl ? (
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                        <a 
+                            href={invitationData.mapUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#a62d2d', color: '#fff', borderRadius: '30px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
+                        >
+                            Chỉ đường trên Google Maps
+                        </a>
+                    </div>
+                ) : null}
             </section>
 
             <section className="clv-memories">
@@ -274,21 +658,39 @@ function CineLoveTraditionalInvitation() {
 
                         return (
                             <button
-                                key={`${image}-${index}`}
-                                className={`clv-memory-card${isOverlayCard ? ' is-overlay' : ''}`}
+                                key={`${image || 'empty'}-${index}`}
+                                className={`clv-memory-card${isOverlayCard ? ' is-overlay' : ''}${image ? '' : ' is-empty'}`}
                                 type="button"
-                                onClick={() => openGalleryAt(index)}
+                                onClick={() => (editable ? onImageClick?.(`images.gallery.${index}`, 'replace') : openGalleryAt(index))}
                                 aria-label={`Mở album ảnh cưới, ảnh số ${index + 1}`}
                             >
-                                <img src={image} alt={`Kỷ niệm cưới ${index + 1}`} />
-                                {isOverlayCard && <span>+{hiddenGalleryCount}</span>}
+                                {image ? (
+                                    <>
+                                        <img src={image} alt={`Kỷ niệm cưới ${index + 1}`} />
+                                        {editable && (
+                                            <span className="clv-change-image-badge">
+                                                <b>+</b>
+                                                Đổi ảnh
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="clv-image-placeholder">Thêm ảnh</span>
+                                        <span className="clv-change-image-badge">
+                                            <b>+</b>
+                                            Đổi ảnh
+                                        </span>
+                                    </>
+                                )}
+                                {isOverlayCard && <span className="clv-memory-card__count">+{hiddenGalleryCount}</span>}
                             </button>
                         );
                     })}
                 </div>
 
-                <button className="clv-memories__open" type="button" onClick={() => openGalleryAt(0)}>
-                    Xem toàn bộ {memoryGalleryImages.length} ảnh
+                <button className="clv-memories__open" type="button" onClick={() => openGalleryAt(0)} disabled={!galleryImages.length}>
+                    {`Xem toàn bộ ${galleryImages.length} ảnh`}
                 </button>
             </section>
 
@@ -307,29 +709,43 @@ function CineLoveTraditionalInvitation() {
                 {wishStatus && <p className="clv-wish-status">{wishStatus}</p>}
 
                 <div className="clv-wish-list" aria-label="Danh sách lời chúc">
-                    {wishes.map((wish) => (
-                        <article key={`${wish.name}-${wish.message}`}>
-                            <strong>{wish.name}</strong>
-                            <p>{wish.message}</p>
-                        </article>
-                    ))}
+                    {wishes.length ? (
+                        wishes.map((wish) => (
+                            <article key={`${wish.name}-${wish.message}`}>
+                                <strong>{wish.name}</strong>
+                                <p>{wish.message}</p>
+                            </article>
+                        ))
+                    ) : (
+                        <p className="clv-wish-empty">Chưa có lời chúc nào</p>
+                    )}
                 </div>
             </section>
 
-            <section className="clv-gift">
-                <div className="clv-gift__copy">
-                    <h2>Hộp Quà Cưới</h2>
-                    <p>Nếu muốn gửi một món quà nhỏ thay lời chúc, tụi mình xin nhận bằng tất cả sự trân quý.</p>
-                </div>
-                <button className="clv-gift__button" type="button" onClick={() => setIsGiftOpen(true)}>
-                    Hộp Quà Cưới
-                </button>
-            </section>
+            {invitationData.showGiftSection !== false && (
+                <section className="clv-gift">
+                    <div className="clv-gift__copy">
+                        <h2>Hộp Quà Cưới</h2>
+                        <p>Nếu muốn gửi một món quà nhỏ thay lời chúc, tụi mình xin nhận bằng tất cả sự trân quý.</p>
+                    </div>
+                    <button className="clv-gift__button" type="button" onClick={() => setIsGiftOpen(true)}>
+                        Hộp Quà Cưới
+                    </button>
+                </section>
+            )}
 
             <section className="clv-rsvp clv-bordered-panel">
                 <h2>Xác Nhận Tham Dự</h2>
                 <p className="clv-rsvp-copy">Hồi âm của bạn là một niềm vui thật đẹp trong ngày chung đôi.</p>
-                <button className="clv-rsvp-open" type="button" onClick={() => setIsRsvpOpen(true)}>
+                <button
+                    className="clv-rsvp-open"
+                    type="button"
+                    onClick={() => {
+                        if (!submitted) {
+                            setIsRsvpOpen(true);
+                        }
+                    }}
+                >
                     {submitted ? 'Đã ghi nhận lời mời' : 'Gửi lời xác nhận'}
                 </button>
             </section>
@@ -387,20 +803,17 @@ function CineLoveTraditionalInvitation() {
                         <h2 id="clv-gift-title" className="clv-gift-modal-title">Hộp quà cưới</h2>
                         <div className="clv-gift-cards">
                             {giftRecipients.map((recipient) => (
-                                <article key={recipient.accountNumber}>
+                                <article key={recipient.title}>
                                     <h3>{recipient.title}</h3>
                                     <div className="clv-gift-qr">
-                                        <img src={recipient.qr} alt={`QR chuyển khoản ${recipient.title}`} />
+                                        <EditablePhoto
+                                            src={recipient.qr}
+                                            alt={`QR chuyển khoản ${recipient.title}`}
+                                            target={recipient.target}
+                                            editable={editable}
+                                            onImageClick={onImageClick}
+                                        />
                                     </div>
-                                    <p>
-                                        Ngân hàng: <strong>{recipient.bank}</strong>
-                                    </p>
-                                    <p>
-                                        Tên tài khoản: <strong>{recipient.accountName}</strong>
-                                    </p>
-                                    <p>
-                                        Số tài khoản: <strong>{recipient.accountNumber}</strong>
-                                    </p>
                                 </article>
                             ))}
                         </div>
@@ -416,7 +829,7 @@ function CineLoveTraditionalInvitation() {
                             <div>
                                 <p>Album ảnh cưới</p>
                                 <strong>
-                                    {activeGalleryIndex + 1}/{memoryGalleryImages.length}
+                                    {activeGalleryIndex + 1}/{galleryImages.length}
                                 </strong>
                             </div>
                             <button type="button" onClick={() => setIsGalleryOpen(false)}>
@@ -430,7 +843,7 @@ function CineLoveTraditionalInvitation() {
                                 <img
                                     key={activeGalleryIndex}
                                     className={`is-${galleryDirection}`}
-                                    src={memoryGalleryImages[activeGalleryIndex]}
+                                    src={galleryImages[activeGalleryIndex]}
                                     alt={`Album cưới ${activeGalleryIndex + 1}`}
                                 />
                             </figure>
@@ -438,7 +851,7 @@ function CineLoveTraditionalInvitation() {
                         </div>
 
                         <div className="clv-gallery-strip" aria-label="Danh sách ảnh thu nhỏ">
-                            {memoryGalleryImages.map((image, index) => (
+                            {galleryImages.map((image, index) => (
                                 <button
                                     key={`${image}-thumb-${index}`}
                                     className={`clv-gallery-thumb${index === activeGalleryIndex ? ' is-active' : ''}`}

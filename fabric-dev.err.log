@@ -1,0 +1,33 @@
+(node:14176) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:14176) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+ERROR in src/App.tsx:17:27
+TS2307: Cannot find module './components/TestComponent' or its corresponding type declarations.
+  [0m [90m 15 |[39m [36mimport[39m [33mElegantInvitation[39m [36mfrom[39m [32m'./components/ElegantInvitation'[39m[33m;[39m
+   [90m 16 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 17 |[39m [36mimport[39m [33mTestComponent[39m [36mfrom[39m [32m'./components/TestComponent'[39m[33m;[39m
+   [90m    |[39m                           [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 18 |[39m [36mimport[39m [33mWeddingInvitationManager[39m [36mfrom[39m [32m'./components/WeddingInvitationManager'[39m[33m;[39m
+   [90m 19 |[39m [36mimport[39m { weddingTemplateConfigs } [36mfrom[39m [32m'./data/weddingTemplateRegistry'[39m[33m;[39m
+   [90m 20 |[39m [36mimport[39m { authTokenService } [36mfrom[39m [32m'./services/auth-token.service'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:17:27
+TS2307: Cannot find module './components/TestComponent' or its corresponding type declarations.
+  [0m [90m 15 |[39m [36mimport[39m [33mElegantInvitation[39m [36mfrom[39m [32m'./components/ElegantInvitation'[39m[33m;[39m
+   [90m 16 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 17 |[39m [36mimport[39m [33mTestComponent[39m [36mfrom[39m [32m'./components/TestComponent'[39m[33m;[39m
+   [90m    |[39m                           [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 18 |[39m [36mimport[39m [33mWeddingInvitationManager[39m [36mfrom[39m [32m'./components/WeddingInvitationManager'[39m[33m;[39m
+   [90m 19 |[39m [36mimport[39m { weddingTemplateConfigs } [36mfrom[39m [32m'./data/weddingTemplateRegistry'[39m[33m;[39m
+   [90m 20 |[39m [36mimport[39m { authTokenService } [36mfrom[39m [32m'./services/auth-token.service'[39m[33m;[39m[0m
+
+ERROR in src/App.tsx:17:27
+TS2307: Cannot find module './components/TestComponent' or its corresponding type declarations.
+  [0m [90m 15 |[39m [36mimport[39m [33mElegantInvitation[39m [36mfrom[39m [32m'./components/ElegantInvitation'[39m[33m;[39m
+   [90m 16 |[39m [36mimport[39m [33mTemplateSelectorPage[39m [36mfrom[39m [32m'./components/TemplateSelectorPage'[39m[33m;[39m
+  [31m[1m>[22m[39m[90m 17 |[39m [36mimport[39m [33mTestComponent[39m [36mfrom[39m [32m'./components/TestComponent'[39m[33m;[39m
+   [90m    |[39m                           [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   [90m 18 |[39m [36mimport[39m [33mWeddingInvitationManager[39m [36mfrom[39m [32m'./components/WeddingInvitationManager'[39m[33m;[39m
+   [90m 19 |[39m [36mimport[39m { weddingTemplateConfigs } [36mfrom[39m [32m'./data/weddingTemplateRegistry'[39m[33m;[39m
+   [90m 20 |[39m [36mimport[39m { authTokenService } [36mfrom[39m [32m'./services/auth-token.service'[39m[33m;[39m[0m
+

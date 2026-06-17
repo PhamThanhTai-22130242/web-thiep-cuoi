@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Copy, Eye, Headphones, LinkIcon, MessageSquareText, Pencil, Search, X } from 'lucide-react';
+import { ChevronDown, Copy, Eye, Headphones, LinkIcon, MessageSquareText, Pencil, Search, Users, X, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getWeddingTemplateConfig } from '../data/weddingTemplateRegistry';
 import {
@@ -51,7 +51,7 @@ function getPersonName(person?: WeddingCardPerson) {
 function getCoupleName(groom?: WeddingCardPerson, bride?: WeddingCardPerson) {
     const groomName = getPersonName(groom) || 'Chú rể';
     const brideName = getPersonName(bride) || 'Cô dâu';
-    return `${groomName} & ${brideName}`;
+    return `${groomName} - ${brideName}`;
 }
 
 function formatCardDate(event?: WeddingCardEvent) {
@@ -124,7 +124,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
     const brideName = getPersonName(bride);
     const event = card.events[0];
     const config = getWeddingTemplateConfig(card.template.code);
-    const thumbnail = card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
+    const thumbnail = config?.thumbnailPath || card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
     const editPath = config?.editorPath
         ? `${config.editorPath}?weddingId=${card.weddingId}`
         : `/EmeraldInvitation/edit?weddingId=${card.weddingId}`;
@@ -164,6 +164,11 @@ function WeddingInvitationManager() {
     const [isCommentLoading, setIsCommentLoading] = useState(false);
     const [commentMessage, setCommentMessage] = useState('');
     const [updatingWishId, setUpdatingWishId] = useState<number | null>(null);
+    const [rsvpCardId, setRsvpCardId] = useState<number | null>(null);
+    const [rsvps, setRsvps] = useState<Array<{ id: number; fullname: string; status: string; createdAt: string }>>([]);
+    const [isRsvpLoading, setIsRsvpLoading] = useState(false);
+    const [rsvpMessage, setRsvpMessage] = useState('');
+    const [rsvpFilter, setRsvpFilter] = useState<'all' | 'yes' | 'no'>('all');
     const toastTimerRef = useRef<number | null>(null);
 
     const showToast = (content: string) => {
@@ -292,6 +297,59 @@ function WeddingInvitationManager() {
         setComments([]);
         setCommentMessage('');
         setUpdatingWishId(null);
+    };
+
+    const openRsvpManager = (invitation: InvitationCard) => {
+        showToast('Đang mở danh sách xác nhận tham dự.');
+        setRsvpCardId(invitation.id);
+        setRsvps([]);
+        setRsvpMessage('');
+        setIsRsvpLoading(true);
+        setRsvpFilter('all');
+
+        weddingCardService.getMyCardRsvps(invitation.id)
+            .then(setRsvps)
+            .catch((error) => {
+                setRsvpMessage(error instanceof Error ? error.message : 'Không thể tải danh sách xác nhận tham dự.');
+            })
+            .finally(() => setIsRsvpLoading(false));
+    };
+
+    const closeRsvpManager = () => {
+        setRsvpCardId(null);
+        setRsvps([]);
+        setRsvpMessage('');
+    };
+
+    const exportToExcel = () => {
+        if (!rsvps || rsvps.length === 0) {
+            showToast('Không có dữ liệu để xuất file.');
+            return;
+        }
+
+        const BOM = '\uFEFF';
+        let csvContent = BOM + 'STT,Họ tên,Trạng thái\n';
+
+        rsvps.forEach((rsvpItem, index) => {
+            const statusText = rsvpItem.status === 'yes' ? 'Tham dự' : 'Từ chối';
+            const escapedName = `"${rsvpItem.fullname.replace(/"/g, '""')}"`;
+            csvContent += `${index + 1},${escapedName},${statusText}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        
+        const selectedRsvpCard = invitations.find((inv) => inv.id === rsvpCardId);
+        const fileNameSuffix = selectedRsvpCard ? `_${selectedRsvpCard.couple.replace(/\s+/g, '_')}` : '';
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `danh_sach_xac_nhan_tham_du${fileNameSuffix}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('Đã tải xuống tệp Excel.');
     };
 
     const toggleCommentVisibility = (wish: WeddingCardWishManagementResponse) => {
@@ -430,6 +488,10 @@ function WeddingInvitationManager() {
                                 <MessageSquareText size={15} strokeWidth={2.3} />
                                 <span>Quản lí bình luận</span>
                             </button>
+                            <button type="button" onClick={() => openRsvpManager(invitation)}>
+                                <Users size={15} strokeWidth={2.3} />
+                                <span>Xác nhận tham dự</span>
+                            </button>
                         </div>
                     </article>
                 ))}
@@ -524,6 +586,92 @@ function WeddingInvitationManager() {
                     </div>
                 </div>
             )}
+
+            {rsvpCardId && (() => {
+                const selectedRsvpCard = invitations.find((inv) => inv.id === rsvpCardId);
+                const total = rsvps.length;
+                const attendingCount = rsvps.filter((r) => r.status === 'yes').length;
+                const declinedCount = rsvps.filter((r) => r.status === 'no').length;
+                const filteredRsvps = rsvps.filter((r) => rsvpFilter === 'all' || r.status === rsvpFilter);
+
+                return (
+                    <div className="wim-rsvp-modal" role="dialog" aria-modal="true" aria-labelledby="wim-rsvp-title">
+                        <div className="wim-rsvp-panel">
+                            <div className="wim-rsvp-head">
+                                <div>
+                                    <p>Danh sách xác nhận tham dự</p>
+                                    <h2 id="wim-rsvp-title">{selectedRsvpCard?.couple}</h2>
+                                    <span>/{selectedRsvpCard?.slug}</span>
+                                </div>
+                                <button type="button" aria-label="Đóng" onClick={closeRsvpManager}>
+                                    <X size={20} strokeWidth={2.4} />
+                                </button>
+                            </div>
+
+                            <div className="wim-rsvp-stats">
+                                <div className="wim-rsvp-stat-card">
+                                    <span>Tổng số</span>
+                                    <strong>{total}</strong>
+                                </div>
+                                <div className="wim-rsvp-stat-card is-attending">
+                                    <span>Tham dự</span>
+                                    <strong>{attendingCount}</strong>
+                                </div>
+                                <div className="wim-rsvp-stat-card is-declined">
+                                    <span>Từ chối</span>
+                                    <strong>{declinedCount}</strong>
+                                </div>
+                            </div>
+
+                            <div className="wim-rsvp-filters">
+                                {(['all', 'yes', 'no'] as const).map((filter) => (
+                                    <button
+                                        key={filter}
+                                        type="button"
+                                        className={`wim-rsvp-filter-btn${rsvpFilter === filter ? ' is-active' : ''}`}
+                                        onClick={() => setRsvpFilter(filter)}
+                                    >
+                                        {filter === 'all' ? 'Tất cả' : filter === 'yes' ? 'Tham dự' : 'Từ chối'}
+                                    </button>
+                                ))}
+                                <button
+                                    type="button"
+                                    className="wim-rsvp-export-btn"
+                                    onClick={exportToExcel}
+                                >
+                                    <Download size={14} strokeWidth={2.4} />
+                                    <span>Xuất Excel</span>
+                                </button>
+                            </div>
+
+                            <div className="wim-rsvp-body">
+                                {isRsvpLoading && <p className="wim-rsvp-state">Đang tải...</p>}
+                                {!isRsvpLoading && rsvpMessage && <p className="wim-rsvp-state is-error">{rsvpMessage}</p>}
+                                {!isRsvpLoading && !rsvpMessage && filteredRsvps.length === 0 && (
+                                    <p className="wim-rsvp-state">Chưa có phản hồi nào.</p>
+                                )}
+                                {!isRsvpLoading && filteredRsvps.length > 0 && (
+                                    <div className="wim-rsvp-list">
+                                        {filteredRsvps.map((rsvpItem) => (
+                                            <article className="wim-rsvp-item" key={rsvpItem.id}>
+                                                <div className="wim-rsvp-item-info">
+                                                    <strong className="wim-rsvp-item-name">{rsvpItem.fullname}</strong>
+                                                    <span className="wim-rsvp-item-time">
+                                                        {rsvpItem.createdAt ? new Date(rsvpItem.createdAt).toLocaleString('vi-VN') : ''}
+                                                    </span>
+                                                </div>
+                                                <span className={`wim-rsvp-badge is-${rsvpItem.status}`}>
+                                                    {rsvpItem.status === 'yes' ? 'Tham dự' : 'Từ chối'}
+                                                </span>
+                                            </article>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
 
             {toastMessage && (
                 <div className="wim-toast" role="status" aria-live="polite">

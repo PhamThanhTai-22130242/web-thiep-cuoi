@@ -5,8 +5,11 @@ import { Wish } from '../data/invitationTemplates';
 import { WeddingCardWishManagementResponse } from '../models/wedding-card.model';
 import { httpRequest } from '../services/http.service';
 import { weddingCardService } from '../services/wedding-card.service';
+import { subscribeToStompTopic } from '../services/stomp.service';
 import EmeraldInvitation from './EmeraldInvitationPage';
-import { mapPublicCardToTemplate, PublicWeddingCardResponse } from './PublicWeddingCardPage';
+import RubyBasicInvitation from './RubyBasicInvitation';
+import CineLoveTraditionalInvitation from './CineLoveTraditionalInvitation';
+import { mapPublicCardToTemplate, PublicWeddingCardResponse, mapPublicCardToCineLoveData } from './PublicWeddingCardPage';
 import './PublicCommentManagerPage.css';
 
 function normalizeSlug(value: string) {
@@ -19,7 +22,7 @@ function getCoupleName(card: PublicWeddingCardResponse | null) {
     const groomName = (groom?.shortName || groom?.fullName || 'Chú rể').trim();
     const brideName = (bride?.shortName || bride?.fullName || 'Cô dâu').trim();
 
-    return `${groomName} & ${brideName}`;
+    return `${groomName} - ${brideName}`;
 }
 
 function PublicCommentManagerPage() {
@@ -75,6 +78,28 @@ function PublicCommentManagerPage() {
         return () => {
             isMounted = false;
         };
+    }, [slug]);
+
+    useEffect(() => {
+        if (!slug) {
+            return undefined;
+        }
+
+        const topic = `/topic/wedding-cards/${slug}/wishes`;
+        const subscription = subscribeToStompTopic<WeddingCardWishManagementResponse & { guestName?: string; wishId?: number }>(topic, (incomingWish) => {
+            const newWish: WeddingCardWishManagementResponse = {
+                wishId: incomingWish.wishId || Date.now(),
+                guestName: incomingWish.guestName || '',
+                message: incomingWish.message,
+                isApproved: incomingWish.isApproved !== false,
+            };
+            setComments((current) => {
+                const exists = current.some((item) => item.guestName === newWish.guestName && item.message === newWish.message);
+                return exists ? current : [newWish, ...current];
+            });
+        });
+
+        return () => subscription.unsubscribe();
     }, [slug]);
 
     const template = useMemo(() => (card ? mapPublicCardToTemplate(card) : null), [card]);
@@ -153,13 +178,24 @@ function PublicCommentManagerPage() {
                     <div className="pcm-preview">
                         {isLoading && <p className="pcm-empty">Đang tải thiệp...</p>}
                         {!isLoading && !template && <p className="pcm-empty">Nhập URL thiệp để xem bản thiệp ở đây.</p>}
-                        {!isLoading && template && (
-                            <EmeraldInvitation
-                                template={template}
-                                initialWishes={visibleWishes}
-                                wishEndpoint={`/api/wedding-cards/${card?.slug}/wishes`}
-                                wishTopic={`/topic/wedding-cards/${card?.slug}/wishes`}
-                            />
+                        {!isLoading && template && card && (
+                            card.template.code === 'RubyBasicInvitation' ? (
+                                <RubyBasicInvitation template={template} />
+                            ) : card.template.code === 'CineLoveTraditionalInvitation' ? (
+                                <CineLoveTraditionalInvitation
+                                    data={mapPublicCardToCineLoveData(card)}
+                                    initialWishes={visibleWishes}
+                                    wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
+                                    wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}
+                                />
+                            ) : (
+                                <EmeraldInvitation
+                                    template={template}
+                                    initialWishes={visibleWishes}
+                                    wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
+                                    wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}
+                                />
+                            )
                         )}
                     </div>
                 </div>

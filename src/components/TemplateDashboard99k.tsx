@@ -11,6 +11,7 @@ import {
 import { useForm } from 'react-hook-form';
 import {
     defaultInvitationTemplate,
+    defaultRubyInvitationTemplate,
     InvitationTemplate,
     savePreviewInvitationTemplate,
     rubyTemplatePreviewStorageKey,
@@ -24,10 +25,14 @@ import './TemplateDashboard.css';
 
 const fontOptions = ['Allura', 'Great Vibes', 'Dancing Script', 'Pacifico'];
 const colorPresets = [
-    { key: 'ruby-gold', primary: '#9f2c24', background: '#f6e8dc', accent: '#d8b16a' },
-    { key: 'wine-blush', primary: '#7f1d2d', background: '#fff1ec', accent: '#c99255' },
-    { key: 'copper-ivory', primary: '#9b4b24', background: '#fff6e8', accent: '#d6a85a' },
-    { key: 'jade-red', primary: '#2f5b52', background: '#f7f2e8', accent: '#b7332b' },
+    // Mặc định — Đỏ Ruby & Vàng
+    { key: 'ruby-gold',      primary: '#952535', background: '#f6e8dc', accent: '#d8b16a' },
+    // Tím Mận Sang Trọng
+    { key: 'plum-velvet',    primary: '#622040', background: '#fdf4f7', accent: '#c4956a' },
+    // Xanh Navy & Vàng Champagne
+    { key: 'navy-prestige',  primary: '#2b3f65', background: '#f2f4f8', accent: '#c9a84c' },
+    // Xanh Rừng Emerald
+    { key: 'forest-emerald', primary: '#305545', background: '#f4f8f2', accent: '#c8a86a' },
 ];
 
 type ImageField = 'images.cover' | 'images.kiss' | 'images.walk' | 'images.smile' | 'images.studio' | 'images.thank';
@@ -48,7 +53,7 @@ const defaultSampleImages = new Set([
 const requiredImages: Array<{ field: ImageField; label: string }> = [
     { field: 'images.cover', label: 'ảnh bìa' },
     { field: 'images.kiss', label: 'ảnh khoảnh khắc' },
-    { field: 'images.studio', label: '?nh c� d�u ch� r?' },
+    { field: 'images.studio', label: 'ảnh cô dâu chú rể' },
 ];
 
 function cloneTemplate(template: InvitationTemplate): InvitationTemplate {
@@ -75,14 +80,14 @@ function getDayName(dateValue: string) {
 }
 
 function createEditableTemplate(): InvitationTemplate {
-    const template = cloneTemplate(defaultInvitationTemplate);
+    const template = cloneTemplate(defaultRubyInvitationTemplate);
     const today = getTodayDateInput();
     template.id = 'ruby-basic-99k';
     template.name = 'Ruby Basic 99k';
     template.slug = '';
     template.templateUrl = '/RubyBasicInvitation';
     template.publicUrl = '/RubyBasicInvitation';
-    template.design.primaryColor = '#9f2c24';
+    template.design.primaryColor = '#952535';
     template.design.backgroundColor = '#f6e8dc';
     template.design.accentColor = '#d8b16a';
     template.images.cover = '';
@@ -103,6 +108,11 @@ function createEditableTemplate(): InvitationTemplate {
 
 function normalizeEditableTemplate(template: InvitationTemplate): InvitationTemplate {
     const next = cloneTemplate(template);
+    if (next.design.primaryColor === defaultInvitationTemplate.design.primaryColor) {
+        next.design.primaryColor = defaultRubyInvitationTemplate.design.primaryColor;
+        next.design.backgroundColor = defaultRubyInvitationTemplate.design.backgroundColor;
+        next.design.accentColor = defaultRubyInvitationTemplate.design.accentColor;
+    }
     if (next.event.date === defaultInvitationTemplate.event.date && next.event.time === defaultInvitationTemplate.event.time) {
         const today = getTodayDateInput();
         next.event.date = toEventDate(today, '00:00');

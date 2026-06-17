@@ -12,8 +12,9 @@ import NotFoundPage from './components/NotFoundPage';
 import PinkWeddingInvitation from './components/PinkWeddingInvitation';
 import PublicCommentManagerPage from './components/PublicCommentManagerPage';
 import PublicWeddingCardPage from './components/PublicWeddingCardPage';
-import QuiphaiInvitation from './components/QuiphaiInvitation';
+import ElegantInvitation from './components/ElegantInvitation';
 import TemplateSelectorPage from './components/TemplateSelectorPage';
+import TestComponent from './components/TestComponent';
 import WeddingInvitationManager from './components/WeddingInvitationManager';
 import { weddingTemplateConfigs } from './data/weddingTemplateRegistry';
 import { authTokenService } from './services/auth-token.service';
@@ -61,7 +62,8 @@ function App() {
                         <Route key={`preview-${template.code}-${path}`} path={path} element={<DisplayComponent />} />
                     ));
                 })}
-                <Route path="/quiphai" element={<QuiphaiInvitation />} />
+                <Route path="/tram-nam-ben-doi" element={<ElegantInvitation />} />
+                <Route path="/test-fabric" element={<TestComponent />} />
                 <Route path="/THIEPMAUHONG" element={<PinkWeddingInvitation />} />
                 <Route path="/CODIEN" element={<CoDienInvitation />} />
                 <Route path="/thiep/:slug" element={<PublicWeddingCardPage />} />
@@ -74,6 +76,7 @@ function App() {
                 <Route path="/admin-templates" element={<RequireAuth adminOnly><AdminTemplateManager /></RequireAuth>} />
                 <Route path="/admin-users" element={<RequireAuth adminOnly><AdminUserManager /></RequireAuth>} />
                 <Route path="/401" element={<NotFoundPage code="401" title="Bạn không có quyền truy cập trang này" />} />
+                <Route path="/500" element={<NotFoundPage code="500" title={'H\u1ec7 th\u1ed1ng \u0111ang g\u1eb7p s\u1ef1 c\u1ed1'} />} />
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>

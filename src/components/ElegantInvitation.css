@@ -42,7 +42,7 @@ body::-webkit-scrollbar-button {
   --qp-display: 'Playfair Display', Georgia, serif;
   --qp-sans: 'Inter', system-ui, sans-serif;
   --qp-strong: 'Bebas Neue', Impact, sans-serif;
-  --qp-script: 'Parisienne', 'Great Vibes', 'Allura', cursive;
+  --qp-script: 'Allura', 'Parisienne', 'Great Vibes', cursive;
   width: min(100%, 575px);
   min-height: 100vh;
   margin: 0 auto;
@@ -111,11 +111,13 @@ body::-webkit-scrollbar-button {
   font-family: var(--qp-script);
   font-size: clamp(4.2rem, 18vw, 6.3rem);
   line-height: 0.76;
+  display: flex;
+  align-items: baseline;
 }
 
 .qp-opening-save span {
-  display: block;
-  margin-top: 10px;
+  display: inline-block;
+  margin-left: 8px;
   font-family: var(--qp-serif);
   font-size: 1.28rem;
   font-style: italic;
@@ -203,14 +205,15 @@ body::-webkit-scrollbar-button {
   transform: translateX(-50%);
   border: 1px solid rgba(141, 95, 37, 0.26);
   border-radius: 999px;
-  padding: 12px 20px;
+  padding: 10px 26px;
   background: rgba(255, 255, 255, 0.28);
   color: var(--qp-gold);
-  font-family: var(--qp-sans);
-  font-size: 0.76rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--qp-serif);
+  font-size: 1.18rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: none;
   backdrop-filter: blur(8px);
   transition: transform 0.2s ease, background 0.2s ease;
 }
@@ -254,6 +257,7 @@ body::-webkit-scrollbar-button {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.42)),
     radial-gradient(circle at 50% 28%, transparent 0 34%, rgba(0, 0, 0, 0.18) 70%);
+  pointer-events: none;
 }
 
 .qp-hero img {
@@ -274,6 +278,7 @@ body::-webkit-scrollbar-button {
   padding: 38px 26px 70px;
   color: #fff;
   text-align: center;
+  pointer-events: none;
 }
 
 .qp-hero-copy span {
@@ -447,7 +452,7 @@ body::-webkit-scrollbar-button {
 .qp-formal-names em {
   font-family: 'Parisienne', 'Great Vibes', 'Allura', cursive;
   margin: 10px 0 12px;
-  font-size: clamp(1.72rem, 5.8vw, 2.55rem);
+  font-size: clamp(1.1rem, 3.8vw, 1.6rem);
   font-style: normal;
   line-height: 0.76;
   text-transform: none;
@@ -684,7 +689,7 @@ body::-webkit-scrollbar-button {
   gap: 34px;
   min-height: 920px;
   overflow: hidden;
-  padding: 48px 34px 78px;
+  padding: 48px 34px 38px;
   background:
     linear-gradient(180deg, #fffdf8 0%, #fff 42%, #fffaf1 100%);
   color: var(--qp-gold);
@@ -755,7 +760,7 @@ body::-webkit-scrollbar-button {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 22px;
+  gap: 30px;
 }
 
 .qp-profile-copy em {
@@ -806,16 +811,29 @@ body::-webkit-scrollbar-button {
   padding: 12px 12px 44px;
   background: #fff;
   box-shadow: 0 22px 34px rgba(70, 54, 35, 0.18);
+  overflow: hidden;
 }
 
 .qp-profile-card figure img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+}
+
+.qp-profile-card figure > img {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 56px);
+  object-fit: cover;
+  object-position: center;
 }
 
 .qp-profile-groom {
   justify-items: start;
+  z-index: 1;
 }
 
 .qp-profile-groom figure {
@@ -827,6 +845,7 @@ body::-webkit-scrollbar-button {
 .qp-profile-bride {
   justify-items: end;
   margin-top: -22px;
+  z-index: 2;
 }
 
 .qp-profile-bride figure {
@@ -839,14 +858,14 @@ body::-webkit-scrollbar-button {
 
 .qp-profile-bride .qp-profile-copy {
   width: min(70%, 260px);
-  text-align: center;
+  text-align: right;
 }
 
 .qp-profile-seal {
   position: absolute;
   z-index: 3;
-  top: 446px;
-  left: 50%;
+  top: 40.2%;
+  left: 48%;
   width: 76px;
   height: 76px;
   object-fit: contain;
@@ -858,7 +877,7 @@ body::-webkit-scrollbar-button {
 .qp-album {
   position: relative;
   overflow: hidden;
-  padding: 20px 12px 28px;
+  padding: 30px 12px 28px;
   background:
     radial-gradient(circle at 12% 0%, rgba(230, 198, 152, 0.24), transparent 28%),
     radial-gradient(circle at 88% 8%, rgba(141, 95, 37, 0.12), transparent 26%),
@@ -942,8 +961,8 @@ body::-webkit-scrollbar-button {
   gap: 10px;
   margin: 0 auto 26px;
   width: min(100%, 430px);
-  font-family: 'Parisienne', 'Great Vibes', 'Allura', cursive;
-  font-size: clamp(2.28rem, 8vw, 3.45rem);
+  font-family: var(--qp-script);
+  font-size: clamp(1.8rem, 6.2vw, 2.5rem);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1;
@@ -981,8 +1000,8 @@ body::-webkit-scrollbar-button {
 .qp-album-word.is-of {
   justify-self: center;
   color: #9f6c2d;
-  font-family: 'Parisienne', 'Great Vibes', 'Allura', cursive;
-  font-size: clamp(1.74rem, 5.6vw, 2.38rem);
+  font-family: var(--qp-script);
+  font-size: clamp(1.3rem, 4.4vw, 1.8rem);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 0.72;
@@ -1090,6 +1109,7 @@ body::-webkit-scrollbar-button {
   min-height: 116px;
   padding: 14px;
   resize: vertical;
+  line-height: 1.5;
 }
 
 .qp-radio-row {
@@ -1163,10 +1183,26 @@ body::-webkit-scrollbar-button {
 .qp-wish-list {
   display: grid;
   gap: 10px;
-  max-height: 260px;
-  overflow: auto;
+  max-height: 220px;
+  overflow-y: auto;
   margin-top: 18px;
   text-align: left;
+  scrollbar-width: thin;
+  scrollbar-color: var(--qp-gold) rgba(141, 95, 37, 0.06);
+}
+
+.qp-wish-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.qp-wish-list::-webkit-scrollbar-track {
+  background: rgba(141, 95, 37, 0.06);
+  border-radius: 999px;
+}
+
+.qp-wish-list::-webkit-scrollbar-thumb {
+  background: var(--qp-gold);
+  border-radius: 999px;
 }
 
 .qp-wish-list article {
@@ -1204,7 +1240,7 @@ body::-webkit-scrollbar-button {
 .qp-gift-modal {
   position: fixed;
   inset: 0;
-  z-index: 120;
+  z-index: 10000;
   display: grid;
   place-items: center;
   padding: 18px;
@@ -1221,9 +1257,9 @@ body::-webkit-scrollbar-button {
 .qp-gift-panel {
   position: relative;
   z-index: 1;
-  width: min(100%, 430px);
+  width: min(94%, 480px);
   border-radius: 18px;
-  padding: 30px 18px 18px;
+  padding: 32px 20px 20px;
   background: var(--qp-paper);
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.26);
   animation: qp-modal-in 0.28s ease both;
@@ -1247,45 +1283,40 @@ body::-webkit-scrollbar-button {
   margin: 0 0 16px;
   font-family: var(--qp-serif);
   text-align: center;
+  font-size: clamp(1.72rem, 6.5vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
-.qp-gift-panel article {
-  border: 1px solid rgba(141, 95, 37, 0.18);
-  border-radius: 14px;
+.qp-gift-qrs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.qp-gift-qr-card {
+  margin: 0;
   padding: 14px;
   background: #fff;
+  border: 1px solid rgba(141, 95, 37, 0.18);
+  border-radius: 14px;
   text-align: center;
 }
 
-.qp-gift-panel article+article {
-  margin-top: 12px;
-}
-
-.qp-gift-panel span {
-  display: block;
+.qp-gift-qr-card figcaption {
+  font-family: var(--qp-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
   color: var(--qp-gold);
-  font-size: 0.78rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
-.qp-gift-panel strong {
-  display: block;
-  margin-top: 8px;
-  overflow-wrap: anywhere;
-  font-size: 1.08rem;
-}
-
-.qp-gift-panel p {
-  margin: 6px 0 4px;
-  color: var(--qp-muted);
-  font-weight: 800;
-}
-
-.qp-gift-panel b {
-  overflow-wrap: anywhere;
-  letter-spacing: 0.06em;
+.qp-gift-qr-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
 [data-qp-reveal] {
@@ -1570,7 +1601,7 @@ body::-webkit-scrollbar-button {
   }
 
   .qp-album {
-    padding-top: 46px;
+    padding-top: 36px;
   }
 
   .qp-album-flower.is-left {
@@ -1593,7 +1624,7 @@ body::-webkit-scrollbar-button {
 
   .qp-couple-profile {
     min-height: 830px;
-    padding: 42px 24px 50px;
+    padding: 42px 24px 36px;
   }
 
   .qp-couple-flower-left {
@@ -1622,6 +1653,13 @@ body::-webkit-scrollbar-button {
     padding: 10px 10px 36px;
   }
 
+  .qp-profile-card figure > img {
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 46px);
+  }
+
   .qp-profile-bride {
     margin-top: -12px;
   }
@@ -1635,10 +1673,123 @@ body::-webkit-scrollbar-button {
   }
 
   .qp-profile-seal {
-    top: 404px;
-    left: 50%;
     width: 68px;
     height: 68px;
-    transform: translate(-50%, -50%);
+  }
+}
+
+/* Edit Mode Overlays */
+.qp-page.is-editing .qp-editable-image {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.qp-page.is-editing .qp-editable-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.qp-page.is-editing .qp-editable-image.is-empty {
+  overflow: hidden;
+  border: 2px dashed rgba(141, 95, 37, 0.24);
+  background: #ffffff;
+}
+
+.qp-image-placeholder {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  min-width: 92px;
+  min-height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 251, 241, 0.62);
+  border-radius: 999px;
+  background: rgba(110, 95, 85, 0.82);
+  color: #fff9ee;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(34, 16, 14, 0.28);
+  box-shadow: 0 12px 24px rgba(55, 25, 20, 0.18);
+}
+
+.qp-change-image-badge {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  min-height: 30px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 247, 226, 0.46);
+  background: linear-gradient(180deg, #a73c38, #86211d);
+  color: #fff9ed;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 8px 16px rgba(141, 95, 37, 0.24);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+.qp-change-image-badge b {
+  display: grid;
+  width: 14px;
+  height: 14px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 249, 237, 0.24);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.qp-page.is-editing .qp-editable-image:hover .qp-change-image-badge {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.qp-page.is-editing .qp-hero .qp-editable-image {
+  height: 100vh;
+  width: 100%;
+}
+
+.qp-page.is-editing .qp-gift-qr-card .qp-editable-image {
+  aspect-ratio: 1;
+  width: 100%;
+  height: auto;
+}
+
+.qp-page.is-editing .qp-profile-card figure .qp-editable-image {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 56px);
+}
+
+@media (max-width: 430px) {
+  .qp-page.is-editing .qp-profile-card figure .qp-editable-image {
+    top: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 46px);
   }
 }

@@ -1,9 +1,16 @@
+import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './ImperialWeddingInvitation.css';
 
 const coupleImage =
     'https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80';
 
 function ImperialWeddingInvitation() {
+    const areImagesLoading = useInvitationImagePreload([coupleImage]);
+
+    if (areImagesLoading) {
+        return <InvitationLoadingScreen className="iwi-page" />;
+    }
+
     return (
         <main className="iwi-page">
             <section className="iwi-card">

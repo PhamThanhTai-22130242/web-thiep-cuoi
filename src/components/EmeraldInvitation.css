@@ -327,7 +327,7 @@
   position: absolute;
   z-index: 2;
   margin: 0;
-  padding: 8px 8px 46px;
+  padding: 8px;
   background: #fffef6;
   box-shadow: 0 16px 32px rgba(var(--ei-shadow-rgb), 0.2);
 }
@@ -341,7 +341,7 @@
 .ei-polaroid.is-empty::before {
   content: 'Chưa có ảnh';
   position: absolute;
-  inset: 8px 8px 46px;
+  inset: 8px;
   display: grid;
   place-items: center;
   border: 1px dashed rgba(var(--ei-green-rgb), 0.2);
@@ -2283,7 +2283,7 @@
   .ei-polaroid-tilt {
     width: clamp(128px, 38vw, 160px);
     height: clamp(184px, 52vw, 224px);
-    padding: 6px 6px 34px;
+    padding: 6px;
     transform: rotate(-5deg);
   }
 

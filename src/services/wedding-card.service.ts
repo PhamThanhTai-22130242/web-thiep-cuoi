@@ -6,7 +6,7 @@ import {
     WeddingCardWishManagementResponse,
 } from '../models/wedding-card.model';
 import { authTokenService } from './auth-token.service';
-import { httpRequest } from './http.service';
+import { httpRequest, redirectToServerErrorPage, shouldRedirectToServerErrorPage } from './http.service';
 
 export const weddingCardService = {
     async checkSlugAvailability(slug: string, weddingId?: number) {
@@ -64,6 +64,17 @@ export const weddingCardService = {
         return response.data || [];
     },
 
+    async getMyCardRsvps(weddingId: number) {
+        const response = await httpRequest<Array<{ id: number; fullname: string; status: string; createdAt: string }>>(
+            `${API_ENDPOINTS.MY_WEDDING_CARDS}/${weddingId}/rsvp`,
+            {
+                auth: true,
+            },
+        );
+
+        return response.data || [];
+    },
+
     async setWishVisibility(weddingId: number, wishId: number, approved: boolean) {
         const response = await httpRequest<WeddingCardWishManagementResponse, { approved: boolean }>(
             `${API_ENDPOINTS.MY_WEDDING_CARDS}/${weddingId}/wishes/${wishId}/visibility`,
@@ -106,19 +117,32 @@ export const weddingCardService = {
         formData.append('file', file);
 
         const accessToken = authTokenService.getAccessToken();
-        const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.UPLOADS.CLOUDINARY}`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
-            body: formData,
-        });
-        const payload = await response.json();
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_ENDPOINTS.UPLOADS.CLOUDINARY}`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+                body: formData,
+            });
+            const payload = await response.json();
+            const statusCode = Number(payload.code || response.status);
 
-        if (!response.ok || Number(payload.code || response.status) < 200 || Number(payload.code || response.status) >= 300) {
+            if (!response.ok || statusCode < 200 || statusCode >= 300) {
+                if (shouldRedirectToServerErrorPage(statusCode || response.status)) {
+                    redirectToServerErrorPage();
+                }
+
             throw new Error(payload.message || 'Không thể upload ảnh.');
         }
 
         const data = payload.data as CloudinaryUploadResponse;
         return data.secureUrl || data.url;
+        } catch (error) {
+            if (error instanceof TypeError || error instanceof SyntaxError) {
+                redirectToServerErrorPage();
+            }
+
+            throw error;
+        }
     },
 };

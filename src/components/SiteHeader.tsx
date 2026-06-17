@@ -1,4 +1,4 @@
-import { FormEvent, MouseEvent, useCallback, useState } from 'react';
+import { FormEvent, MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthUserBadge from './AuthUserBadge';
 import GoogleLoginButton from './GoogleLoginButton';
@@ -19,6 +19,13 @@ function SiteHeader() {
     const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
     const [currentUser, setCurrentUser] = useState(() => authTokenService.getUser());
     const isRegister = authMode === 'register';
+
+    // Allow any part of the app to open the login modal via a custom event
+    useEffect(() => {
+        const handler = () => setAuthMode('login');
+        window.addEventListener('open-auth-modal', handler);
+        return () => window.removeEventListener('open-auth-modal', handler);
+    }, []);
 
     const handleAuthSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -55,7 +62,9 @@ function SiteHeader() {
             formElement.reset();
             setCurrentUser(loggedInUser);
             setAuthMode(null);
-            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+            if (!location.pathname.endsWith('/edit')) {
+                navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+            }
         } catch (error) {
             setAuthMessageType('error');
             setAuthMessage(error instanceof ApiError ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
@@ -73,8 +82,10 @@ function SiteHeader() {
         setAuthMessage('Đăng nhập Google thành công.');
         setCurrentUser(loggedInUser);
         setAuthMode(null);
-        navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
-    }, [navigate]);
+        if (!location.pathname.endsWith('/edit')) {
+            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+        }
+    }, [navigate, location.pathname]);
 
     const handleGoogleLoginError = useCallback((message: string) => {
         setAuthMessageType('error');

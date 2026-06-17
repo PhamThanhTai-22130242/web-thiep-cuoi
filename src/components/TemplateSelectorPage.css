@@ -96,20 +96,20 @@
   display: grid;
   place-items: center;
   min-height: 0;
-  padding: 16px;
-  background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.08), transparent 45%),
-    linear-gradient(180deg, #32110d, #100a09);
+  padding: 18px;
+  background: #f0ede8;
   overflow: hidden;
 }
 
 .selector-preview-glow {
   position: absolute;
-  inset: 8% 8% auto;
-  height: 210px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--selector-accent) 60%, white), transparent 64%);
-  opacity: 0.38;
-  filter: blur(34px);
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 50%, rgba(230, 180, 120, 0.14), transparent 70%),
+    radial-gradient(ellipse 75% 18% at 50% 0%, rgba(255, 240, 210, 0.45), transparent 100%);
+  opacity: 1;
+  filter: blur(12px);
+  pointer-events: none;
 }
 
 .selector-phone {
@@ -164,6 +164,46 @@
   transform: translateX(-50%) scale(0.37);
   transform-origin: top center;
   pointer-events: none;
+}
+
+.selector-template-image {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  max-height: 348px;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow:
+    0 0 0 1px rgba(200, 160, 110, 0.2),
+    0 8px 28px rgba(100, 60, 20, 0.18),
+    0 2px 8px rgba(100, 60, 20, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.selector-card:hover .selector-template-image {
+  transform: translateY(-3px) scale(1.012);
+  box-shadow:
+    0 0 0 1px rgba(200, 160, 110, 0.35),
+    0 16px 44px rgba(100, 60, 20, 0.26),
+    0 4px 12px rgba(100, 60, 20, 0.14);
+}
+
+/* Khi có thumbnail ảnh tĩnh — ảnh chiếm full, có padding để thấy full ảnh */
+.selector-preview-wrap.has-thumbnail {
+  padding: 16px;
+}
+
+.selector-phone-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .selector-card-copy {

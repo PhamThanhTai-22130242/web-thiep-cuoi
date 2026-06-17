@@ -1,0 +1,33 @@
+.invitation-image-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+}
+
+.invitation-image-loading-status {
+  display: grid;
+  place-items: center;
+}
+
+.invitation-image-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  color: rgba(45, 75, 69, 0.18);
+  fill: #c2a113;
+  animation: invitation-image-loading-spin 0.8s linear infinite;
+}
+
+.invitation-image-loading .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@keyframes invitation-image-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -4,6 +4,8 @@ export type WeddingCardPerson = {
     shortName?: string;
     avatar?: string;
     familyLable?: string;
+    fatherName?: string;
+    motherName?: string;
 };
 
 export type WeddingCardEvent = {
@@ -42,7 +44,12 @@ export type MyWeddingCardResponse = {
 };
 
 export type MyWeddingCardSaveRequest = {
-    templateCode: 'EmeraldInvitation' | 'RubyBasicInvitation';
+    templateCode:
+        | 'EmeraldInvitation'
+        | 'RubyBasicInvitation'
+        | 'CineLoveTraditionalInvitation'
+        | 'ElegantInvitation'
+        | 'PinkWeddingInvitation';
     slug: string;
     status: 'draft' | 'active';
     design: {
@@ -54,6 +61,10 @@ export type MyWeddingCardSaveRequest = {
         bride: string;
         groomRole: string;
         brideRole: string;
+        groomFather?: string;
+        groomMother?: string;
+        brideFather?: string;
+        brideMother?: string;
     };
     event: {
         inviteText?: string;

@@ -3,9 +3,9 @@
   padding: 34px clamp(18px, 4vw, 54px) 48px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 5% 15%, rgba(155, 30, 24, 0.08), transparent 24%),
-    radial-gradient(circle at 90% 12%, rgba(249, 197, 108, 0.16), transparent 26%),
-    linear-gradient(180deg, #fffaf6 0%, #fff8f1 52%, #fbefe4 100%);
+    radial-gradient(circle at 5% 15%, rgba(155, 30, 24, 0.03), transparent 24%),
+    radial-gradient(circle at 90% 12%, rgba(249, 197, 108, 0.06), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #fafafa 52%, #f5f5f5 100%);
   color: #3d1712;
   font-family: 'Inter', system-ui, sans-serif;
 }
@@ -520,28 +520,33 @@
 .wim-card-actions {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   border-top: 1px solid rgba(124, 22, 15, 0.1);
+  background: rgba(255, 255, 255, 0.44);
 }
 
 .wim-card-actions button,
 .wim-card-actions a {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 48px;
+  padding: 12px 8px;
   align-items: center;
   justify-content: center;
   gap: 6px;
   border: 0;
   border-right: 1px solid rgba(124, 22, 15, 0.08);
-  background: rgba(255, 255, 255, 0.44);
+  background: transparent;
   color: #6b433b;
-  font-size: 0.73rem;
+  font-size: 0.74rem;
   font-weight: 800;
   text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .wim-card-actions svg {
   flex: 0 0 auto;
+  color: #7c160f;
+  transition: transform 0.2s ease;
 }
 
 .wim-card-actions button:hover,
@@ -550,13 +555,17 @@
   color: #5e4530;
 }
 
-.wim-card-actions .is-more {
-  border-right: 0;
-  font-size: 1rem;
+.wim-card-actions button:hover svg,
+.wim-card-actions a:hover svg {
+  transform: scale(1.08);
 }
 
 .wim-card-actions > :last-child {
   border-right: 0;
+}
+
+.wim-card-actions .is-more {
+  font-size: 1rem;
 }
 
 .wim-comment-modal {
@@ -957,11 +966,27 @@
 
   .wim-card-actions {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    padding: 0;
   }
 
   .wim-card-actions button,
   .wim-card-actions a {
-    min-height: 42px;
+    min-height: 46px;
+    padding: 8px 4px;
+    border-right: 1px solid rgba(124, 22, 15, 0.08);
+    border-bottom: 1px solid rgba(124, 22, 15, 0.08);
+    border-radius: 0;
+  }
+
+  .wim-card-actions > :nth-child(2n) {
+    border-right: 0;
+  }
+
+  .wim-card-actions > :last-child {
+    grid-column: span 2;
+    border-right: 0;
+    border-bottom: 0;
   }
 
   .wim-card-actions .is-more {
@@ -984,4 +1009,257 @@
   .wim-activation-actions {
     grid-template-columns: 1fr;
   }
+}
+
+/* RSVP Modal Styles */
+.wim-rsvp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  background: rgba(31, 18, 14, 0.38);
+  backdrop-filter: blur(8px);
+}
+
+.wim-rsvp-panel {
+  width: min(680px, 100%);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow: hidden;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 22px;
+  background: #fffaf6;
+  box-shadow: 0 30px 90px rgba(44, 20, 14, 0.24);
+  display: flex;
+  flex-direction: column;
+}
+
+.wim-rsvp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid rgba(124, 22, 15, 0.1);
+  padding: 22px 24px 18px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(198, 154, 74, 0.18), transparent 36%),
+    linear-gradient(135deg, #fffdf9 0%, #fff3ea 100%);
+}
+
+.wim-rsvp-head p,
+.wim-rsvp-head h2,
+.wim-rsvp-head span {
+  margin: 0;
+}
+
+.wim-rsvp-head p {
+  color: #9a2a24;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wim-rsvp-head h2 {
+  margin-top: 6px;
+  color: #7c160f;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  line-height: 1.1;
+}
+
+.wim-rsvp-head span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #7b5a51;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.wim-rsvp-head button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border: 1px solid rgba(124, 22, 15, 0.12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.84);
+  color: #6b433b;
+  cursor: pointer;
+}
+
+.wim-rsvp-head button:hover {
+  background: #7c160f;
+  color: #fffaf6;
+}
+
+.wim-rsvp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px 24px 12px;
+}
+
+.wim-rsvp-stat-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(124, 22, 15, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(84, 31, 20, 0.04);
+}
+
+.wim-rsvp-stat-card span {
+  display: block;
+  font-size: 0.76rem;
+  color: #8b7169;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.wim-rsvp-stat-card strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.6rem;
+  color: #9b1d17;
+  font-weight: 900;
+}
+
+.wim-rsvp-stat-card.is-attending strong {
+  color: #17633d;
+}
+
+.wim-rsvp-stat-card.is-declined strong {
+  color: #a01813;
+}
+
+.wim-rsvp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px 12px;
+  border-bottom: 1px solid rgba(124, 22, 15, 0.06);
+}
+
+.wim-rsvp-filter-btn {
+  background: transparent;
+  border: 1px solid rgba(124, 22, 15, 0.1);
+  border-radius: 99px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #6b433b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wim-rsvp-filter-btn:hover {
+  background: rgba(94, 69, 48, 0.06);
+}
+
+.wim-rsvp-filter-btn.is-active {
+  background: #5e4530;
+  border-color: #5e4530;
+  color: #fffaf4;
+}
+
+.wim-rsvp-export-btn {
+  margin-left: auto;
+  background: #17633d;
+  border: 1px solid #17633d;
+  border-radius: 99px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fffaf4;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(23, 99, 61, 0.15);
+}
+
+.wim-rsvp-export-btn:hover {
+  background: #114b2e;
+  border-color: #114b2e;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(23, 99, 61, 0.25);
+}
+
+.wim-rsvp-export-btn svg {
+  flex-shrink: 0;
+}
+
+.wim-rsvp-body {
+  flex: 1;
+  overflow-y: auto;
+  max-height: min(440px, calc(100vh - 290px));
+}
+
+.wim-rsvp-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px 24px 24px;
+}
+
+.wim-rsvp-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid rgba(124, 22, 15, 0.08);
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 24px rgba(84, 31, 20, 0.03);
+}
+
+.wim-rsvp-item-info {
+  display: grid;
+  gap: 4px;
+}
+
+.wim-rsvp-item-name {
+  font-weight: 800;
+  color: #493028;
+  font-size: 0.92rem;
+}
+
+.wim-rsvp-item-time {
+  font-size: 0.72rem;
+  color: #9f8c87;
+}
+
+.wim-rsvp-badge {
+  border-radius: 99px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.wim-rsvp-badge.is-yes {
+  background: #e9fbf1;
+  color: #198754;
+}
+
+.wim-rsvp-badge.is-no {
+  background: #f3e8e5;
+  color: #8d1f17;
+}
+
+.wim-rsvp-state {
+  margin: 18px 24px 24px;
+  border: 1px solid rgba(124, 22, 15, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #76524a;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
 }

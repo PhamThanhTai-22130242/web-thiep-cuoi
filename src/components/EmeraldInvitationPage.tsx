@@ -10,6 +10,8 @@ import {
 } from '../data/invitationTemplates';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { API_CONFIG } from '../config/api.config';
+import { redirectToServerErrorPage, shouldRedirectToServerErrorPage } from '../services/http.service';
+import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './EmeraldInvitation.css';
 
 type EmeraldInvitationProps = {
@@ -182,21 +184,33 @@ async function postWhenConfigured<T>(endpoint: string, payload: T) {
     }
 
     const url = endpoint.startsWith('http') ? endpoint : `${API_CONFIG.BASE_URL}${endpoint}`;
-    const response = await fetch(url, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    if (!response.ok) {
-        let message = 'Request failed';
-        try {
-            const errorPayload = await response.json();
-            message = errorPayload.message || message;
-        } catch {
-            // Keep the generic message when the server does not return JSON.
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+            if (shouldRedirectToServerErrorPage(response.status)) {
+                redirectToServerErrorPage();
+            }
+
+            let message = 'Request failed';
+            try {
+                const errorPayload = await response.json();
+                message = errorPayload.message || message;
+            } catch {
+                // Keep the generic message when the server does not return JSON.
+            }
+            throw new Error(message);
         }
-        throw new Error(message);
+    } catch (error) {
+        if (error instanceof TypeError || error instanceof SyntaxError) {
+            redirectToServerErrorPage();
+        }
+
+        throw error;
     }
 }
 
@@ -246,7 +260,16 @@ function isDefaultSampleImage(image: string) {
     return samples.includes(image);
 }
 
-function EmeraldInvitation({ template, preview = false, onImageClick, initialWishes = [], wishEndpoint = '', wishTopic = '' }: EmeraldInvitationProps) {
+const DEFAULT_INITIAL_WISHES: Wish[] = [];
+
+function EmeraldInvitation({
+    template,
+    preview = false,
+    onImageClick,
+    initialWishes = DEFAULT_INITIAL_WISHES,
+    wishEndpoint = '',
+    wishTopic = '',
+}: EmeraldInvitationProps) {
     const shouldLoadSavedPreview = !template && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     const isPreviewMode = preview || shouldLoadSavedPreview;
     const shouldUseTemplateColors = isPreviewMode || Boolean(template);
@@ -273,6 +296,15 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
     const galleryPreview = galleryImages.slice(0, 4);
     const hiddenGalleryCount = Math.max(galleryImages.length - galleryPreview.length, 0);
     const galleryOverlayCount = hiddenGalleryCount;
+    const imageLoadTargets = Array.from(new Set([
+        invitationData.images.cover,
+        invitationData.images.kiss,
+        invitationData.images.walk,
+        invitationData.images.smile,
+        invitationData.images.studio,
+        invitationData.images.thank,
+        ...galleryImages,
+    ].filter(Boolean)));
     const countdownTargetDate = getCountdownTargetDate(invitationData.event);
     const weddingCalendar = getWeddingCalendar(invitationData.event);
     const shouldShowVenue = Boolean(invitationData.event.venue?.trim());
@@ -285,8 +317,10 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
     const [activeThemeKey, setActiveThemeKey] = useState(invitationColorThemes[0].key);
+    const areImagesLoading = useInvitationImagePreload(onImageClick ? [] : imageLoadTargets, isLoadingSavedPreview);
     const lastSubmittedWishRef = useRef<Wish | null>(null);
     const lastSubmittedWishDeliveredRef = useRef(false);
+    const lastInitialWishesRef = useRef<Wish[]>(initialWishes);
     const activeTheme = invitationColorThemes.find((theme) => theme.key === activeThemeKey) || invitationColorThemes[0];
 
     useEffect(() => {
@@ -349,7 +383,15 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
     }, [countdownTargetDate]);
 
     useEffect(() => {
-        setWishes(initialWishes);
+        const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
+            initialWishes.every((w, i) => 
+                w.name === lastInitialWishesRef.current[i]?.name && 
+                w.message === lastInitialWishesRef.current[i]?.message
+            );
+        if (!isSame) {
+            lastInitialWishesRef.current = initialWishes;
+            setWishes(initialWishes);
+        }
     }, [initialWishes]);
 
     useEffect(() => {
@@ -377,7 +419,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
     }, [isPreviewMode, wishTopic]);
 
     useEffect(() => {
-        if (isLoadingSavedPreview) {
+        if (areImagesLoading) {
             return undefined;
         }
 
@@ -395,7 +437,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
 
         elements.forEach((element) => observer.observe(element));
         return () => observer.disconnect();
-    }, [invitationData.id, isLoadingSavedPreview]);
+    }, [areImagesLoading, invitationData.id]);
 
     useEffect(() => {
         if (!isGalleryOpen) {
@@ -444,9 +486,12 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
             lastSubmittedWishRef.current = nextWish;
             lastSubmittedWishDeliveredRef.current = false;
             await postWhenConfigured(wishEndpoint || invitationData.api.wishEndpoint, nextWish);
-            if (!wishEndpoint && !invitationData.api.wishEndpoint) {
-                setWishes((current) => [nextWish, ...current]);
-            }
+            
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === nextWish.name && item.message === nextWish.message);
+                return exists ? current : [nextWish, ...current];
+            });
+
             setWishStatus('Dâu rể đã nhận được lời chúc của bạn.');
             formElement.reset();
         } catch {
@@ -486,18 +531,14 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
         setIsGalleryOpen(true);
     };
 
-    if (isLoadingSavedPreview) {
-        return (
-            <main className="ei-page ei-page-loading" style={pageStyle} aria-busy="true">
-                <div className="ei-preview-loading-bar" aria-label="Dang tai ban xem truoc" />
-            </main>
-        );
+    if (areImagesLoading) {
+        return <InvitationLoadingScreen className="ei-page ei-page-loading" style={pageStyle} />;
     }
 
     return (
         <>
             {!shouldUseTemplateColors && (
-                <aside className="ei-color-dock" aria-label="Lá»±a chá»n mÃ u thiá»‡p">
+                <aside className="ei-color-dock" aria-label="Lựa chọn màu thiệp">
                     {invitationColorThemes.map((theme) => (
                         <button
                             key={theme.key}
@@ -505,7 +546,7 @@ function EmeraldInvitation({ template, preview = false, onImageClick, initialWis
                             type="button"
                             onClick={() => setActiveThemeKey(theme.key)}
                             style={{ '--ei-swatch': theme.primary, '--ei-swatch-accent': theme.accent } as CSSProperties}
-                            aria-label={`Chá»n mÃ u ${theme.name}`}
+                            aria-label={`Chọn màu ${theme.name}`}
                             aria-pressed={theme.key === activeThemeKey}
                             title={theme.name}
                         >
