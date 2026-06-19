@@ -12,24 +12,23 @@ import {
     Plus,
     Save,
     Upload,
-    UserRound,
     UsersRound,
 } from 'lucide-react';
-import ElegantInvitation, {
-    ElegantInvitationData,
-    defaultElegantInvitationData,
-    emptyElegantInvitationData,
-    EditableElegantImageTarget,
-} from './ElegantInvitation';
-import { saveElegantPreview } from '../data/invitationTemplates';
+import PinkWeddingInvitation, {
+    PinkWeddingInvitationData,
+    defaultPinkWeddingInvitationData,
+    emptyPinkWeddingInvitationData,
+    EditablePinkImageTarget,
+} from './PinkWeddingInvitation';
+import { savePinkPreview } from '../data/invitationTemplates';
 import { MyWeddingCardResponse } from '../models/wedding-card.model';
 import { authTokenService } from '../services/auth-token.service';
 import { weddingCardService } from '../services/wedding-card.service';
-import './ElegantInvitationEditor.css';
+import './PinkWeddingInvitationEditor.css';
 
-type ImageTarget = EditableElegantImageTarget;
+type ImageTarget = EditablePinkImageTarget;
 
-function cloneData(data: ElegantInvitationData): ElegantInvitationData {
+function cloneData(data: PinkWeddingInvitationData): PinkWeddingInvitationData {
     return {
         ...data,
         images: {
@@ -57,9 +56,9 @@ function readFileAsDataUrl(url: string): Promise<string> {
     });
 }
 
-async function resolveLocalImages(data: ElegantInvitationData): Promise<ElegantInvitationData> {
+async function resolveLocalImages(data: PinkWeddingInvitationData): Promise<PinkWeddingInvitationData> {
     const next = cloneData(data);
-    const imageKeys = ['cover', 'hero', 'portraitOne', 'portraitTwo', 'groomQr', 'brideQr'] as const;
+    const imageKeys = ['cover', 'portraitOne', 'portraitTwo', 'embrace', 'letterCenter', 'kiss', 'groomQr', 'brideQr'] as const;
 
     await Promise.all(
         imageKeys.map(async (key) => {
@@ -82,25 +81,27 @@ async function resolveLocalImages(data: ElegantInvitationData): Promise<ElegantI
     return next;
 }
 
-function toSaveRequest(data: ElegantInvitationData, status: 'draft' | 'active') {
+function toSaveRequest(data: PinkWeddingInvitationData, status: 'draft' | 'active') {
     const galleryMedia = data.images.gallery
         .map((imgUrl, index) => ({ slotKey: `images.gallery.${index}`, imgUrl, number: 100 + index }))
         .filter((item) => item.imgUrl && !item.imgUrl.startsWith('blob:') && !item.imgUrl.startsWith('data:'));
 
     const singleMedia = [
         { slotKey: 'images.cover', imgUrl: data.images.cover, number: 1 },
-        { slotKey: 'images.hero', imgUrl: data.images.hero, number: 2 },
-        { slotKey: 'images.portraitOne', imgUrl: data.images.portraitOne, number: 3 },
-        { slotKey: 'images.portraitTwo', imgUrl: data.images.portraitTwo, number: 4 },
+        { slotKey: 'images.portraitOne', imgUrl: data.images.portraitOne, number: 2 },
+        { slotKey: 'images.portraitTwo', imgUrl: data.images.portraitTwo, number: 3 },
+        { slotKey: 'images.embrace', imgUrl: data.images.embrace, number: 4 },
+        { slotKey: 'images.letterCenter', imgUrl: data.images.letterCenter, number: 5 },
+        { slotKey: 'images.kiss', imgUrl: data.images.kiss, number: 6 },
         { slotKey: 'images.groomQr', imgUrl: data.images.groomQr, number: 10 },
         { slotKey: 'images.brideQr', imgUrl: data.images.brideQr, number: 11 },
     ].filter((item) => item.imgUrl && !item.imgUrl.startsWith('blob:') && !item.imgUrl.startsWith('data:'));
 
     return {
-        templateCode: 'ElegantInvitation' as const,
+        templateCode: 'PinkWeddingInvitation' as const,
         slug: data.slug || '',
         status,
-        design: { primaryColor: '#8d5f25', dropEffect: 'none' },
+        design: { primaryColor: '#ff5c8a', dropEffect: 'none' },
         couple: {
             groom: data.groomName,
             bride: data.brideName,
@@ -123,7 +124,7 @@ function toSaveRequest(data: ElegantInvitationData, status: 'draft' | 'active') 
     };
 }
 
-function fromApiCard(card: MyWeddingCardResponse, fallback: ElegantInvitationData): ElegantInvitationData {
+function fromApiCard(card: MyWeddingCardResponse, fallback: PinkWeddingInvitationData): PinkWeddingInvitationData {
     const groom = card.people.find((p) => p.role === 'groom');
     const bride = card.people.find((p) => p.role === 'bride');
     const event = card.events[0];
@@ -142,8 +143,8 @@ function fromApiCard(card: MyWeddingCardResponse, fallback: ElegantInvitationDat
         slug: card.slug || '',
         groomName: groom?.shortName || groom?.fullName || fallback.groomName,
         brideName: bride?.shortName || bride?.fullName || fallback.brideName,
-        groomIntroName: groom?.shortName || groom?.fullName || fallback.groomIntroName,
-        brideIntroName: bride?.shortName || bride?.fullName || fallback.brideIntroName,
+        groomIntroName: groom?.fullName || fallback.groomIntroName,
+        brideIntroName: bride?.fullName || fallback.brideIntroName,
         groomFamilyLabel: groom?.familyLable || fallback.groomFamilyLabel,
         brideFamilyLabel: bride?.familyLable || fallback.brideFamilyLabel,
         groomFather: groom?.fatherName || fallback.groomFather,
@@ -161,19 +162,21 @@ function fromApiCard(card: MyWeddingCardResponse, fallback: ElegantInvitationDat
         showGiftSection: Boolean(groomQr || brideQr),
         images: {
             cover: mediaBySlot.get('images.cover') || fallback.images.cover,
-            hero: mediaBySlot.get('images.hero') || fallback.images.hero,
             portraitOne: mediaBySlot.get('images.portraitOne') || fallback.images.portraitOne,
             portraitTwo: mediaBySlot.get('images.portraitTwo') || fallback.images.portraitTwo,
+            embrace: mediaBySlot.get('images.embrace') || fallback.images.embrace,
+            letterCenter: mediaBySlot.get('images.letterCenter') || fallback.images.letterCenter,
+            kiss: mediaBySlot.get('images.kiss') || fallback.images.kiss,
             groomQr: groomQr,
             brideQr: brideQr,
-            gallery: gallery.length ? [...gallery, ...Array(Math.max(0, 8 - gallery.length)).fill('')] : fallback.images.gallery,
+            gallery: gallery.length ? [...gallery, ...Array(Math.max(0, 9 - gallery.length)).fill('')] : fallback.images.gallery,
         },
     };
 }
 
-async function uploadLocalImages(data: ElegantInvitationData, onProgress: (msg: string) => void): Promise<ElegantInvitationData> {
+async function uploadLocalImages(data: PinkWeddingInvitationData, onProgress: (msg: string) => void): Promise<PinkWeddingInvitationData> {
     const next = cloneData(data);
-    const singleKeys = ['cover', 'hero', 'portraitOne', 'portraitTwo', 'groomQr', 'brideQr'] as const;
+    const singleKeys = ['cover', 'portraitOne', 'portraitTwo', 'embrace', 'letterCenter', 'kiss', 'groomQr', 'brideQr'] as const;
     const allEntries: Array<{ key: string; url: string; isGallery: boolean; index?: number }> = [
         ...singleKeys
             .filter((k) => next.images[k]?.startsWith('blob:'))
@@ -257,12 +260,12 @@ function parseDateDisplay(value: string) {
     return `${year}-${month}-${day}`;
 }
 
-function ElegantInvitationEditor() {
+function PinkWeddingInvitationEditor() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [draft, setDraft] = useState<ElegantInvitationData>(() => cloneData(emptyElegantInvitationData));
+    const [draft, setDraft] = useState<PinkWeddingInvitationData>(() => cloneData(emptyPinkWeddingInvitationData));
     const [showSaveSuccess, setShowSaveSuccess] = useState(false);
-    const [validationAlert, setValidationAlert] = useState<{ title: string; message: string; missingImages?: Array<'cover' | 'hero' | 'portraitOne' | 'portraitTwo' | 'gallery'> } | null>(null);
+    const [validationAlert, setValidationAlert] = useState<{ title: string; message: string; missingImages?: Array<'cover' | 'portraitOne' | 'portraitTwo' | 'embrace' | 'letterCenter' | 'kiss' | 'gallery'> } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState('');
     const [slugError, setSlugError] = useState('');
@@ -332,7 +335,7 @@ function ElegantInvitationEditor() {
             .getMyCard(value)
             .then((card) => {
                 if (!active) return;
-                const loaded = fromApiCard(card, defaultElegantInvitationData);
+                const loaded = fromApiCard(card, defaultPinkWeddingInvitationData);
                 setDraft(loaded);
                 setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
@@ -354,11 +357,17 @@ function ElegantInvitationEditor() {
         };
     }, []);
 
-    const updateField = (field: keyof ElegantInvitationData, value: string) => {
-        setDraft((current) => ({
-            ...current,
-            [field]: value,
-        }));
+    const updateField = (field: keyof PinkWeddingInvitationData, value: string) => {
+        setDraft((current) => {
+            const next = { ...current, [field]: value };
+            if (field === 'groomName' && current.groomIntroName === current.groomName) {
+                next.groomIntroName = value;
+            }
+            if (field === 'brideName' && current.brideIntroName === current.brideName) {
+                next.brideIntroName = value;
+            }
+            return next;
+        });
     };
 
     const requestImage = (target: ImageTarget, mode: 'replace' | 'insert' = 'replace') => {
@@ -397,7 +406,7 @@ function ElegantInvitationEditor() {
                 return next;
             }
 
-            const key = target.replace('images.', '') as Exclude<keyof ElegantInvitationData['images'], 'gallery'>;
+            const key = target.replace('images.', '') as Exclude<keyof PinkWeddingInvitationData['images'], 'gallery'>;
             next.images[key] = url;
             return next;
         });
@@ -438,17 +447,20 @@ function ElegantInvitationEditor() {
     };
 
     const validateRequiredImages = (): boolean => {
-        const requiredImages: Array<{ key: 'cover' | 'portraitOne' | 'portraitTwo'; label: string }> = [
-            { key: 'cover', label: 'Ảnh bìa (ảnh đôi lớn phía trên)' },
-            { key: 'portraitOne', label: 'Ảnh chân dung chú rể' },
-            { key: 'portraitTwo', label: 'Ảnh chân dung cô dâu' },
+        const requiredImages: Array<{ key: 'cover' | 'portraitOne' | 'portraitTwo' | 'embrace' | 'letterCenter' | 'kiss'; label: string }> = [
+            { key: 'cover', label: 'Ảnh bìa sổ lưu niệm' },
+            { key: 'portraitOne', label: 'Ảnh chú rể' },
+            { key: 'portraitTwo', label: 'Ảnh cô dâu' },
+            { key: 'embrace', label: 'Ảnh thư mời 1' },
+            { key: 'letterCenter', label: 'Anh thu moi 2' },
+            { key: 'kiss', label: 'Ảnh thư mời 3' },
         ];
 
         const missingRequiredImages = requiredImages.filter(({ key }) => !draft.images[key]);
         const galleryCount = draft.images.gallery.filter(Boolean).length;
         const missingGallery = galleryCount < 4;
 
-        const missingKeys: Array<'cover' | 'hero' | 'portraitOne' | 'portraitTwo' | 'gallery'> = [
+        const missingKeys: Array<'cover' | 'portraitOne' | 'portraitTwo' | 'embrace' | 'letterCenter' | 'kiss' | 'gallery'> = [
             ...missingRequiredImages.map(({ key }) => key),
             ...(missingGallery ? (['gallery'] as const) : []),
         ];
@@ -457,7 +469,7 @@ function ElegantInvitationEditor() {
             setValidationAlert({
                 title: 'Thiếu ảnh bắt buộc',
                 message: '',
-                missingImages: missingKeys,
+                missingImages: missingKeys as any,
             });
             return false;
         }
@@ -500,11 +512,11 @@ function ElegantInvitationEditor() {
             }
 
             resolveLocalImages(draft)
-                .then((previewData) => saveElegantPreview(previewData))
+                .then((previewData) => savePinkPreview(previewData))
                 .then(() => {
                     if (previewWindow) {
                         previewWindow.opener = null;
-                        previewWindow.location.href = '/tram-nam-ben-doi?preview=1';
+                        previewWindow.location.href = '/hoa-hao-nguyet-vien?preview=1';
                     }
                 })
                 .catch((error) => {
@@ -542,7 +554,6 @@ function ElegantInvitationEditor() {
         if (!validateRequiredImages()) {
             return;
         }
-
 
         if (status === 'active' && draft.showGiftSection !== false) {
             const missingGroom = draft.showGroomGift && !draft.images.groomQr;
@@ -591,23 +602,23 @@ function ElegantInvitationEditor() {
     const handlePublish = () => persistDraft('active');
 
     return (
-        <main className="clve-page">
-            <input ref={fileInputRef} className="clve-file-input" type="file" accept="image/*" onChange={handleFileChange} />
+        <main className="pwie-page">
+            <input ref={fileInputRef} className="pwie-file-input" type="file" accept="image/*" onChange={handleFileChange} />
 
-            <section className="clve-preview">
-                <div className="clve-phone-frame">
-                    <ElegantInvitation data={draft} editable onImageClick={requestImage} />
+            <section className="pwie-preview">
+                <div className="pwie-phone-frame">
+                    <PinkWeddingInvitation data={draft} editable onImageClick={requestImage} />
                 </div>
             </section>
 
-            <aside className="clve-editor">
-                <div className="clve-actions">
+            <aside className="pwie-editor">
+                <div className="pwie-actions">
                     <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
                         <Eye size={17} />
                         Xem trước
                     </button>
                     <button type="button" disabled={isSaving} onClick={handleSaveDraft}>
-                        {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Save size={17} />}
+                        {isSaving ? <Loader2 size={17} className="pwie-spin" /> : <Save size={17} />}
                         Lưu nháp
                     </button>
                     <button className="is-primary" type="button" disabled={isSaving} onClick={handlePublish}>
@@ -617,7 +628,7 @@ function ElegantInvitationEditor() {
                 </div>
 
                 {saveStatus && (
-                    <div className={`clve-save-status${isSaving ? ' is-loading' : ''}`}>
+                    <div className={`pwie-save-status${isSaving ? ' is-loading' : ''}`}>
                         {isSaving && (
                             <div role="status">
                                 <svg aria-hidden="true" className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -631,93 +642,134 @@ function ElegantInvitationEditor() {
                     </div>
                 )}
 
-                <header className="clve-header">
+                <header className="pwie-header">
                     <span>Chỉnh sửa thiệp</span>
-                    <h1>Trăm Năm Bến Đợi</h1>
+                    <h1>Hoa Hảo Nguyệt Viên</h1>
                     <p>Thay đổi nội dung bên dưới sẽ cập nhật trực tiếp trên khung preview.</p>
                 </header>
 
-                <form className="clve-form">
-                    <section className="clve-card">
-                        <div className="clve-card__title">
+                <form className="pwie-form">
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
                             <LinkIcon size={18} />
                             <h2>Đường dẫn ngắn</h2>
                         </div>
                         <p style={{ fontSize: '0.82rem', color: '#666', margin: '0 0 12px' }}>
                             Dùng để truy cập đến URL của thiệp của bạn.
                         </p>
-                        <div className="clve-field">
+                        <div className="pwie-field">
                             <input
-                                value={draft.slug || ''}
-                                type="text"
-                                className={slugError ? 'is-error' : ''}
-                                placeholder="tram-nam-ben-doi-slug"
-                                onChange={(event) => {
-                                    setSlugError('');
-                                    if (saveStatus.includes('URL đã tồn tại')) {
-                                        setSaveStatus('');
-                                    }
-                                    updateField('slug', event.target.value);
-                                }}
+                                value={draft.slug}
+                                placeholder="vi-du-nguyen-van-a"
+                                onChange={(event) => updateField('slug', event.target.value)}
                             />
-                            {slugError && <strong className="clve-field-error" style={{ color: '#b72d31', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>{slugError}</strong>}
+                            {slugError && <span className="pwie-field__error">{slugError}</span>}
                         </div>
                     </section>
 
-                    <section className="clve-card">
-                        <div className="clve-card__title">
-                            <UserRound size={18} />
-                            <h2>Thông tin mở đầu</h2>
-                        </div>
-
-                        <div className="clve-grid-2">
-                            <label className="clve-field">
-                                <span>Tên chú rể đầu thiệp</span>
-                                <input value={draft.groomName} type="text" onChange={(event) => updateField('groomName', event.target.value)} />
-                            </label>
-                            <label className="clve-field">
-                                <span>Tên cô dâu đầu thiệp</span>
-                                <input value={draft.brideName} type="text" onChange={(event) => updateField('brideName', event.target.value)} />
-                            </label>
-                        </div>
-                    </section>
-
-                    <section className="clve-card">
-                        <div className="clve-card__title">
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
                             <UsersRound size={18} />
-                            <h2>Thông tin nhà trai nhà gái</h2>
+                            <h2>Thông tin Cô Dâu & Chú Rể</h2>
                         </div>
 
-                        <div className="clve-grid-2">
-                            <label className="clve-field">
-                                <span>Cha chú rể</span>
-                                <input value={draft.groomFather} type="text" onChange={(event) => updateField('groomFather', event.target.value)} />
+                        <div className="pwie-grid-2">
+                            <label className="pwie-field">
+                                <span>Tên chú rể đầu thiệp</span>
+                                <input
+                                    value={draft.groomName}
+                                    placeholder="Tên Chú rể"
+                                    onChange={(event) => updateField('groomName', event.target.value)}
+                                />
                             </label>
-                            <label className="clve-field">
-                                <span>Cha cô dâu</span>
-                                <input value={draft.brideFather} type="text" onChange={(event) => updateField('brideFather', event.target.value)} />
+                            <label className="pwie-field">
+                                <span>Tên cô dâu đầu thiệp</span>
+                                <input
+                                    value={draft.brideName}
+                                    placeholder="Tên Cô dâu"
+                                    onChange={(event) => updateField('brideName', event.target.value)}
+                                />
                             </label>
-                            <label className="clve-field">
-                                <span>Mẹ chú rể</span>
-                                <input value={draft.groomMother} type="text" onChange={(event) => updateField('groomMother', event.target.value)} />
+                        </div>
+
+                        <div className="pwie-grid-2">
+                            <label className="pwie-field">
+                                <span>Tên Chú rể (giữa thiệp)</span>
+                                <input
+                                    value={draft.groomIntroName}
+                                    placeholder="Họ tên chú rể"
+                                    onChange={(event) => updateField('groomIntroName', event.target.value)}
+                                />
                             </label>
-                            <label className="clve-field">
-                                <span>Mẹ cô dâu</span>
-                                <input value={draft.brideMother} type="text" onChange={(event) => updateField('brideMother', event.target.value)} />
+                            <label className="pwie-field">
+                                <span>Tên Cô dâu (giữa thiệp)</span>
+                                <input
+                                    value={draft.brideIntroName}
+                                    placeholder="Họ tên cô dâu"
+                                    onChange={(event) => updateField('brideIntroName', event.target.value)}
+                                />
+                            </label>
+                        </div>
+
+                        <div className="pwie-grid-2">
+                            <label className="pwie-field">
+                                <span>Họ tên bố chú rể</span>
+                                <input
+                                    value={draft.groomFather}
+                                    placeholder="Ví dụ: Ông Trần Quốc Tuấn"
+                                    onChange={(event) => updateField('groomFather', event.target.value)}
+                                />
+                            </label>
+                            <label className="pwie-field">
+                                <span>Họ tên mẹ chú rể</span>
+                                <input
+                                    value={draft.groomMother}
+                                    placeholder="Ví dụ: Bà Lê Thị Mỹ Duyên"
+                                    onChange={(event) => updateField('groomMother', event.target.value)}
+                                />
+                            </label>
+                        </div>
+
+                        <div className="pwie-grid-2">
+                            <label className="pwie-field">
+                                <span>Họ tên bố cô dâu</span>
+                                <input
+                                    value={draft.brideFather}
+                                    placeholder="Ví dụ: Ông Phạm Gia Long"
+                                    onChange={(event) => updateField('brideFather', event.target.value)}
+                                />
+                            </label>
+                            <label className="pwie-field">
+                                <span>Họ tên mẹ cô dâu</span>
+                                <input
+                                    value={draft.brideMother}
+                                    placeholder="Ví dụ: Bà Nguyễn Thị Ngọc Hạnh"
+                                    onChange={(event) => updateField('brideMother', event.target.value)}
+                                />
                             </label>
                         </div>
                     </section>
 
-                    <section className="clve-card">
-                        <div className="clve-card__title">
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
                             <CalendarDays size={18} />
-                            <h2>Lễ cưới</h2>
+                            <h2>Ngày giờ & Địa điểm tổ chức</h2>
                         </div>
 
-                        <div className="clve-grid-2">
-                            <label className="clve-field">
-                                <span>Ngày cưới</span>
-                                <div className="clve-date-input-row" style={{ display: 'flex', gap: '0', position: 'relative' }}>
+                        <label className="pwie-field">
+                            <span>Lời mời trân trọng</span>
+                            <textarea
+                                value={draft.inviteText}
+                                rows={2}
+                                placeholder="Lời mời tham dự đám cưới..."
+                                onChange={(event) => updateField('inviteText', event.target.value)}
+                            />
+                        </label>
+
+                        <div className="pwie-grid-2">
+                            <label className="pwie-field">
+                                <span>Ngày tổ chức</span>
+                                <div style={{ display: 'flex', gap: '0', position: 'relative' }}>
                                     <input
                                         type="text"
                                         inputMode="numeric"
@@ -729,7 +781,7 @@ function ElegantInvitationEditor() {
                                     />
                                     <button
                                         type="button"
-                                        aria-label="Chọn ngày cưới"
+                                        aria-label="Chọn ngày tổ chức"
                                         onClick={handleDatePickerClick}
                                         style={{
                                             width: '44px',
@@ -765,69 +817,67 @@ function ElegantInvitationEditor() {
                                     />
                                 </div>
                             </label>
-                            <label className="clve-field">
-                                <span>Giờ cưới</span>
-                                <input value={draft.eventTime} type="time" onChange={(event) => updateField('eventTime', event.target.value)} />
+                            <label className="pwie-field">
+                                <span>Giờ tổ chức</span>
+                                <input
+                                    type="time"
+                                    value={draft.eventTime}
+                                    onChange={(event) => updateField('eventTime', event.target.value)}
+                                />
                             </label>
                         </div>
-                    </section>
 
-                    <section className="clve-card">
-                        <div className="clve-card__title">
-                            <MapPin size={18} />
-                            <h2>Địa điểm tổ chức</h2>
-                        </div>
-
-                        <label className="clve-field">
-                            <span>Tên địa điểm</span>
-                            <input value={draft.venueName} type="text" onChange={(event) => updateField('venueName', event.target.value)} />
+                        <label className="pwie-field">
+                            <span>Tại địa điểm</span>
+                            <input
+                                value={draft.venueName}
+                                placeholder="Ví dụ: Adora Center - Phú Nhuận"
+                                onChange={(event) => updateField('venueName', event.target.value)}
+                            />
                         </label>
 
-                        <label className="clve-field">
-                            <span>Địa chỉ</span>
-                            <textarea value={draft.address} rows={3} onChange={(event) => updateField('address', event.target.value)} />
-                        </label>
-
-                        <label className="clve-field">
-                            <span className="clve-field-head">
-                                Bản đồ
-                                <button type="button" onClick={() => window.open(draft.mapUrl, '_blank')} disabled={!draft.mapUrl.trim()}>
-                                    <Eye size={15} />
-                                    Xem bản đồ
-                                </button>
-                            </span>
-                            <textarea
-                                value={draft.mapUrl}
-                                rows={3}
-                                placeholder="Ví dụ: https://maps.app.goo.gl/... hoặc dán mã nhúng bản đồ"
-                                onChange={(event) => {
-                                    const value = event.target.value;
-                                    let cleanValue = value;
-                                    if (value.toLowerCase().includes('<iframe')) {
-                                        const match = value.match(/src=["']([^"']+)["']/i);
-                                        if (match && match[1]) {
-                                            cleanValue = match[1];
-                                        }
-                                    }
-                                    updateField('mapUrl', cleanValue);
-                                }}
+                        <label className="pwie-field">
+                            <span>Địa chỉ cụ thể</span>
+                            <input
+                                value={draft.address}
+                                placeholder="Số nhà, tên đường, quận, thành phố"
+                                onChange={(event) => updateField('address', event.target.value)}
                             />
                         </label>
                     </section>
 
-                    <section className="clve-card">
-                        <div className="clve-card__title">
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
+                            <MapPin size={18} />
+                            <h2>Bản đồ chỉ đường</h2>
+                        </div>
+                        <p style={{ fontSize: '0.82rem', color: '#666', margin: '0 0 12px' }}>
+                            Dán liên kết từ Google Maps hoặc mã nhúng bản đồ vào ô dưới.
+                        </p>
+                        <label className="pwie-field">
+                            <span>Bản đồ (iframe)</span>
+                            <textarea
+                                value={draft.mapUrl}
+                                rows={3}
+                                placeholder="Ví dụ: https://maps.app.goo.gl/... hoặc dán mã nhúng bản đồ"
+                                onChange={(event) => updateField('mapUrl', event.target.value)}
+                            />
+                        </label>
+                    </section>
+
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
                             <Image size={18} />
                             <h2>Hình ảnh album & ảnh đôi</h2>
                         </div>
 
-                        <div className="clve-image-row-head">
+                        <div className="pwie-image-row-head">
                             <label>Album (Tối đa 20 ảnh)</label>
                             <span>{draft.images.gallery.filter(Boolean).length}/20 ảnh</span>
                         </div>
 
-                        <div className="clve-image-strip" ref={galleryStripRef}>
-                            <button className="clve-add-image" type="button" onClick={addGalleryImage}>
+                        <div className="pwie-image-strip" ref={galleryStripRef}>
+                            <button className="pwie-add-image" type="button" onClick={addGalleryImage}>
                                 <Plus size={24} />
                                 <span>Thêm ảnh</span>
                             </button>
@@ -840,28 +890,36 @@ function ElegantInvitationEditor() {
                             ))}
                         </div>
 
-                        <div className="clve-upload-grid is-primary-images">
-                            <button className={`clve-upload-tile${draft.images.cover ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.cover')}>
+                        <div className="pwie-upload-grid is-primary-images">
+                            <button className={`pwie-upload-tile${draft.images.cover ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.cover')}>
                                 <Upload size={18} />
                                 <span>{draft.images.cover ? 'Đổi ảnh bìa' : 'Thêm ảnh bìa'}</span>
                             </button>
-                            <button className={`clve-upload-tile${draft.images.hero ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.hero')}>
-                                <Upload size={18} />
-                                <span>{draft.images.hero ? 'Đổi ảnh đôi lớn' : 'Thêm ảnh đôi lớn'}</span>
-                            </button>
-                            <button className={`clve-upload-tile${draft.images.portraitOne ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.portraitOne')}>
+                            <button className={`pwie-upload-tile${draft.images.portraitOne ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.portraitOne')}>
                                 <Upload size={18} />
                                 <span>{draft.images.portraitOne ? 'Đổi ảnh chú rể' : 'Thêm ảnh chú rể'}</span>
                             </button>
-                            <button className={`clve-upload-tile${draft.images.portraitTwo ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.portraitTwo')}>
+                            <button className={`pwie-upload-tile${draft.images.portraitTwo ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.portraitTwo')}>
                                 <Upload size={18} />
                                 <span>{draft.images.portraitTwo ? 'Đổi ảnh cô dâu' : 'Thêm ảnh cô dâu'}</span>
+                            </button>
+                            <button className={`pwie-upload-tile${draft.images.embrace ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.embrace')}>
+                                <Upload size={18} />
+                                <span>{draft.images.embrace ? 'Đổi ảnh thư mời 1' : 'Thêm ảnh thư mời 1'}</span>
+                            </button>
+                            <button className={`pwie-upload-tile${draft.images.letterCenter ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.letterCenter')}>
+                                <Upload size={18} />
+                                <span>{draft.images.letterCenter ? 'Doi anh thu moi 2' : 'Them anh thu moi 2'}</span>
+                            </button>
+                            <button className={`pwie-upload-tile${draft.images.kiss ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.kiss')}>
+                                <Upload size={18} />
+                                <span>{draft.images.kiss ? 'Đổi ảnh thư mời 3' : 'Thêm ảnh thư mời 3'}</span>
                             </button>
                         </div>
                     </section>
 
-                    <section className="clve-card">
-                        <div className="clve-card__title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <section className="pwie-card">
+                        <div className="pwie-card__title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Gift size={18} />
                                 <h2 style={{ margin: 0 }}>Hộp quà cưới mừng tuổi</h2>
@@ -876,7 +934,7 @@ function ElegantInvitationEditor() {
 
                         {draft.showGiftSection !== false && (
                             <>
-                                <div className="clve-qr-toggle-grid">
+                                <div className="pwie-qr-toggle-grid">
                                     <label>
                                         <input
                                             checked={draft.showGroomGift !== false}
@@ -895,9 +953,9 @@ function ElegantInvitationEditor() {
                                     </label>
                                 </div>
 
-                                <div className="clve-upload-grid">
+                                <div className="pwie-upload-grid">
                                     <button
-                                        className={`clve-upload-tile${draft.images.groomQr ? ' has-image' : ''}`}
+                                        className={`pwie-upload-tile${draft.images.groomQr ? ' has-image' : ''}`}
                                         type="button"
                                         disabled={draft.showGroomGift === false}
                                         onClick={() => requestImage('images.groomQr')}
@@ -906,7 +964,7 @@ function ElegantInvitationEditor() {
                                         <span>{draft.images.groomQr ? 'Đổi QR chú rể' : 'Thêm QR chú rể'}</span>
                                     </button>
                                     <button
-                                        className={`clve-upload-tile${draft.images.brideQr ? ' has-image' : ''}`}
+                                        className={`pwie-upload-tile${draft.images.brideQr ? ' has-image' : ''}`}
                                         type="button"
                                         disabled={draft.showBrideGift === false}
                                         onClick={() => requestImage('images.brideQr')}
@@ -922,24 +980,26 @@ function ElegantInvitationEditor() {
             </aside>
 
             {validationAlert && (
-                <div className="clve-map-modal" role="dialog" aria-modal="true">
-                    <button className="clve-map-backdrop" type="button" onClick={() => setValidationAlert(null)} />
-                    <div className="clve-alert-dialog has-list">
-                        <div className="clve-map-dialog__head">
+                <div className="pwie-map-modal" role="dialog" aria-modal="true">
+                    <button className="pwie-map-backdrop" type="button" onClick={() => setValidationAlert(null)} />
+                    <div className="pwie-alert-dialog has-list">
+                        <div className="pwie-map-dialog__head">
                             <strong>{validationAlert.title}</strong>
                             <button type="button" onClick={() => setValidationAlert(null)}>Đóng</button>
                         </div>
-                        <div className="clve-alert-dialog__content">
+                        <div className="pwie-alert-dialog__content">
                             {validationAlert.missingImages ? (
                                 <>
-                                    <p className="clve-alert-dialog__intro">Vui lòng bổ sung các hình ảnh bắt buộc sau:</p>
-                                    <ul className="clve-alert-dialog__list">
+                                    <p className="pwie-alert-dialog__intro">Vui lòng bổ sung các hình ảnh bắt buộc sau:</p>
+                                    <ul className="pwie-alert-dialog__list">
                                         {validationAlert.missingImages.map((key) => {
                                             const labels: Record<string, string> = {
-                                                cover: 'Ảnh bìa (ảnh đôi lớn phía trên)',
-                                                hero: 'Ảnh đôi lớn mở đầu',
-                                                portraitOne: 'Ảnh chân dung chú rể',
-                                                portraitTwo: 'Ảnh chân dung cô dâu',
+                                                cover: 'Ảnh bìa sổ lưu niệm',
+                                                portraitOne: 'Ảnh chú rể',
+                                                portraitTwo: 'Ảnh cô dâu',
+                                                embrace: 'Ảnh thư mời 1',
+                                                letterCenter: 'Anh thu moi 2',
+                                                kiss: 'Ảnh thư mời 3',
                                                 gallery: 'Ảnh album cưới (cần ít nhất 4 ảnh)',
                                             };
                                             return (
@@ -947,7 +1007,7 @@ function ElegantInvitationEditor() {
                                                     <span>{labels[key]}</span>
                                                     <button
                                                         type="button"
-                                                        className="clve-alert-dialog__quick-upload"
+                                                        className="pwie-alert-dialog__quick-upload"
                                                         onClick={() => {
                                                             setValidationAlert(null);
                                                             if (key === 'gallery') {
@@ -964,11 +1024,11 @@ function ElegantInvitationEditor() {
                                         })}
                                     </ul>
                                 </>
-							) : (
-								<p>{validationAlert.message}</p>
-							)}
+                            ) : (
+                                <p>{validationAlert.message}</p>
+                            )}
                         </div>
-                        <div className="clve-alert-dialog__actions">
+                        <div className="pwie-alert-dialog__actions">
                             <button type="button" onClick={() => setValidationAlert(null)}>Đồng ý</button>
                         </div>
                     </div>
@@ -976,21 +1036,21 @@ function ElegantInvitationEditor() {
             )}
 
             {showSaveSuccess && (
-                <div className="clve-map-modal" role="dialog" aria-modal="true">
-                    <button className="clve-map-backdrop" type="button" onClick={() => setShowSaveSuccess(false)} />
-                    <div className="clve-alert-dialog clve-success-dialog">
-                        <div className="clve-success-dialog__icon">
+                <div className="pwie-map-modal" role="dialog" aria-modal="true">
+                    <button className="pwie-map-backdrop" type="button" onClick={() => setShowSaveSuccess(false)} />
+                    <div className="pwie-alert-dialog pwie-success-dialog">
+                        <div className="pwie-success-dialog__icon">
                             <Check size={36} />
                         </div>
-                        <h2 className="clve-success-dialog__title">Lưu thiệp thành công!</h2>
-                        <p className="clve-success-dialog__desc">
+                        <h2 className="pwie-success-dialog__title">Lưu thiệp thành công!</h2>
+                        <p className="pwie-success-dialog__desc">
                             Thiệp cưới đã được lưu vào hệ thống. Bạn có muốn quay lại trang quản lý không?
                         </p>
-                        <div className="clve-success-dialog__actions">
-                            <button type="button" className="clve-success-dialog__btn is-secondary" onClick={() => setShowSaveSuccess(false)}>
+                        <div className="pwie-success-dialog__actions">
+                            <button type="button" className="pwie-success-dialog__btn is-secondary" onClick={() => setShowSaveSuccess(false)}>
                                 Tiếp tục chỉnh sửa
                             </button>
-                            <button type="button" className="clve-success-dialog__btn is-primary" onClick={() => navigate('/dashboard')}>
+                            <button type="button" className="pwie-success-dialog__btn is-primary" onClick={() => navigate('/dashboard')}>
                                 Quản lý thiệp cưới
                             </button>
                         </div>
@@ -1001,4 +1061,4 @@ function ElegantInvitationEditor() {
     );
 }
 
-export default ElegantInvitationEditor;
+export default PinkWeddingInvitationEditor;

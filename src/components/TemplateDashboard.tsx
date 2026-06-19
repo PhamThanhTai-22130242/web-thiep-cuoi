@@ -196,6 +196,10 @@ function toGoogleMapEmbedUrl(value: string) {
         return '';
     }
 
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue;
+    }
+
     try {
         const url = new URL(trimmedValue);
 
@@ -394,7 +398,7 @@ function TemplateDashboard() {
             return next;
         }
 
-        setSaveStatus(`Đang upload ${pendingEntries.length} ảnh...`);
+        setSaveStatus('Đang lưu...');
         const uploadedItems = await Promise.all(
             pendingEntries.map(async ([target, file]) => ({
                 target,
@@ -539,7 +543,7 @@ function TemplateDashboard() {
             await savePreviewInvitationTemplate({ ...previewValues, id: selectedId, status: 'draft' });
             if (previewWindow) {
                 previewWindow.opener = null;
-                previewWindow.location.href = '/EmeraldInvitation?preview=1';
+                previewWindow.location.href = '/hy-sac-vu-qui?preview=1';
                 return;
             }
 
@@ -813,7 +817,7 @@ function TemplateDashboard() {
                         <input {...register('event.address')} />
                     </div>
                     <div className="td-field td-map-field">
-                        <label>Vị trí Google Map</label>
+                        <label>Bản đồ (iframe)</label>
                         <div className="td-map-input-row">
                             <input
                                 value={previewTemplate.event?.mapUrl || ''}

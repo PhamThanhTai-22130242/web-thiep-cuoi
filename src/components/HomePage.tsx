@@ -10,6 +10,12 @@ import './HomePage.css';
 
 type AuthMode = 'login' | 'register';
 
+const socialLinks = {
+    zalo: process.env.REACT_APP_ZALO_URL || 'https://zalo.me/0869380447',
+    tiktok: process.env.REACT_APP_TIKTOK_URL || 'https://www.tiktok.com/@goixongcuoi77',
+    facebook: process.env.REACT_APP_FACEBOOK_URL || 'https://www.facebook.com/profile.php?id=61564494647627',
+};
+
 function MaterialStatusIcon({ included }: { included: boolean }) {
     return (
         <span className={`home-material-status ${included ? 'is-check' : 'is-cancel'}`}>
@@ -215,7 +221,7 @@ function HomePage() {
                     </article>
                     <article>
                         <h2>Đủ tính năng cần thiết</h2>
-                        <p>Từ Google Map, lời chúc, nhạc nền, QR mừng cưới đến xác nhận tham dự đều được sắp xếp rõ ràng.</p>
+                        <p>Từ Google Map, lời chúc, QR mừng cưới đến xác nhận tham dự đều được sắp xếp rõ ràng.</p>
                     </article>
                 </div>
             </section>
@@ -260,9 +266,8 @@ function HomePage() {
                         ['Lịch cưới, thời gian & địa điểm', true, true, true],
                         ['Bản đồ Google Map', true, true, true],
                         ['Gửi lời chúc', true, true, true],
-                        ['Nhạc nền', false, true, true],
                         ['QR mừng cưới', false, true, true],
-                        ['Xác nhận tham dự qua email', false, true, true],
+                        ['Xác nhận tham dự', false, true, true],
                         ['Tùy chỉnh màu sắc thiệp', false, false, true],
                         ['Hiệu ứng rơi theo chủ đề', false, false, true],
                         ['Thống kê lượt xem thiệp', false, false, true],
@@ -417,13 +422,13 @@ function HomePage() {
                         <h3>Liên hệ</h3>
                         <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn. Vui lòng liên hệ với chúng tôi qua các kênh dưới đây để được tư vấn.</p>
                         <div className="home-footer-socials">
-                            <a href="https://zalo.me/" target="_blank" rel="noreferrer" aria-label="Liên hệ Zalo">
-                                <img src="/img/zalo-logo.svg" alt="" />
+                            <a href={socialLinks.zalo} target="_blank" rel="noreferrer" aria-label="Liên hệ Zalo">
+                                <img src="/img/zalo.png" alt="" />
                             </a>
-                            <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="Liên hệ TikTok">
+                            <a href={socialLinks.tiktok} target="_blank" rel="noreferrer" aria-label="Liên hệ TikTok">
                                 <img src="/img/tiktok-logo.svg" alt="" />
                             </a>
-                            <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Liên hệ Facebook">
+                            <a href={socialLinks.facebook} target="_blank" rel="noreferrer" aria-label="Liên hệ Facebook">
                                 <img src="/img/facebook-logo.svg" alt="" />
                             </a>
                         </div>
@@ -443,13 +448,13 @@ function HomePage() {
             </footer>
 
             <aside className="home-floating-contact" aria-label="Liên hệ nhanh">
-                <a href="https://zalo.me/" target="_blank" rel="noreferrer" aria-label="Liên hệ Zalo">
-                    <img src="https://th.bing.com/th/id/R.21eabc8fa667f86843a9bfa549da2e30?rik=6Np0hdLw5lOW9g&riu=http%3a%2f%2fwww.dlghoteldanang.com%2fimages%2fci%2f349-03.png&ehk=UTdXtfbYkEESRzbdlgqt6D0C%2ftG0IFTKiEmeT5pIgBU%3d&risl=&pid=ImgRaw&r=0" alt="" />
+                <a href={socialLinks.zalo} target="_blank" rel="noreferrer" aria-label="Liên hệ Zalo">
+                    <img src="/img/zalo.png" alt="" />
                 </a>
-                <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok">
-                    <img src="https://static.vecteezy.com/system/resources/previews/006/057/996/original/tiktok-logo-on-transparent-background-free-vector.jpg" alt="" />
+                <a href={socialLinks.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok">
+                    <img className="home-floating-contact-tiktok" src="https://static.vecteezy.com/system/resources/previews/006/057/996/original/tiktok-logo-on-transparent-background-free-vector.jpg" alt="" />
                 </a>
-                <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook">
+                <a href={socialLinks.facebook} target="_blank" rel="noreferrer" aria-label="Facebook">
                     <img src="https://tse2.mm.bing.net/th/id/OIP._-N0rPk3XBfnfR9ZvP892wHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="" />
                 </a>
             </aside>

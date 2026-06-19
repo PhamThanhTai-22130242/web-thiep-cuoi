@@ -4,9 +4,7 @@
   min-height: calc(100vh - 72px);
   padding: 16px 24px 72px;
   color: #4a2415;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(255, 249, 241, 0.98)),
-    radial-gradient(circle at 18% 12%, rgba(185, 106, 44, 0.14), transparent 28%);
+  background: #ffffff;
   overflow: visible;
 }
 
@@ -15,9 +13,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    linear-gradient(130deg, rgba(185, 106, 44, 0.08) 0 16%, transparent 16% 100%),
-    radial-gradient(circle at 82% 18%, rgba(255, 227, 183, 0.34), transparent 28%);
+  background: transparent;
 }
 
 .selector-tabs,
@@ -128,6 +124,8 @@
     0 0 0 1px rgba(35, 18, 12, 0.42),
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
     inset 0 0 18px rgba(0, 0, 0, 0.42);
+  transform-origin: center bottom;
+  animation: selector-gentle-sway 4.6s ease-in-out infinite;
 }
 
 .selector-phone::before {
@@ -181,6 +179,8 @@
     0 0 0 1px rgba(200, 160, 110, 0.2),
     0 8px 28px rgba(100, 60, 20, 0.18),
     0 2px 8px rgba(100, 60, 20, 0.1);
+  transform-origin: center bottom;
+  animation: selector-gentle-sway 4.6s ease-in-out infinite;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -193,6 +193,35 @@
 }
 
 /* Khi có thumbnail ảnh tĩnh — ảnh chiếm full, có padding để thấy full ảnh */
+.selector-card:nth-child(2n) .selector-phone,
+.selector-card:nth-child(2n) .selector-template-image {
+  animation-delay: -1.6s;
+}
+
+.selector-card:nth-child(3n) .selector-phone,
+.selector-card:nth-child(3n) .selector-template-image {
+  animation-duration: 5.2s;
+}
+
+@keyframes selector-gentle-sway {
+  0%,
+  100% {
+    rotate: -1.1deg;
+  }
+
+  50% {
+    rotate: 1.1deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selector-phone,
+  .selector-template-image {
+    animation: none;
+    rotate: 0deg;
+  }
+}
+
 .selector-preview-wrap.has-thumbnail {
   padding: 16px;
 }
@@ -218,27 +247,24 @@
   display: inline-flex;
   max-width: 100%;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 14px;
-  border: 1px solid rgba(167, 15, 15, 0.18);
+  border: 1px solid #ead8d0;
   border-radius: 8px;
-  padding: 8px 12px;
-  background:
-    linear-gradient(135deg, rgba(167, 15, 15, 0.12), rgba(255, 246, 235, 0.9)),
-    #fff8ef;
-  box-shadow: 0 12px 26px rgba(134, 21, 21, 0.1);
+  padding: 7px 10px;
+  background: #fff;
 }
 
 .selector-card-price del {
-  color: #9a7869;
-  font-size: 0.88rem;
-  font-weight: 850;
+  color: #9b8b84;
+  font-size: 0.84rem;
+  font-weight: 650;
 }
 
 .selector-card-price strong {
-  color: #a70f0f;
-  font-size: 1.45rem;
-  font-weight: 950;
+  color: #9f1713;
+  font-size: 1.24rem;
+  font-weight: 850;
   line-height: 1;
 }
 

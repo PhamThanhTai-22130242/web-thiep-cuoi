@@ -1,3 +1,7 @@
+.clv-page button {
+  cursor: pointer;
+}
+
 .clv-page {
   --clv-red: #7b2424;
   --clv-red-dark: #631a1a;

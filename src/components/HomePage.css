@@ -1296,6 +1296,10 @@
   object-fit: contain;
 }
 
+.home-floating-contact-tiktok {
+  transform: scale(1.45);
+}
+
 .home-auth-modal-backdrop {
   position: fixed;
   inset: 0;

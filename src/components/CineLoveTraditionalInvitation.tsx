@@ -23,8 +23,6 @@ type WeddingWish = {
     message: string;
 };
 
-const initialWishes: WeddingWish[] = [];
-
 export type CineLoveInvitationImages = {
     hero: string;
     groom: string;
@@ -625,7 +623,9 @@ function CineLoveTraditionalInvitation({
                     )}
                     {invitationData.address}
                 </p>
-                {invitationData.mapUrl && (invitationData.mapUrl.includes('embed') || invitationData.mapUrl.includes('maps.google.com/maps?q=')) ? (
+                {invitationData.mapUrl && invitationData.mapUrl.toLowerCase().includes('<iframe') ? (
+                    <div dangerouslySetInnerHTML={{ __html: invitationData.mapUrl }} />
+                ) : invitationData.mapUrl && (invitationData.mapUrl.includes('embed') || invitationData.mapUrl.includes('maps.google.com/maps?q=')) ? (
                     <iframe
                         title="Bản đồ địa điểm tổ chức tiệc cưới"
                         src={invitationData.mapUrl}

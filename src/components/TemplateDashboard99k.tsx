@@ -85,8 +85,8 @@ function createEditableTemplate(): InvitationTemplate {
     template.id = 'ruby-basic-99k';
     template.name = 'Ruby Basic 99k';
     template.slug = '';
-    template.templateUrl = '/RubyBasicInvitation';
-    template.publicUrl = '/RubyBasicInvitation';
+    template.templateUrl = '/ben-tinh-tram-nam';
+    template.publicUrl = '/ben-tinh-tram-nam';
     template.design.primaryColor = '#952535';
     template.design.backgroundColor = '#f6e8dc';
     template.design.accentColor = '#d8b16a';
@@ -222,6 +222,10 @@ function toGoogleMapEmbedUrl(value: string) {
 
     if (!trimmedValue) {
         return '';
+    }
+
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue;
     }
 
     try {
@@ -422,7 +426,7 @@ function TemplateDashboard99k() {
             return next;
         }
 
-        setSaveStatus(`Đang upload ${pendingEntries.length} ảnh...`);
+        setSaveStatus('Đang lưu...');
         const uploadedItems = await Promise.all(
             pendingEntries.map(async ([target, file]) => ({
                 target,
@@ -567,7 +571,7 @@ function TemplateDashboard99k() {
             await savePreviewInvitationTemplate({ ...previewValues, id: selectedId, status: 'draft' }, rubyTemplatePreviewStorageKey);
             if (previewWindow) {
                 previewWindow.opener = null;
-                previewWindow.location.href = '/RubyBasicInvitation?preview=1';
+                previewWindow.location.href = '/ben-tinh-tram-nam?preview=1';
                 return;
             }
 
@@ -841,7 +845,7 @@ function TemplateDashboard99k() {
                         <input {...register('event.address')} />
                     </div>
                     <div className="td-field td-map-field">
-                        <label>Vị trí Google Map</label>
+                        <label>Bản đồ (iframe)</label>
                         <div className="td-map-input-row">
                             <input
                                 value={previewTemplate.event?.mapUrl || ''}
@@ -930,4 +934,3 @@ function TemplateDashboard99k() {
 }
 
 export default TemplateDashboard99k;
-

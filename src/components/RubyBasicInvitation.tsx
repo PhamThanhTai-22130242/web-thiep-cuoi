@@ -366,7 +366,11 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
 
 
             <section className="rbi-map-section" id="map" data-rbi-image="left">
-                <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
+                {invitationData.event.mapUrl && invitationData.event.mapUrl.toLowerCase().includes('<iframe') ? (
+                    <div dangerouslySetInnerHTML={{ __html: invitationData.event.mapUrl }} />
+                ) : (
+                    <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
+                )}
             </section>
             <section className="rbi-gallery" data-rbi-reveal>
                 <RubySectionTitle title="Our Memories" subtitle={invitationData.couple.quote} />

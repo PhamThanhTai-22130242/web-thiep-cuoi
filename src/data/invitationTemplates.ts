@@ -166,8 +166,8 @@ export const defaultRubyInvitationTemplate: InvitationTemplate = {
     id: 'ruby-basic-99k',
     name: 'Ruby Basic 99k',
     slug: 'ruby-basic',
-    templateUrl: '/RubyBasicInvitation',
-    publicUrl: '/RubyBasicInvitation',
+    templateUrl: '/ben-tinh-tram-nam',
+    publicUrl: '/ben-tinh-tram-nam',
     design: {
         ...defaultInvitationTemplate.design,
         primaryColor: '#952535',
@@ -190,6 +190,7 @@ export const rubyTemplateStorageKey = 'harmony.invitationTemplates.99k';
 export const rubyTemplatePreviewStorageKey = 'harmony.invitationPreviewTemplate.99k';
 export const cineLovePreviewStorageKey = 'harmony.invitationPreviewTemplate.cineLove';
 export const elegantPreviewStorageKey = 'harmony.invitationPreviewTemplate.elegant';
+export const pinkPreviewStorageKey = 'harmony.invitationPreviewTemplate.pink';
 const templatePreviewDatabaseName = 'harmonyInvitationPreview';
 const templatePreviewStoreName = 'templates';
 
@@ -308,6 +309,43 @@ export async function saveElegantPreview(data: unknown, storageKey = elegantPrev
 }
 
 export async function loadElegantPreview(storageKey = elegantPreviewStorageKey): Promise<unknown | null> {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        const stored = await readPreviewFromDatabase(storageKey);
+        if (stored) {
+            return stored;
+        }
+    } catch {
+        // Fall back to localStorage below.
+    }
+
+    try {
+        const raw = window.localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        window.localStorage.removeItem(storageKey);
+        return null;
+    }
+}
+
+export async function savePinkPreview(data: unknown, storageKey = pinkPreviewStorageKey) {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    await writePreviewToDatabase(data as InvitationTemplate, storageKey);
+
+    try {
+        window.localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+        // IndexedDB is the source of truth. localStorage is only a fallback.
+    }
+}
+
+export async function loadPinkPreview(storageKey = pinkPreviewStorageKey): Promise<unknown | null> {
     if (typeof window === 'undefined') {
         return null;
     }

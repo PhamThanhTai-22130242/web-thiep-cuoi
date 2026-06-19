@@ -341,7 +341,11 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                         <p>{invitationData.event.address}</p>
                     </div>
                     <section className="ei-map-section" id="map">
-                        <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
+                        {invitationData.event.mapUrl && invitationData.event.mapUrl.toLowerCase().includes('<iframe') ? (
+                            <div dangerouslySetInnerHTML={{ __html: invitationData.event.mapUrl }} />
+                        ) : (
+                            <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
+                        )}
                     </section>
                 </div>}
             </section>

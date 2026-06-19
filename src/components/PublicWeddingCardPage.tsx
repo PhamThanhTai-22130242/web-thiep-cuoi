@@ -11,6 +11,10 @@ import ElegantInvitation, {
     ElegantInvitationData,
     defaultElegantInvitationData,
 } from './ElegantInvitation';
+import PinkWeddingInvitation, {
+    PinkWeddingInvitationData,
+    defaultPinkWeddingInvitationData,
+} from './PinkWeddingInvitation';
 import { httpRequest } from '../services/http.service';
 import { WeddingCardEvent, WeddingCardMedia, WeddingCardPerson } from '../models/wedding-card.model';
 import NotFoundPage from './NotFoundPage';
@@ -176,6 +180,54 @@ export function mapPublicCardToElegantData(card: PublicWeddingCardResponse): Ele
     return data;
 }
 
+export function mapPublicCardToPinkData(card: PublicWeddingCardResponse): PinkWeddingInvitationData {
+    const data = JSON.parse(JSON.stringify(defaultPinkWeddingInvitationData)) as PinkWeddingInvitationData;
+    const groom = card.people.find((person) => person.role === 'groom');
+    const bride = card.people.find((person) => person.role === 'bride');
+    const event = card.events[0];
+    const mediaBySlot = new Map(card.media.map((item) => [item.slotKey, item.imgUrl]));
+    const gallery = card.media
+        .filter((item) => item.slotKey?.startsWith('images.gallery.'))
+        .sort((left, right) => (left.number || 0) - (right.number || 0))
+        .map((item) => item.imgUrl)
+        .filter(Boolean);
+
+    const groomQr = mediaBySlot.get('images.groomQr') || '';
+    const brideQr = mediaBySlot.get('images.brideQr') || '';
+
+    data.slug = card.slug;
+    data.groomName = groom?.shortName || groom?.fullName || data.groomName;
+    data.brideName = bride?.shortName || bride?.fullName || data.brideName;
+    data.groomIntroName = groom?.fullName || groom?.shortName || data.groomIntroName;
+    data.brideIntroName = bride?.fullName || bride?.shortName || data.brideIntroName;
+    data.groomFamilyLabel = groom?.familyLable || data.groomFamilyLabel;
+    data.brideFamilyLabel = bride?.familyLable || data.brideFamilyLabel;
+    data.groomFather = groom?.fatherName || data.groomFather;
+    data.groomMother = groom?.motherName || data.groomMother;
+    data.brideFather = bride?.fatherName || data.brideFather;
+    data.brideMother = bride?.motherName || data.brideMother;
+    data.inviteText = event?.inviteText || data.inviteText;
+    data.eventDate = event?.eventDate || data.eventDate;
+    data.eventTime = (event?.eventTime || data.eventTime).slice(0, 5);
+    data.venueName = event?.venueName || data.venueName;
+    data.address = event?.address || data.address;
+    data.mapUrl = event?.linkMap || data.mapUrl;
+    data.showGroomGift = Boolean(groomQr);
+    data.showBrideGift = Boolean(brideQr);
+    data.showGiftSection = Boolean(groomQr || brideQr);
+    data.images.cover = mediaBySlot.get('images.cover') || data.images.cover;
+    data.images.portraitOne = mediaBySlot.get('images.portraitOne') || data.images.portraitOne;
+    data.images.portraitTwo = mediaBySlot.get('images.portraitTwo') || data.images.portraitTwo;
+    data.images.embrace = mediaBySlot.get('images.embrace') || data.images.embrace;
+    data.images.letterCenter = mediaBySlot.get('images.letterCenter') || data.images.letterCenter;
+    data.images.kiss = mediaBySlot.get('images.kiss') || data.images.kiss;
+    data.images.groomQr = groomQr || data.images.groomQr;
+    data.images.brideQr = brideQr || data.images.brideQr;
+    data.images.gallery = gallery.length ? [...gallery, ...Array(Math.max(0, 9 - gallery.length)).fill('')] : data.images.gallery;
+
+    return data;
+}
+
 function PublicWeddingCardPage() {
     const { slug } = useParams<{ slug: string }>();
     const [card, setCard] = useState<PublicWeddingCardResponse | null>(null);
@@ -259,6 +311,18 @@ function PublicWeddingCardPage() {
         return (
             <ElegantInvitation
                 data={mapPublicCardToElegantData(card)}
+                initialWishes={wishes}
+                wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
+                wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}
+                rsvpEndpoint={`/api/wedding-cards/${card.slug}/rsvp`}
+            />
+        );
+    }
+
+    if (card.template.code === 'PinkWeddingInvitation') {
+        return (
+            <PinkWeddingInvitation
+                data={mapPublicCardToPinkData(card)}
                 initialWishes={wishes}
                 wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
                 wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}

@@ -9,10 +9,8 @@ import HomePage from './components/HomePage';
 import MainLayout from './components/MainLayout';
 import MyWeddingCardPreviewPage from './components/MyWeddingCardPreviewPage';
 import NotFoundPage from './components/NotFoundPage';
-import PinkWeddingInvitation from './components/PinkWeddingInvitation';
 import PublicCommentManagerPage from './components/PublicCommentManagerPage';
 import PublicWeddingCardPage from './components/PublicWeddingCardPage';
-import ElegantInvitation from './components/ElegantInvitation';
 import TemplateSelectorPage from './components/TemplateSelectorPage';
 import TestComponent from './components/TestComponent';
 import WeddingInvitationManager from './components/WeddingInvitationManager';
@@ -62,9 +60,7 @@ function App() {
                         <Route key={`preview-${template.code}-${path}`} path={path} element={<DisplayComponent />} />
                     ));
                 })}
-                <Route path="/tram-nam-ben-doi" element={<ElegantInvitation />} />
                 <Route path="/test-fabric" element={<TestComponent />} />
-                <Route path="/THIEPMAUHONG" element={<PinkWeddingInvitation />} />
                 <Route path="/CODIEN" element={<CoDienInvitation />} />
                 <Route path="/thiep/:slug" element={<PublicWeddingCardPage />} />
                 <Route path="/preview-wedding-card/:weddingId" element={<RequireAuth><MyWeddingCardPreviewPage /></RequireAuth>} />

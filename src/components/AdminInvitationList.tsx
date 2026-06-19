@@ -462,7 +462,7 @@ function AdminInvitationList() {
                                                     <Link to={`/thiep/${invitation.slug}`} aria-label="Xem thiệp">
                                                         <Eye size={15} />
                                                     </Link>
-                                                    <Link to={`/EmeraldInvitation/edit?weddingId=${invitation.weddingId}`} aria-label="Chỉnh sửa">
+                                                    <Link to={`/hy-sac-vu-qui/edit?weddingId=${invitation.weddingId}`} aria-label="Chỉnh sửa">
                                                         <Edit3 size={15} />
                                                     </Link>
                                                     <Link to={`/quan-li-binh-luan/${invitation.slug}`} aria-label="Quản lí bình luận">

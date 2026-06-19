@@ -127,7 +127,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
     const thumbnail = config?.thumbnailPath || card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
     const editPath = config?.editorPath
         ? `${config.editorPath}?weddingId=${card.weddingId}`
-        : `/EmeraldInvitation/edit?weddingId=${card.weddingId}`;
+        : `/hy-sac-vu-qui/edit?weddingId=${card.weddingId}`;
     const updatedAt = card.updatedAt || card.createdAt;
 
     return {

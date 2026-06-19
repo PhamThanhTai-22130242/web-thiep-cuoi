@@ -164,6 +164,10 @@ function toGoogleMapEmbedUrl(value: string) {
         return '';
     }
 
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue;
+    }
+
     try {
         const url = new URL(trimmedValue);
 
@@ -637,7 +641,11 @@ function EmeraldInvitation({
                 </section>
 
                 {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map" data-ei-image-reveal="left">
-                    <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
+                    {mapUrl.toLowerCase().includes('<iframe') ? (
+                        <div dangerouslySetInnerHTML={{ __html: mapUrl }} />
+                    ) : (
+                        <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
+                    )}
                 </section>}
 
                 <section className="ei-gallery" data-ei-reveal>

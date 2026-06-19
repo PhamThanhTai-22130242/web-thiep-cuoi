@@ -189,7 +189,7 @@ async function uploadLocalImages(data: CineLoveInvitationData, onProgress: (msg:
     ];
 
     if (allEntries.length === 0) return next;
-    onProgress(`Đang upload ${allEntries.length} ảnh lên Cloudinary...`);
+    onProgress('Đang lưu...');
 
     const uploaded = await Promise.all(
         allEntries.map(async (entry) => ({
@@ -217,6 +217,53 @@ async function fetchBlob(url: string): Promise<File> {
 
 // ---- Component ----
 
+function formatDateInput(dateValue: string) {
+    const datePart = dateValue?.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
+    if (datePart) {
+        return datePart;
+    }
+
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
+        return '';
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
+function formatDateDisplay(dateValue: string) {
+    const normalizedDate = formatDateInput(dateValue);
+
+    if (!normalizedDate) {
+        return '';
+    }
+
+    return `${normalizedDate.slice(8, 10)}/${normalizedDate.slice(5, 7)}/${normalizedDate.slice(0, 4)}`;
+}
+
+function parseDateDisplay(value: string) {
+    const match = value.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+    if (!match) {
+        return '';
+    }
+
+    const day = match[1].padStart(2, '0');
+    const month = match[2].padStart(2, '0');
+    const year = match[3];
+    const date = new Date(`${year}-${month}-${day}T00:00:00+07:00`);
+
+    if (Number.isNaN(date.getTime()) || date.getDate() !== Number(day) || date.getMonth() + 1 !== Number(month) || date.getFullYear() !== Number(year)) {
+        return '';
+    }
+
+    return `${year}-${month}-${day}`;
+}
+
 function CineLoveTraditionalInvitationEditor() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -236,6 +283,51 @@ function CineLoveTraditionalInvitationEditor() {
     const shouldInsertGalleryImageRef = useRef(false);
     const shouldScrollGalleryEndRef = useRef(false);
     const objectUrlsRef = useRef<string[]>([]);
+    const dateInputRef = useRef<HTMLInputElement | null>(null);
+    const [eventDateText, setEventDateText] = useState(() => formatDateDisplay(draft.eventDate || ''));
+
+    useEffect(() => {
+        setEventDateText(formatDateDisplay(draft.eventDate || ''));
+    }, [draft.eventDate]);
+
+    const handleEventDateChange = (dateValue: string) => {
+        const nextDate = dateValue || '';
+        updateField('eventDate', nextDate);
+    };
+
+    const handleEventDateTextChange = (dateValue: string) => {
+        setEventDateText(dateValue);
+        const parsedDate = parseDateDisplay(dateValue);
+        if (parsedDate) {
+            handleEventDateChange(parsedDate);
+        }
+    };
+
+    const handleEventDateTextBlur = () => {
+        const parsedDate = parseDateDisplay(eventDateText);
+        if (parsedDate) {
+            setEventDateText(formatDateDisplay(parsedDate));
+            return;
+        }
+
+        const fallbackDate = draft.eventDate || '';
+        setEventDateText(formatDateDisplay(fallbackDate));
+        handleEventDateChange(fallbackDate);
+    };
+
+    const handleDatePickerClick = () => {
+        const input = dateInputRef.current;
+        if (!input) return;
+
+        const pickerInput = input as HTMLInputElement & { showPicker?: () => void };
+        if (pickerInput.showPicker) {
+            pickerInput.showPicker();
+            return;
+        }
+
+        input.focus();
+        input.click();
+    };
 
     // Load existing card when ?weddingId= is in URL
     useEffect(() => {
@@ -250,6 +342,7 @@ function CineLoveTraditionalInvitationEditor() {
                 if (!active) return;
                 const loaded = fromApiCard(card, emptyCineLoveInvitationData);
                 setDraft(loaded);
+                setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
             })
@@ -425,7 +518,7 @@ function CineLoveTraditionalInvitationEditor() {
                 .then(() => {
                     if (previewWindow) {
                         previewWindow.opener = null;
-                        previewWindow.location.href = '/CineLoveTraditionalInvitation?preview=1';
+                        previewWindow.location.href = '/duyen-tham-miet-vuon?preview=1';
                     }
                 })
                 .catch((error) => {
@@ -597,11 +690,11 @@ function CineLoveTraditionalInvitationEditor() {
 
                         <div className="clve-grid-2">
                             <label className="clve-field">
-                                <span>Tên chú rể mở đầu</span>
+                                <span>Tên chú rể đầu thiệp</span>
                                 <input value={draft.groomName} type="text" onChange={(event) => updateField('groomName', event.target.value)} />
                             </label>
                             <label className="clve-field">
-                                <span>Tên cô dâu mở đầu</span>
+                                <span>Tên cô dâu đầu thiệp</span>
                                 <input value={draft.brideName} type="text" onChange={(event) => updateField('brideName', event.target.value)} />
                             </label>
                         </div>
@@ -615,11 +708,11 @@ function CineLoveTraditionalInvitationEditor() {
 
                         <div className="clve-grid-2">
                             <label className="clve-field">
-                                <span>Tên chú rể bên dưới</span>
+                                <span>Tên Chú rể (giữa thiệp)</span>
                                 <input value={draft.groomIntroName} type="text" onChange={(event) => updateField('groomIntroName', event.target.value)} />
                             </label>
                             <label className="clve-field">
-                                <span>Tên cô dâu bên dưới</span>
+                                <span>Tên Cô dâu (giữa thiệp)</span>
                                 <input value={draft.brideIntroName} type="text" onChange={(event) => updateField('brideIntroName', event.target.value)} />
                             </label>
                         </div>
@@ -663,7 +756,53 @@ function CineLoveTraditionalInvitationEditor() {
                         <div className="clve-grid-2">
                             <label className="clve-field">
                                 <span>Ngày cưới</span>
-                                <input value={draft.eventDate} type="date" onChange={(event) => updateField('eventDate', event.target.value)} />
+                                <div className="clve-date-input-row" style={{ display: 'flex', gap: '0', position: 'relative' }}>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder="dd/mm/yyyy"
+                                        value={eventDateText}
+                                        style={{ borderRight: '0', borderRadius: '10px 0 0 10px', flex: '1' }}
+                                        onChange={(event) => handleEventDateTextChange(event.target.value)}
+                                        onBlur={handleEventDateTextBlur}
+                                    />
+                                    <button
+                                        type="button"
+                                        aria-label="Chọn ngày cưới"
+                                        onClick={handleDatePickerClick}
+                                        style={{
+                                            width: '44px',
+                                            minHeight: '44px',
+                                            display: 'grid',
+                                            placeItems: 'center',
+                                            border: '1px solid rgba(141, 95, 37, 0.16)',
+                                            borderRadius: '0 10px 10px 0',
+                                            background: '#ffffff',
+                                            color: '#8d5f25',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        <CalendarDays size={18} />
+                                    </button>
+                                    <input
+                                        ref={dateInputRef}
+                                        type="date"
+                                        value={draft.eventDate}
+                                        onChange={(event) => handleEventDateChange(event.target.value)}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '0',
+                                            bottom: '0',
+                                            width: '1px',
+                                            height: '1px',
+                                            padding: '0',
+                                            opacity: '0',
+                                            pointerEvents: 'none'
+                                        }}
+                                        tabIndex={-1}
+                                        aria-hidden="true"
+                                    />
+                                </div>
                             </label>
                             <label className="clve-field">
                                 <span>Giờ cưới</span>
@@ -708,7 +847,7 @@ function CineLoveTraditionalInvitationEditor() {
 
                         <label className="clve-field">
                             <span className="clve-field-head">
-                                Đường dẫn bản đồ (Google Maps)
+                                Bản đồ (iframe)
                                 <button type="button" onClick={() => window.open(draft.mapUrl, '_blank')} disabled={!draft.mapUrl.trim()}>
                                     <Eye size={15} />
                                     Xem bản đồ
@@ -718,14 +857,7 @@ function CineLoveTraditionalInvitationEditor() {
                                 value={draft.mapUrl} 
                                 rows={3}
                                 placeholder="Ví dụ: https://maps.app.goo.gl/... hoặc dán mã nhúng bản đồ"
-                                onChange={(event) => {
-                                    let val = event.target.value;
-                                    const match = val.match(/src=["']([^"']+)["']/);
-                                    if (match && val.toLowerCase().includes('<iframe')) {
-                                        val = match[1];
-                                    }
-                                    updateField('mapUrl', val);
-                                }} 
+                                onChange={(event) => updateField('mapUrl', event.target.value)} 
                                 style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13px', resize: 'vertical' }}
                             />
                         </label>
