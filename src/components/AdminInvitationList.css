@@ -48,7 +48,7 @@
 
 .admin-invitation-toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto minmax(170px, auto) minmax(190px, auto) auto auto;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(170px, auto) minmax(190px, auto) auto;
   gap: 12px;
   align-items: center;
   margin-bottom: 14px;
@@ -57,7 +57,6 @@
 .admin-invitation-search,
 .admin-invitation-tabs,
 .admin-invitation-toolbar select,
-.admin-invitation-export,
 .admin-invitation-add,
 .admin-invitation-footer select {
   min-height: 42px;
@@ -71,8 +70,31 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 12px;
+  padding: 0 0 0 12px;
   color: #7f665d;
+  overflow: hidden;
+  height: 42px;
+}
+
+.admin-invitation-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  align-self: stretch;
+  border: 0;
+  background: #a11612;
+  color: #fffaf4;
+  padding: 0 16px;
+  cursor: pointer;
+  font-weight: 850;
+  font-size: 0.78rem;
+  transition: background 0.18s ease;
+}
+
+.admin-invitation-search-btn:hover {
+  background: #bd1d19;
 }
 
 .admin-invitation-search input {
@@ -91,6 +113,7 @@
   align-items: center;
   gap: 4px;
   padding: 4px;
+  flex-shrink: 0;
 }
 
 .admin-invitation-tabs button {
@@ -104,6 +127,8 @@
   font: inherit;
   font-size: 0.78rem;
   font-weight: 850;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .admin-invitation-tabs button.is-active {
@@ -121,7 +146,6 @@
   font-weight: 850;
 }
 
-.admin-invitation-export,
 .admin-invitation-add {
   display: inline-flex;
   min-height: 42px;
@@ -134,11 +158,6 @@
   font-size: 0.78rem;
   font-weight: 900;
   text-decoration: none;
-}
-
-.admin-invitation-export {
-  background: #fffaf6;
-  color: #a11612;
 }
 
 .admin-invitation-add {

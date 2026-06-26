@@ -173,6 +173,25 @@ function PinkSectionTitle({ title }: { title: string }) {
     );
 }
 
+function extractIframeSrc(value: string) {
+    const match = value.match(/src=["']([^"']+)["']/i);
+    return match?.[1]?.trim() || '';
+}
+
+function getGoogleMapEmbedUrl(value: string) {
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+        return '';
+    }
+
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return extractIframeSrc(trimmedValue);
+    }
+
+    return trimmedValue;
+}
+
 function getEventParts(dateValue: string) {
     const date = new Date(`${dateValue || defaultPinkWeddingInvitationData.eventDate}T00:00:00+07:00`);
     if (Number.isNaN(date.getTime())) {
@@ -529,12 +548,9 @@ function PinkWeddingInvitation({
                     </div>
                 </div>
                 {invitationData.mapUrl && (() => {
-                    const isIframe = invitationData.mapUrl.toLowerCase().includes('<iframe');
-                    let mapLink = invitationData.mapUrl;
-                    if (isIframe) {
-                        const match = invitationData.mapUrl.match(/src=["']([^"']+)["']/i);
-                        mapLink = match ? match[1] : '';
-                    }
+                    const mapLink = getGoogleMapEmbedUrl(invitationData.mapUrl);
+                    const shouldEmbedMap = mapLink.includes('google.com/maps/embed');
+
                     return (
                         <>
                             {mapLink && (
@@ -547,17 +563,13 @@ function PinkWeddingInvitation({
                                     Xem Chỉ Đường
                                 </a>
                             )}
-                            {isIframe ? (
-                                <div dangerouslySetInnerHTML={{ __html: invitationData.mapUrl }} />
-                            ) : (
-                                invitationData.mapUrl.includes('google.com/maps/embed') && (
-                                    <iframe
-                                        title="Bản đồ địa điểm"
-                                        src={invitationData.mapUrl}
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                    />
-                                )
+                            {shouldEmbedMap && (
+                                <iframe
+                                    title="Bản đồ địa điểm"
+                                    src={mapLink}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                />
                             )}
                         </>
                     );

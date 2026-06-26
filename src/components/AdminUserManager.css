@@ -49,20 +49,7 @@
   font-size: 0.86rem;
 }
 
-.admin-users-heading::after {
-  content: '+  Thêm người dùng';
-  display: inline-flex;
-  min-height: 42px;
-  align-items: center;
-  border-radius: 8px;
-  padding: 0 18px;
-  background: #a11612;
-  color: #fffaf4;
-  font-size: 0.82rem;
-  font-weight: 900;
-  white-space: nowrap;
-  box-shadow: 0 12px 24px rgba(161, 22, 18, 0.18);
-}
+
 
 .admin-users-stats {
   display: grid;
@@ -139,7 +126,7 @@
 
 .admin-users-toolbar {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(150px, auto) minmax(160px, auto) minmax(170px, auto) auto 42px;
+  grid-template-columns: minmax(260px, 1fr) minmax(150px, auto) minmax(160px, auto) minmax(170px, auto);
   gap: 12px;
   align-items: center;
   margin-bottom: 14px;
@@ -147,9 +134,6 @@
 
 .admin-users-search,
 .admin-users-toolbar select,
-.admin-users-date,
-.admin-users-export,
-.admin-users-filter,
 .admin-users-page-size select {
   min-height: 42px;
   border: 1px solid #ead8cd;
@@ -186,34 +170,7 @@
   font-weight: 820;
 }
 
-.admin-users-date,
-.admin-users-export,
-.admin-users-filter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 14px;
-  color: #765b52;
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 850;
-}
 
-.admin-users-date {
-  justify-content: space-between;
-}
-
-.admin-users-export {
-  background: #fffaf6;
-  color: #5d4038;
-}
-
-.admin-users-filter {
-  width: 42px;
-  padding: 0;
-}
 
 .admin-users-table-card {
   overflow: hidden;
@@ -298,6 +255,11 @@
 .admin-users-role.is-admin {
   background: #ffe8e8;
   color: #c92a25;
+}
+
+.admin-users-role.is-support {
+  background: #f3e8ff;
+  color: #7e22ce;
 }
 
 .admin-users-status.is-active {
@@ -481,4 +443,140 @@
   .admin-users-content {
     padding: 16px 12px 28px;
   }
+}
+
+/* Modal Role Selector */
+.admin-users-role-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(45, 24, 18, 0.4);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.admin-users-role-card {
+  width: min(500px, 100%);
+  border: 1px solid #ead8cd;
+  border-radius: 14px;
+  padding: 24px;
+  background: #fffbf9;
+  box-shadow: 0 24px 60px rgba(96, 50, 31, 0.25);
+  animation: scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-users-role-card strong {
+  display: block;
+  color: #2f201c;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.admin-users-role-card p {
+  margin: 0 0 20px;
+  color: #6d5148;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.admin-users-role-card p strong {
+  display: inline;
+  color: #a11612;
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.admin-users-role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.role-option-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #ead8cd;
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.role-option-btn:hover {
+  border-color: #cb9b82;
+  background: #fffbf9;
+  transform: translateY(-1px);
+}
+
+.role-option-btn.is-current {
+  border-color: #a11612;
+  background: #fff5f2;
+}
+
+.role-option-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2f201c;
+  margin-bottom: 4px;
+}
+
+.role-option-btn.is-admin.is-current .role-option-label {
+  color: #c92a25;
+}
+
+.role-option-btn.is-support.is-current .role-option-label {
+  color: #7e22ce;
+}
+
+.role-option-btn.is-user.is-current .role-option-label {
+  color: #b45309;
+}
+
+.role-option-desc {
+  display: block;
+  font-size: 0.78rem;
+  color: #806a62;
+  line-height: 1.35;
+}
+
+.admin-users-role-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-users-role-actions .cancel-btn {
+  min-height: 38px;
+  border: 1px solid #ead8cd;
+  border-radius: 8px;
+  padding: 0 20px;
+  background: #fff;
+  color: #6d5148;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.18s ease;
+}
+
+.admin-users-role-actions .cancel-btn:hover {
+  background: #f8efe8;
+  color: #2f201c;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

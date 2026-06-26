@@ -2,7 +2,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { AuthUser } from '../models/auth.model';
 import { authService } from '../services/auth.service';
 import { authTokenService } from '../services/auth-token.service';
-import { ApiError } from '../services/http.service';
+import { ApiError, isApiError } from '../services/http.service';
 
 type GoogleLoginButtonProps = {
     disabled?: boolean;
@@ -27,7 +27,7 @@ function GoogleLoginButton({ disabled = false, onStart, onSuccess, onError, onSe
 
             onSuccess(loggedInUser);
         } catch (error) {
-            onError(error instanceof ApiError ? error.message : 'Đăng nhập Google thất bại. Vui lòng thử lại.');
+            onError(isApiError(error) ? error.message : 'Đăng nhập Google thất bại. Vui lòng thử lại.');
         } finally {
             onSettled?.();
         }

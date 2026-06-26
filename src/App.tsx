@@ -17,15 +17,16 @@ import WeddingInvitationManager from './components/WeddingInvitationManager';
 import { weddingTemplateConfigs } from './data/weddingTemplateRegistry';
 import { authTokenService } from './services/auth-token.service';
 
-function RequireAuth({ children, adminOnly = false }: { children: ReactNode; adminOnly?: boolean }) {
+function RequireAuth({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) {
     const user = authTokenService.getUser();
 
     if (!user) {
         return <Navigate to="/" replace />;
     }
 
-    if (adminOnly && user.role !== 'ADMIN') {
-        return <Navigate to="/dashboard" replace />;
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        const redirectPath = user.role === 'SUPPORT' ? '/admin-invitations' : '/dashboard';
+        return <Navigate to={redirectPath} replace />;
     }
 
     return <>{children}</>;
@@ -64,13 +65,11 @@ function App() {
                 <Route path="/CODIEN" element={<CoDienInvitation />} />
                 <Route path="/thiep/:slug" element={<PublicWeddingCardPage />} />
                 <Route path="/preview-wedding-card/:weddingId" element={<RequireAuth><MyWeddingCardPreviewPage /></RequireAuth>} />
-                <Route path="/admin-dashboard" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
-                <Route path="/admin-orders" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
-                <Route path="/admin-invitations" element={<RequireAuth adminOnly><AdminInvitationList /></RequireAuth>} />
-                <Route path="/admin-payments" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
-                <Route path="/admin-settings" element={<RequireAuth adminOnly><AdminDashboard /></RequireAuth>} />
-                <Route path="/admin-templates" element={<RequireAuth adminOnly><AdminTemplateManager /></RequireAuth>} />
-                <Route path="/admin-users" element={<RequireAuth adminOnly><AdminUserManager /></RequireAuth>} />
+                <Route path="/admin-dashboard" element={<RequireAuth allowedRoles={['ADMIN']}><AdminDashboard /></RequireAuth>} />
+                <Route path="/admin-invitations" element={<RequireAuth allowedRoles={['ADMIN', 'SUPPORT']}><AdminInvitationList /></RequireAuth>} />
+                <Route path="/admin-settings" element={<RequireAuth allowedRoles={['ADMIN']}><AdminDashboard /></RequireAuth>} />
+                <Route path="/admin-templates" element={<RequireAuth allowedRoles={['ADMIN']}><AdminTemplateManager /></RequireAuth>} />
+                <Route path="/admin-users" element={<RequireAuth allowedRoles={['ADMIN']}><AdminUserManager /></RequireAuth>} />
                 <Route path="/401" element={<NotFoundPage code="401" title="Bạn không có quyền truy cập trang này" />} />
                 <Route path="/500" element={<NotFoundPage code="500" title={'H\u1ec7 th\u1ed1ng \u0111ang g\u1eb7p s\u1ef1 c\u1ed1'} />} />
                 <Route path="*" element={<NotFoundPage />} />

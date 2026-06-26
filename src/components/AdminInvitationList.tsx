@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-    CreditCard,
     MessageCircle,
-    Download,
     Edit3,
     Eye,
     FileText,
@@ -11,13 +9,13 @@ import {
     LayoutTemplate,
     LockKeyhole,
     MoreVertical,
-    Package,
     Plus,
     Search,
     Settings,
     Smartphone,
     Users,
     type LucideIcon,
+    LogOut,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
@@ -68,12 +66,9 @@ interface AdminInvitationStatusResponse {
 
 const navItems = [
     { label: 'Tổng quan', icon: Home, path: '/admin-dashboard' },
-    { label: 'Đơn hàng', icon: Package, path: '/admin-orders' },
     { label: 'Người dùng', icon: Users, path: '/admin-users' },
     { label: 'Thiệp cưới', icon: Smartphone, path: '/admin-invitations', active: true },
     { label: 'Mẫu thiệp', icon: LayoutTemplate, path: '/admin-templates' },
-    { label: 'Thanh toán', icon: CreditCard, path: '/admin-payments' },
-    { label: 'Cài đặt', icon: Settings, path: '/admin-settings' },
 ];
 
 const statusTabs = [
@@ -162,13 +157,26 @@ function AdminInvitationList() {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [query, setQuery] = useState('');
+    const [localQuery, setLocalQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [userFilter, setUserFilter] = useState('all');
+    const [dateFilter, setDateFilter] = useState('today');
     const [sort, setSort] = useState('created_desc');
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [openActionMenuId, setOpenActionMenuId] = useState<number | null>(null);
     const [updatingStatusId, setUpdatingStatusId] = useState<number | null>(null);
+
+    const userRole = authTokenService.getUser()?.role;
+    const isSupport = userRole === 'SUPPORT';
+    const visibleNavItems = useMemo(() => {
+        return navItems.filter(item => {
+            if (isSupport) {
+                return item.path === '/admin-invitations';
+            }
+            return true;
+        });
+    }, [isSupport]);
 
     const creatorOptions = useMemo(() => {
         const map = new Map<number, string>();
@@ -191,10 +199,17 @@ function AdminInvitationList() {
                     size: String(pageSize),
                     query,
                     status: statusFilter,
+                    dateFilter,
                     sort,
                 });
                 if (userFilter !== 'all') {
-                    params.set('userId', userFilter);
+                    if (userFilter === 'role_admin') {
+                        params.set('creatorRole', 'ADMIN');
+                    } else if (userFilter === 'role_user') {
+                        params.set('creatorRole', 'USER');
+                    } else {
+                        params.set('userId', userFilter);
+                    }
                 }
 
                 const accessToken = authTokenService.getAccessToken();
@@ -245,7 +260,7 @@ function AdminInvitationList() {
         return () => {
             isMounted = false;
         };
-    }, [page, pageSize, query, sort, statusFilter, userFilter]);
+    }, [page, pageSize, query, sort, statusFilter, userFilter, dateFilter]);
 
     async function updateInvitationStatus(invitation: AdminInvitation, status: InvitationStatus) {
         if (invitation.status === status || updatingStatusId !== null) {
@@ -321,12 +336,21 @@ function AdminInvitationList() {
                 </div>
 
                 <nav className="admin-nav" aria-label="Admin navigation">
-                    {navItems.map(({ label, icon: Icon, path, active }) => (
+                    {visibleNavItems.map(({ label, icon: Icon, path, active }) => (
                         <Link className={active ? 'is-active' : ''} to={path} key={label}>
                             <Icon size={18} strokeWidth={2} />
                             <span>{label}</span>
                         </Link>
                     ))}
+                    <Link
+                        to="/"
+                        onClick={() => {
+                            authTokenService.clearSession();
+                        }}
+                    >
+                        <LogOut size={18} strokeWidth={2} />
+                        <span>Đăng xuất</span>
+                    </Link>
                 </nav>
             </aside>
 
@@ -338,17 +362,24 @@ function AdminInvitationList() {
                     </section>
 
                     <section className="admin-invitation-toolbar" aria-label="Bộ lọc danh sách thiệp cưới">
-                        <label className="admin-invitation-search">
+                        <form
+                            className="admin-invitation-search"
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                setQuery(localQuery);
+                                setPage(1);
+                            }}
+                        >
                             <input
-                                value={query}
-                                onChange={(event) => {
-                                    setQuery(event.target.value);
-                                    setPage(1);
-                                }}
-                                placeholder="Tìm tên cặp đôi, slug..."
+                                value={localQuery}
+                                onChange={(event) => setLocalQuery(event.target.value)}
+                                placeholder="Tìm tên cặp đôi, slug, email..."
                             />
-                            <Search size={16} />
-                        </label>
+                            <button className="admin-invitation-search-btn" type="submit">
+                                <Search size={16} />
+                                <span>Tìm</span>
+                            </button>
+                        </form>
 
                         <div className="admin-invitation-tabs">
                             {statusTabs.map((item) => (
@@ -375,9 +406,26 @@ function AdminInvitationList() {
                             }}
                         >
                             <option value="all">Tất cả người dùng</option>
+                            <option value="role_admin">Tài khoản Admin</option>
+                            <option value="role_user">Tài khoản Người dùng</option>
                             {creatorOptions.map((creator) => (
                                 <option value={creator.id} key={creator.id}>{creator.name}</option>
                             ))}
+                        </select>
+
+                        <select
+                            aria-label="Ngày kích hoạt"
+                            value={dateFilter}
+                            onChange={(event) => {
+                                setDateFilter(event.target.value);
+                                setPage(1);
+                            }}
+                        >
+                            <option value="today">Kích hoạt: Hôm nay</option>
+                            <option value="15">15 ngày trước</option>
+                            <option value="30">30 ngày trước</option>
+                            <option value="60">2 tháng trước</option>
+                            <option value="all">Kích hoạt: Tất cả</option>
                         </select>
 
                         <select
@@ -393,15 +441,8 @@ function AdminInvitationList() {
                             <option value="views_desc">Lượt xem cao</option>
                         </select>
 
-                        <button className="admin-invitation-export" type="button">
-                            <Download size={16} />
-                            Xuất Excel
-                        </button>
 
-                        <Link className="admin-invitation-add" to="/chon-mau/basic">
-                            <Plus size={17} />
-                            Thêm thiệp
-                        </Link>
+
                     </section>
 
                     <section className="admin-invitation-table-card">

@@ -1,25 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-    CalendarDays,
-    CreditCard,
-    Download,
-    Edit3,
-    Eye,
     Home,
     LayoutTemplate,
     LockKeyhole,
     LockOpen,
-    MoreVertical,
-    Package,
     Search,
-    Settings,
-    SlidersHorizontal,
     Smartphone,
     UserCheck,
     UserPlus,
     Users,
+    LogOut,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { authTokenService } from '../services/auth-token.service';
 import { API_ENDPOINTS } from '../config/api.config';
 import { ApiError, httpRequest } from '../services/http.service';
 import './AdminDashboard.css';
@@ -37,12 +30,9 @@ interface AdminUser {
 
 const navItems = [
     { label: 'Tổng quan', icon: Home, path: '/admin-dashboard' },
-    { label: 'Đơn hàng', icon: Package, path: '/admin-orders' },
     { label: 'Người dùng', icon: Users, path: '/admin-users', active: true },
     { label: 'Thiệp cưới', icon: Smartphone, path: '/admin-invitations' },
     { label: 'Mẫu thiệp', icon: LayoutTemplate, path: '/admin-templates' },
-    { label: 'Thanh toán', icon: CreditCard, path: '/admin-payments' },
-    { label: 'Cài đặt', icon: Settings, path: '/admin-settings' },
 ];
 
 function getInitials(name: string) {
@@ -71,7 +61,9 @@ function formatDateTime(value: string) {
 }
 
 function getRoleLabel(role: string) {
-    return role === 'ADMIN' ? 'Admin' : 'Khách hàng';
+    if (role === 'ADMIN') return 'Admin';
+    if (role === 'SUPPORT') return 'Support';
+    return 'Khách hàng';
 }
 
 function getStatusLabel(status: string) {
@@ -97,8 +89,10 @@ function AdminUserManager() {
     const [query, setQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [dateFilter, setDateFilter] = useState('all');
     const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
     const [statusError, setStatusError] = useState('');
+    const [roleSelectorUser, setRoleSelectorUser] = useState<AdminUser | null>(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -146,9 +140,28 @@ function AdminUserManager() {
             const matchesRole = roleFilter === 'all' || user.role === roleFilter;
             const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
 
-            return matchesQuery && matchesRole && matchesStatus;
+            let matchesDate = true;
+            if (dateFilter !== 'all') {
+                const userCreatedAt = new Date(user.createdAt);
+                if (!Number.isNaN(userCreatedAt.getTime())) {
+                    if (dateFilter === 'today') {
+                        const today = new Date();
+                        matchesDate = userCreatedAt.getFullYear() === today.getFullYear()
+                            && userCreatedAt.getMonth() === today.getMonth()
+                            && userCreatedAt.getDate() === today.getDate();
+                    } else {
+                        const daysAgo = Number(dateFilter);
+                        const cutoffTime = Date.now() - daysAgo * 24 * 60 * 60 * 1000;
+                        matchesDate = userCreatedAt.getTime() >= cutoffTime;
+                    }
+                } else {
+                    matchesDate = false;
+                }
+            }
+
+            return matchesQuery && matchesRole && matchesStatus && matchesDate;
         });
-    }, [query, roleFilter, statusFilter, users]);
+    }, [query, roleFilter, statusFilter, dateFilter, users]);
 
     const activeCount = users.filter((user) => user.status === 'ACTIVE').length;
     const lockedCount = users.filter((user) => isLockedStatus(user.status)).length;
@@ -208,6 +221,39 @@ function AdminUserManager() {
         }
     };
 
+    const handleSelectRole = async (targetUser: AdminUser, nextRole: string) => {
+        if (targetUser.role === nextRole) {
+            setRoleSelectorUser(null);
+            return;
+        }
+
+        setRoleSelectorUser(null);
+        setUpdatingUserId(targetUser.id);
+        setStatusError('');
+
+        try {
+            const payload = await httpRequest<AdminUser>(`${API_ENDPOINTS.ADMIN.USERS}/${targetUser.id}/role`, {
+                method: 'PATCH',
+                auth: true,
+                body: { role: nextRole },
+            });
+
+            if (!payload.data) {
+                throw new Error(`Không nhận được dữ liệu tài khoản sau khi thay đổi vai trò.`);
+            }
+
+            const updatedUser = payload.data;
+
+            setUsers((currentUsers) => currentUsers.map((user) => (
+                user.id === updatedUser.id ? updatedUser : user
+            )));
+        } catch (error) {
+            setStatusError(error instanceof ApiError || error instanceof Error ? error.message : `Không thể thay đổi vai trò người dùng. Vui lòng thử lại.`);
+        } finally {
+            setUpdatingUserId(null);
+        }
+    };
+
     return (
         <main className="admin-dashboard admin-users-page">
             {statusError && (
@@ -216,6 +262,48 @@ function AdminUserManager() {
                         <strong>Không thể cập nhật tài khoản</strong>
                         <p>{statusError}</p>
                         <button type="button" onClick={() => setStatusError('')}>Đóng</button>
+                    </div>
+                </div>
+            )}
+
+            {roleSelectorUser && (
+                <div className="admin-users-role-modal" role="dialog" aria-modal="true">
+                    <div className="admin-users-role-card">
+                        <strong>Thay đổi vai trò</strong>
+                        <p>Chọn vai trò mới cho tài khoản: <strong>{roleSelectorUser.email}</strong></p>
+                        
+                        <div className="admin-users-role-options">
+                            <button 
+                                type="button" 
+                                className={`role-option-btn is-admin ${roleSelectorUser.role === 'ADMIN' ? 'is-current' : ''}`}
+                                onClick={() => handleSelectRole(roleSelectorUser, 'ADMIN')}
+                            >
+                                <span className="role-option-label">Quản trị viên (Admin)</span>
+                                <span className="role-option-desc">Toàn quyền cấu hình, quản lý người dùng, mẫu thiệp và xem báo cáo dashboard.</span>
+                            </button>
+                            
+                            <button 
+                                type="button" 
+                                className={`role-option-btn is-support ${roleSelectorUser.role === 'SUPPORT' ? 'is-current' : ''}`}
+                                onClick={() => handleSelectRole(roleSelectorUser, 'SUPPORT')}
+                            >
+                                <span className="role-option-label">Nhân viên hỗ trợ (Support)</span>
+                                <span className="role-option-desc">Chỉ có quyền truy cập và quản lý danh sách thiệp cưới của hệ thống.</span>
+                            </button>
+                            
+                            <button 
+                                type="button" 
+                                className={`role-option-btn is-user ${roleSelectorUser.role === 'USER' ? 'is-current' : ''}`}
+                                onClick={() => handleSelectRole(roleSelectorUser, 'USER')}
+                            >
+                                <span className="role-option-label">Khách hàng (User)</span>
+                                <span className="role-option-desc">Người dùng thông thường, có thể tạo và quản lý thiệp cưới cá nhân.</span>
+                            </button>
+                        </div>
+                        
+                        <footer className="admin-users-role-actions">
+                            <button type="button" className="cancel-btn" onClick={() => setRoleSelectorUser(null)}>Hủy bỏ</button>
+                        </footer>
                     </div>
                 </div>
             )}
@@ -236,6 +324,15 @@ function AdminUserManager() {
                             <span>{label}</span>
                         </Link>
                     ))}
+                    <Link
+                        to="/"
+                        onClick={() => {
+                            authTokenService.clearSession();
+                        }}
+                    >
+                        <LogOut size={18} strokeWidth={2} />
+                        <span>Đăng xuất</span>
+                    </Link>
                 </nav>
             </aside>
 
@@ -276,6 +373,7 @@ function AdminUserManager() {
                         <select aria-label="Vai trò" value={roleFilter} onChange={(event) => setRoleFilter(event.target.value)}>
                             <option value="all">Vai trò: Tất cả</option>
                             <option value="ADMIN">Admin</option>
+                            <option value="SUPPORT">Support</option>
                             <option value="USER">Khách hàng</option>
                         </select>
 
@@ -285,19 +383,17 @@ function AdminUserManager() {
                             <option value="BLOCKED">Bị khóa</option>
                         </select>
 
-                        <button className="admin-users-date" type="button">
-                            <span>Ngày đăng ký</span>
-                            <CalendarDays size={16} />
-                        </button>
-
-                        <button className="admin-users-export" type="button">
-                            <Download size={16} />
-                            Xuất Excel
-                        </button>
-
-                        <button className="admin-users-filter" type="button" aria-label="Bộ lọc nâng cao">
-                            <SlidersHorizontal size={17} />
-                        </button>
+                        <select
+                            aria-label="Ngày đăng ký"
+                            value={dateFilter}
+                            onChange={(event) => setDateFilter(event.target.value)}
+                        >
+                            <option value="all">Ngày đăng ký: Tất cả</option>
+                            <option value="today">Hôm nay</option>
+                            <option value="15">15 ngày trước</option>
+                            <option value="30">30 ngày trước</option>
+                            <option value="60">2 tháng trước</option>
+                        </select>
                     </section>
 
                     <section className="admin-users-table-card">
@@ -342,14 +438,21 @@ function AdminUserManager() {
                                                 <strong>{user.fullname || '-'}</strong>
                                             </td>
                                             <td>{user.email}</td>
-                                            <td><span className={user.role === 'ADMIN' ? 'admin-users-role is-admin' : 'admin-users-role'}>{getRoleLabel(user.role)}</span></td>
+                                            <td><span className={`admin-users-role ${user.role === 'ADMIN' ? 'is-admin' : user.role === 'SUPPORT' ? 'is-support' : ''}`}>{getRoleLabel(user.role)}</span></td>
                                             <td><span className={user.status === 'ACTIVE' ? 'admin-users-status is-active' : 'admin-users-status is-locked'}>{getStatusLabel(user.status)}</span></td>
                                             <td>{formatDateTime(user.createdAt)}</td>
                                             <td>{formatDateTime(user.updateAt)}</td>
                                             <td>
                                                 <div className="admin-users-actions">
-                                                    <button type="button" aria-label="Xem"><Eye size={15} /></button>
-                                                    <button type="button" aria-label="Chỉnh sửa"><Edit3 size={15} /></button>
+                                                    <button
+                                                        type="button"
+                                                        aria-label="Thay đổi vai trò"
+                                                        title="Thay đổi vai trò"
+                                                        disabled={updatingUserId === user.id}
+                                                        onClick={() => setRoleSelectorUser(user)}
+                                                    >
+                                                        <UserCheck size={15} />
+                                                    </button>
                                                     {isLockedStatus(user.status) ? (
                                                         <button
                                                             type="button"
@@ -371,7 +474,6 @@ function AdminUserManager() {
                                                             <LockKeyhole size={15} />
                                                         </button>
                                                     )}
-                                                    <button type="button" aria-label="Thêm"><MoreVertical size={15} /></button>
                                                 </div>
                                             </td>
                                         </tr>

@@ -417,10 +417,10 @@
 
 .admin-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 1.4fr) minmax(240px, 0.86fr) minmax(280px, 1fr) minmax(240px, 0.86fr);
+  grid-template-columns: minmax(320px, 1.4fr) minmax(240px, 1fr) minmax(280px, 1.2fr);
   grid-template-areas:
-    "revenue donut template users"
-    "orders orders orders orders";
+    "revenue donut users"
+    "orders orders orders";
   gap: 16px;
   align-items: start;
 }

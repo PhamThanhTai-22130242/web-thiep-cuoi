@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Eye } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { WeddingTemplateCode, weddingTemplateRegistry } from '../data/weddingTemplateRegistry';
+import { weddingTemplateService, DbTemplate, packageKeys } from '../services/wedding-template.service';
 import './TemplateSelectorPage.css';
 
 type PackageKey = 'co-ban' | 'chuyen-nghiep' | 'thoi-thuong';
@@ -75,6 +76,9 @@ const templatePackages: Record<PackageKey, TemplatePackage> = {
 
 function TemplateSelectorPage() {
     const { packageKey } = useParams<{ packageKey: string }>();
+    const [dbTemplates, setDbTemplates] = useState<DbTemplate[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const legacyPackageKeys: Record<string, PackageKey> = {
         '99k': 'co-ban',
         '199k': 'chuyen-nghiep',
@@ -87,9 +91,35 @@ function TemplateSelectorPage() {
     const animationRefs = useRef<number[]>([]);
 
     useEffect(() => {
+        let isMounted = true;
+        async function fetchTemplates() {
+            try {
+                const data = await weddingTemplateService.getPublicTemplates();
+                if (isMounted) {
+                    setDbTemplates(data);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error("Failed to load templates", error);
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        }
+        fetchTemplates();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    const currentPackageTemplates = dbTemplates.filter(
+        (t) => packageKeys[t.category] === currentPackageKey
+    );
+
+    useEffect(() => {
         animationRefs.current.forEach((frameId) => window.cancelAnimationFrame(frameId));
         animationRefs.current = [];
-        frameRefs.current = frameRefs.current.slice(0, selectedPackage.samples.length);
+        frameRefs.current = frameRefs.current.slice(0, currentPackageTemplates.length);
 
         frameRefs.current.forEach((frame, index) => {
             if (!frame) {
@@ -151,6 +181,16 @@ function TemplateSelectorPage() {
         };
     }, [selectedPackage]);
 
+    if (loading) {
+        return (
+            <main className="selector-page" style={{ '--selector-accent': selectedPackage.accent } as React.CSSProperties}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px', color: '#90766d', fontFamily: 'system-ui' }}>
+                    Đang tải danh sách mẫu thiệp...
+                </div>
+            </main>
+        );
+    }
+
     return (
         <main className="selector-page" style={{ '--selector-accent': selectedPackage.accent } as React.CSSProperties}>
             <nav className="selector-tabs" aria-label="Lọc mẫu thiệp theo gói">
@@ -165,13 +205,18 @@ function TemplateSelectorPage() {
                 ))}
             </nav>
 
-            {selectedPackage.samples.length > 0 ? (
+            {currentPackageTemplates.length > 0 ? (
                 <section className="selector-grid" aria-label="Danh sách mẫu thiệp cưới">
-                    {selectedPackage.samples.map((sample, index) => {
-                        const templateConfig = weddingTemplateRegistry[sample.templateCode];
+                    {currentPackageTemplates.map((dbTpl, index) => {
+                        const templateConfig = weddingTemplateRegistry[dbTpl.code];
+                        if (!templateConfig) return null;
+                        const price = dbTpl.price;
+                        const promoPrice = dbTpl.promoPrice;
+                        const name = dbTpl.name;
+                        const description = dbTpl.description;
 
                         return (
-                        <article key={sample.templateCode} className="selector-card">
+                        <article key={dbTpl.code} className="selector-card">
                             <div
                                 className={`selector-preview-wrap${templateConfig.thumbnailPath ? ' has-thumbnail' : ''}`}
                                 style={templateConfig.previewBgColor ? { background: templateConfig.previewBgColor } : undefined}
@@ -181,7 +226,7 @@ function TemplateSelectorPage() {
                                     <img
                                         className="selector-template-image"
                                         src={templateConfig.thumbnailPath}
-                                        alt={templateConfig.name}
+                                        alt={name}
                                         loading="lazy"
                                     />
                                 ) : (
@@ -191,7 +236,7 @@ function TemplateSelectorPage() {
                                                 frameRefs.current[index] = node;
                                             }}
                                             src={templateConfig.previewPath}
-                                            title={`Preview ${templateConfig.name}`}
+                                            title={`Preview ${name}`}
                                             loading="lazy"
                                             scrolling="no"
                                             tabIndex={-1}
@@ -203,11 +248,11 @@ function TemplateSelectorPage() {
                             <div className="selector-card-copy">
                                 <div>
                                     <div className="selector-card-price">
-                                        {selectedPackage.originalPrice && <del>{selectedPackage.originalPrice}</del>}
-                                        <strong>{selectedPackage.price}</strong>
+                                        {price && <del>{price}</del>}
+                                        <strong>{promoPrice}</strong>
                                     </div>
-                                    <h2>{templateConfig.name}</h2>
-                                    <p>{templateConfig.description}</p>
+                                    <h2>{name}</h2>
+                                    <p>{description}</p>
                                 </div>
 
                                 <div className="selector-actions">
@@ -229,7 +274,7 @@ function TemplateSelectorPage() {
                 <section className="selector-empty">
                     <h2>Mẫu của {selectedPackage.label} đang được cập nhật</h2>
                     <p>Sắp cập nhập</p>
-                    <Link to="/chon-mau/co-ban">Xem mẫu đang có <ArrowRight size={17} /></Link>
+                    <Link to="/chon-mau/chuyen-nghiep">Xem mẫu đang có <ArrowRight size={17} /></Link>
                 </section>
             )}
         </main>

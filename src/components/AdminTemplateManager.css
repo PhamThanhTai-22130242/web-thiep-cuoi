@@ -146,8 +146,7 @@
 }
 
 .admin-template-toolbar {
-  display: grid;
-  grid-template-columns: minmax(210px, 1fr) auto minmax(150px, auto) minmax(150px, auto) auto auto;
+  display: flex;
   gap: 12px;
   align-items: center;
   margin-bottom: 18px;
@@ -170,6 +169,7 @@
   gap: 8px;
   padding: 0 12px;
   color: #8a7067;
+  flex: 1;
 }
 
 .admin-template-search input {
@@ -357,7 +357,7 @@
 .admin-template-actions {
   grid-column: 2 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   align-self: end;
 }
@@ -391,29 +391,11 @@
   .admin-template-grid {
     grid-template-columns: repeat(2, minmax(320px, 1fr));
   }
-
-  .admin-template-toolbar {
-    grid-template-columns: minmax(230px, 1fr) auto auto auto;
-  }
-
-  .admin-template-tabs {
-    grid-column: 1 / -1;
-    width: fit-content;
-  }
 }
 
 @media (max-width: 1100px) {
   .admin-template-stats {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
-  }
-
-  .admin-template-toolbar {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .admin-template-search,
-  .admin-template-tabs {
-    grid-column: 1 / -1;
   }
 }
 
@@ -422,8 +404,12 @@
     padding: 18px 14px 28px;
   }
 
+  .admin-template-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .admin-template-stats,
-  .admin-template-toolbar,
   .admin-template-grid {
     grid-template-columns: 1fr;
   }
@@ -433,9 +419,7 @@
     overflow-x: auto;
   }
 
-  .admin-template-toolbar select,
-  .admin-template-export,
-  .admin-template-add {
+  .admin-template-toolbar select {
     width: 100%;
   }
 
@@ -457,4 +441,140 @@
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Modal Edit Pricing Styles */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(45, 30, 24, 0.45);
+  backdrop-filter: blur(8px);
+  animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-modal-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 16px;
+  border: 1px solid #ebd9cc;
+  border-radius: 16px;
+  background: #fffdfb;
+  box-shadow: 0 20px 45px rgba(80, 40, 25, 0.15);
+  overflow: hidden;
+  animation: modalScaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0dfd5;
+}
+
+.admin-modal-header h3 {
+  margin: 0;
+  color: #9c1a16;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+}
+
+.admin-modal-close {
+  border: 0;
+  background: transparent;
+  color: #8c6c62;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.admin-modal-body {
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.admin-form-group {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-form-group label {
+  color: #6d554c;
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+.admin-form-group input {
+  height: 42px;
+  border: 1px solid #ead8cd;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #fffcfb;
+  color: #4a3029;
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: 0;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.admin-form-group input:focus {
+  border-color: #a11612;
+  box-shadow: 0 0 0 3px rgba(161, 22, 18, 0.1);
+}
+
+.admin-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #f0dfd5;
+  background: #faf4ef;
+}
+
+.admin-btn-cancel,
+.admin-btn-save {
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.admin-btn-cancel {
+  border-color: #ead8cd;
+  background: #fff;
+  color: #765b52;
+}
+
+.admin-btn-cancel:hover {
+  background: #faf4ef;
+}
+
+.admin-btn-save {
+  background: #a11612;
+  color: #fff;
+}
+
+.admin-btn-save:hover {
+  background: #8b120f;
+  transform: translateY(-1px);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

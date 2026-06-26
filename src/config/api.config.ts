@@ -11,10 +11,13 @@ export const API_ENDPOINTS = {
         REFRESH_TOKEN: '/api/auth/refresh-token',
     },
     ADMIN: {
+        DASHBOARD: '/api/admin/dashboard',
         USERS: '/api/admin/users',
         INVITATIONS: '/api/admin/invitations',
+        TEMPLATES: '/api/admin/templates',
     },
     MY_WEDDING_CARDS: '/api/my-wedding-cards',
+    TEMPLATES: '/api/templates',
     UPLOADS: {
         CLOUDINARY: '/api/uploads/cloudinary',
     },

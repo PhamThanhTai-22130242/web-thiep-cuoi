@@ -776,14 +776,12 @@
 .wim-activation-panel {
   position: relative;
   width: min(560px, 100%);
-  border: 1px solid rgba(160, 24, 19, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 22px;
   padding: 28px;
-  background:
-    radial-gradient(circle at 16% 0%, rgba(160, 24, 19, 0.2), transparent 34%),
-    linear-gradient(135deg, #fff8f6 0%, #ffe8e4 100%);
-  color: #3f241e;
-  box-shadow: 0 30px 90px rgba(44, 20, 14, 0.26);
+  background: #ffffff;
+  color: #4a5568;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.18);
 }
 
 .wim-activation-close {
@@ -794,16 +792,17 @@
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 1px solid rgba(124, 22, 15, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.84);
-  color: #6b433b;
+  background: #ffffff;
+  color: #718096;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .wim-activation-close:hover {
-  background: #7c160f;
-  color: #fffaf6;
+  background: #f7fafc;
+  color: #1a202c;
 }
 
 .wim-activation-panel h2,
@@ -814,7 +813,7 @@
 .wim-activation-panel h2 {
   max-width: 430px;
   padding-top: 34px;
-  color: #4b241d;
+  color: #1a202c;
   font-family: 'Inter', system-ui, sans-serif;
   font-size: clamp(1.35rem, 3vw, 2rem);
   font-weight: 950;
@@ -828,14 +827,14 @@
   gap: 5px 12px;
   align-items: center;
   margin-top: 22px;
-  border: 1px solid rgba(160, 24, 19, 0.24);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
   padding: 13px 14px;
-  background: rgba(255, 246, 244, 0.92);
+  background: #f7fafc;
 }
 
 .wim-activation-copy span {
-  color: #8f6f65;
+  color: #718096;
   font-size: 0.72rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -858,29 +857,30 @@
   width: 40px;
   height: 40px;
   place-items: center;
-  border: 1px solid rgba(160, 24, 19, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
-  background: #fff7f5;
-  color: #a01813;
+  background: #ffffff;
+  color: #4a5568;
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .wim-activation-copy button:hover {
-  background: #a01813;
-  color: #fffaf6;
+  background: #f7fafc;
+  color: #1a202c;
 }
 
 .wim-activation-note {
   display: grid;
   gap: 12px;
   margin-top: 20px;
-  border: 1px solid rgba(160, 24, 19, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 14px;
   padding: 16px;
-  background: rgba(255, 246, 244, 0.84);
-  color: #6d2e28;
+  background: #f7fafc;
+  color: #4a5568;
   font-size: 0.94rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.65;
 }
 
@@ -897,14 +897,15 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  border: 1px solid rgba(160, 24, 19, 0.18);
+  border: 1px solid rgba(0, 104, 255, 0.15);
   border-radius: 8px;
-  background: #a01813;
-  color: #fffaf6;
+  background: #eef4ff;
+  color: #0056d6;
   font-size: 0.9rem;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 16px 30px rgba(160, 24, 19, 0.16);
+  box-shadow: 0 8px 16px rgba(0, 104, 255, 0.05);
+  transition: all 0.2s ease;
 }
 
 .wim-activation-actions img {
@@ -916,14 +917,19 @@
 }
 
 .wim-activation-actions a + a {
-  border-color: rgba(124, 22, 15, 0.3);
-  background: #7c160f;
-  color: #fffaf6;
-  box-shadow: 0 16px 30px rgba(124, 22, 15, 0.16);
+  border-color: rgba(224, 73, 144, 0.15);
+  background: #fff0f6;
+  color: #d11c72;
+  box-shadow: 0 8px 16px rgba(224, 73, 144, 0.05);
 }
 
 .wim-activation-actions a:hover {
   transform: translateY(-1px);
+  background: #e0ecff;
+}
+
+.wim-activation-actions a + a:hover {
+  background: #ffe3f0;
 }
 
 @media (max-width: 1180px) {

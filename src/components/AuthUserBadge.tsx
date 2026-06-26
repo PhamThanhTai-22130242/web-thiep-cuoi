@@ -47,7 +47,9 @@ function AuthUserBadge({ user, onLogout }: { user: AuthUser; onLogout: () => voi
 
     const handleManageInvitations = () => {
         setIsOpen(false);
-        navigate(user.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+        const isAdminOrSupport = user.role === 'ADMIN' || user.role === 'SUPPORT';
+        const adminPath = user.role === 'SUPPORT' ? '/admin-invitations' : '/admin-dashboard';
+        navigate(isAdminOrSupport ? adminPath : '/dashboard');
     };
 
     return (

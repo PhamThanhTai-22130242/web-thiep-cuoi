@@ -521,7 +521,7 @@ function ElegantInvitationEditor() {
         }
     };
 
-    const persistDraft = async (status: 'draft' | 'active') => {
+    const persistDraft = async (status: 'draft' | 'active', isPublishing = false) => {
         if (isSaving) return;
 
         if (!authTokenService.isAuthenticated()) {
@@ -539,26 +539,6 @@ function ElegantInvitationEditor() {
             return;
         }
 
-        if (!validateRequiredImages()) {
-            return;
-        }
-
-
-        if (status === 'active' && draft.showGiftSection !== false) {
-            const missingGroom = draft.showGroomGift && !draft.images.groomQr;
-            const missingBride = draft.showBrideGift && !draft.images.brideQr;
-            if (missingGroom || missingBride) {
-                const missing = [];
-                if (missingGroom) missing.push('QR chú rể');
-                if (missingBride) missing.push('QR cô dâu');
-                setValidationAlert({
-                    title: 'Thiếu thông tin mã QR',
-                    message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
-                });
-                return;
-            }
-        }
-
         setIsSaving(true);
         setSaveStatus('');
         try {
@@ -566,13 +546,38 @@ function ElegantInvitationEditor() {
             await weddingCardService.checkSlugAvailability(requestedSlug, weddingId);
             setSlugError('');
 
+            if (!validateRequiredImages()) {
+                return;
+            }
+
+            if ((status === 'active' || isPublishing) && draft.showGiftSection !== false) {
+                const missingGroom = draft.showGroomGift && !draft.images.groomQr;
+                const missingBride = draft.showBrideGift && !draft.images.brideQr;
+                if (missingGroom || missingBride) {
+                    const missing = [];
+                    if (missingGroom) missing.push('QR chú rể');
+                    if (missingBride) missing.push('QR cô dâu');
+                    setValidationAlert({
+                        title: 'Thiếu thông tin mã QR',
+                        message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
+                    });
+                    return;
+                }
+            }
+
             const uploadReady = await uploadLocalImages(draft, setSaveStatus);
-            setSaveStatus(status === 'active' ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
-            const payload = toSaveRequest(uploadReady, status);
+            setSaveStatus((status === 'active' || isPublishing) ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
+            const payload = toSaveRequest(uploadReady, isPublishing ? 'draft' : status);
             const card = await weddingCardService.saveMyCard(payload, weddingId);
             const normalized = fromApiCard(card, draft);
             setDraft(normalized);
             setWeddingId(card.weddingId);
+
+            if (isPublishing) {
+                navigate(`/dashboard?activate=${card.weddingId}`);
+                return;
+            }
+
             setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
             setSaveStatus(status === 'active' ? 'Đã xuất bản thiệp thành công!' : 'Đã lưu bản nháp thành công!');
             setShowSaveSuccess(true);
@@ -588,7 +593,7 @@ function ElegantInvitationEditor() {
     };
 
     const handleSaveDraft = () => persistDraft('draft');
-    const handlePublish = () => persistDraft('active');
+    const handlePublish = () => persistDraft('draft', true);
 
     return (
         <main className="clve-page">

@@ -4,7 +4,7 @@ import AuthUserBadge from './AuthUserBadge';
 import GoogleLoginButton from './GoogleLoginButton';
 import { authService } from '../services/auth.service';
 import { authTokenService } from '../services/auth-token.service';
-import { ApiError } from '../services/http.service';
+import { ApiError, isApiError } from '../services/http.service';
 import './HomePage.css';
 import './SiteHeader.css';
 
@@ -63,11 +63,13 @@ function SiteHeader() {
             setCurrentUser(loggedInUser);
             setAuthMode(null);
             if (!location.pathname.endsWith('/edit')) {
-                navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+                const isAdminOrSupport = loggedInUser?.role === 'ADMIN' || loggedInUser?.role === 'SUPPORT';
+                const adminPath = loggedInUser?.role === 'SUPPORT' ? '/admin-invitations' : '/admin-dashboard';
+                navigate(isAdminOrSupport ? adminPath : '/dashboard');
             }
         } catch (error) {
             setAuthMessageType('error');
-            setAuthMessage(error instanceof ApiError ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
+            setAuthMessage(isApiError(error) ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
         } finally {
             setIsAuthSubmitting(false);
         }
@@ -83,7 +85,9 @@ function SiteHeader() {
         setCurrentUser(loggedInUser);
         setAuthMode(null);
         if (!location.pathname.endsWith('/edit')) {
-            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+            const isAdminOrSupport = loggedInUser?.role === 'ADMIN' || loggedInUser?.role === 'SUPPORT';
+            const adminPath = loggedInUser?.role === 'SUPPORT' ? '/admin-invitations' : '/admin-dashboard';
+            navigate(isAdminOrSupport ? adminPath : '/dashboard');
         }
     }, [navigate, location.pathname]);
 
@@ -124,7 +128,7 @@ function SiteHeader() {
                     <ul className="home-nav-links">
                         <li><a href="/#home">Trang chủ</a></li>
                         <li><a href="/#pricing">Bảng giá</a></li>
-                        <li><Link to="/chon-mau/co-ban">Mẫu thiệp</Link></li>
+                        <li><Link to="/chon-mau/chuyen-nghiep">Mẫu thiệp</Link></li>
                         <li><a href="/#contact">Liên hệ</a></li>
                     </ul>
 

@@ -24,7 +24,12 @@ export class ApiError extends Error {
         this.status = status;
         this.code = code;
         this.data = data;
+        Object.setPrototypeOf(this, ApiError.prototype);
     }
+}
+
+export function isApiError(error: unknown): error is ApiError {
+    return error instanceof ApiError || (error !== null && typeof error === 'object' && (error as any).name === 'ApiError');
 }
 
 function buildUrl(path: string) {
@@ -141,16 +146,18 @@ export async function httpRequest<TResponse, TBody = unknown>(
 
         return payload;
     } catch (error) {
-        if (!(error instanceof ApiError)) {
+        const isApiErr = isApiError(error);
+        if (!isApiErr) {
             redirectToServerErrorPage();
         }
 
-        if (error instanceof ApiError) {
-            if (shouldRedirectToServerErrorPage(error.status) || shouldRedirectToServerErrorPage(error.code)) {
+        if (isApiErr) {
+            const apiErr = error as ApiError;
+            if (shouldRedirectToServerErrorPage(apiErr.status) || shouldRedirectToServerErrorPage(apiErr.code)) {
                 redirectToServerErrorPage();
             }
 
-            throw error;
+            throw apiErr;
         }
 
         if (error instanceof DOMException && error.name === 'AbortError') {

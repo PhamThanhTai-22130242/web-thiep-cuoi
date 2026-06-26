@@ -96,6 +96,15 @@ function SectionTitle({ label, title, subtitle }: { label?: string; title: strin
     );
 }
 
+function getMapSrc(value: string) {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return '';
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
+    }
+    return trimmedValue;
+}
+
 function Polaroid({ src, alt, className }: { src: string; alt: string; className: string }) {
     return (
         <figure className={`ei-polaroid ${className}`}>
@@ -112,6 +121,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
     const countdownTargetDate = getCountdownTargetDate(invitationData.event);
     const weddingCalendar = getWeddingCalendar(invitationData.event);
     const shouldShowVenue = Boolean(invitationData.event.venue?.trim());
+    const mapSrc = getMapSrc(invitationData.event.mapUrl);
     const [countdown, setCountdown] = useState(() => getCountdown(countdownTargetDate));
     const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
     const [wishStatus, setWishStatus] = useState('');
@@ -146,6 +156,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
                     }
                 });
             },
@@ -316,6 +327,8 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
             <section className="ei-details-stage" data-ei-reveal>
                 <div className="ei-invite-card">
                     <div className="ei-band">
+                        <img src="/img/flower-hysac-1.png" alt="" className="ei-band-flower ei-band-flower-tl" />
+                        <img src="/img/flower-hysac-3.png" alt="" className="ei-band-flower ei-band-flower-br" />
                         <p>Trân trọng kính mời</p>
                         <h2>Quý khách</h2>
                         <span>Tham dự buổi tiệc thân mật cùng gia đình chúng tôi</span>
@@ -334,18 +347,14 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                     {shouldShowVenue && <a href="#map">Xem chỉ đường</a>}
                 </div>
 
-                {shouldShowVenue && <div className="ei-map-card" data-ei-image-reveal="left">
+                {shouldShowVenue && <div className="ei-map-card">
                     <div className="ei-map-copy">
                         <span>Venue Guide</span>
                         <h3>{invitationData.event.venue}</h3>
                         <p>{invitationData.event.address}</p>
                     </div>
                     <section className="ei-map-section" id="map">
-                        {invitationData.event.mapUrl && invitationData.event.mapUrl.toLowerCase().includes('<iframe') ? (
-                            <div dangerouslySetInnerHTML={{ __html: invitationData.event.mapUrl }} />
-                        ) : (
-                            <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
-                        )}
+                        {mapSrc && <iframe title="Bản đồ địa điểm cưới" src={mapSrc} loading="lazy" />}
                     </section>
                 </div>}
             </section>

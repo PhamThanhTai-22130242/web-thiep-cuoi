@@ -1748,7 +1748,7 @@ body::-webkit-scrollbar-button {
 
   .qp-formal-names {
     margin-bottom: 48px;
-    font-size: clamp(1.28rem, 5.8vw, 1.2rem);
+    font-size: clamp(2.3rem, 9.5vw, 3.2rem);
   }
 
   .qp-name-flower.is-left {
@@ -1885,6 +1885,8 @@ body::-webkit-scrollbar-button {
   .qp-profile-seal {
     width: 68px;
     height: 68px;
+    left: 50%;
+    top: 43.5%;
   }
 }
 

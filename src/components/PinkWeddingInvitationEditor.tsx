@@ -260,6 +260,16 @@ function parseDateDisplay(value: string) {
     return `${year}-${month}-${day}`;
 }
 
+function extractMapIframeSrc(value: string) {
+    const match = value.match(/src=["']([^"']+)["']/i);
+    return match?.[1]?.trim() || value;
+}
+
+function normalizeMapInput(value: string) {
+    const trimmedValue = value.trim();
+    return trimmedValue.toLowerCase().includes('<iframe') ? extractMapIframeSrc(trimmedValue) : value;
+}
+
 function PinkWeddingInvitationEditor() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -533,7 +543,7 @@ function PinkWeddingInvitationEditor() {
         }
     };
 
-    const persistDraft = async (status: 'draft' | 'active') => {
+    const persistDraft = async (status: 'draft' | 'active', isPublishing = false) => {
         if (isSaving) return;
 
         if (!authTokenService.isAuthenticated()) {
@@ -551,25 +561,6 @@ function PinkWeddingInvitationEditor() {
             return;
         }
 
-        if (!validateRequiredImages()) {
-            return;
-        }
-
-        if (status === 'active' && draft.showGiftSection !== false) {
-            const missingGroom = draft.showGroomGift && !draft.images.groomQr;
-            const missingBride = draft.showBrideGift && !draft.images.brideQr;
-            if (missingGroom || missingBride) {
-                const missing = [];
-                if (missingGroom) missing.push('QR chú rể');
-                if (missingBride) missing.push('QR cô dâu');
-                setValidationAlert({
-                    title: 'Thiếu thông tin mã QR',
-                    message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
-                });
-                return;
-            }
-        }
-
         setIsSaving(true);
         setSaveStatus('');
         try {
@@ -577,13 +568,38 @@ function PinkWeddingInvitationEditor() {
             await weddingCardService.checkSlugAvailability(requestedSlug, weddingId);
             setSlugError('');
 
+            if (!validateRequiredImages()) {
+                return;
+            }
+
+            if ((status === 'active' || isPublishing) && draft.showGiftSection !== false) {
+                const missingGroom = draft.showGroomGift && !draft.images.groomQr;
+                const missingBride = draft.showBrideGift && !draft.images.brideQr;
+                if (missingGroom || missingBride) {
+                    const missing = [];
+                    if (missingGroom) missing.push('QR chú rể');
+                    if (missingBride) missing.push('QR cô dâu');
+                    setValidationAlert({
+                        title: 'Thiếu thông tin mã QR',
+                        message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
+                    });
+                    return;
+                }
+            }
+
             const uploadReady = await uploadLocalImages(draft, setSaveStatus);
-            setSaveStatus(status === 'active' ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
-            const payload = toSaveRequest(uploadReady, status);
+            setSaveStatus((status === 'active' || isPublishing) ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
+            const payload = toSaveRequest(uploadReady, isPublishing ? 'draft' : status);
             const card = await weddingCardService.saveMyCard(payload, weddingId);
             const normalized = fromApiCard(card, draft);
             setDraft(normalized);
             setWeddingId(card.weddingId);
+
+            if (isPublishing) {
+                navigate(`/dashboard?activate=${card.weddingId}`);
+                return;
+            }
+
             setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
             setSaveStatus(status === 'active' ? 'Đã xuất bản thiệp thành công!' : 'Đã lưu bản nháp thành công!');
             setShowSaveSuccess(true);
@@ -599,7 +615,7 @@ function PinkWeddingInvitationEditor() {
     };
 
     const handleSaveDraft = () => persistDraft('draft');
-    const handlePublish = () => persistDraft('active');
+    const handlePublish = () => persistDraft('draft', true);
 
     return (
         <main className="pwie-page">
@@ -860,7 +876,7 @@ function PinkWeddingInvitationEditor() {
                                 value={draft.mapUrl}
                                 rows={3}
                                 placeholder="Ví dụ: https://maps.app.goo.gl/... hoặc dán mã nhúng bản đồ"
-                                onChange={(event) => updateField('mapUrl', event.target.value)}
+                                onChange={(event) => updateField('mapUrl', normalizeMapInput(event.target.value))}
                             />
                         </label>
                     </section>

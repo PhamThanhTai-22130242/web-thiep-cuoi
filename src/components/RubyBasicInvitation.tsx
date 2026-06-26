@@ -1,4 +1,5 @@
 import { CSSProperties, FormEvent, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
     defaultInvitationTemplate,
     defaultRubyInvitationTemplate,
@@ -48,6 +49,15 @@ function RubySectionTitle({ label, title, subtitle }: { label?: string; title: s
     );
 }
 
+function getMapSrc(value: string) {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return '';
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
+    }
+    return trimmedValue;
+}
+
 function RubyPhoto({ src, alt, className, onClick }: { src: string; alt: string; className: string; onClick?: () => void }) {
     const hasImage = Boolean(src);
 
@@ -74,6 +84,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
             },
         }
         : rawInvitationData;
+    const mapSrc = getMapSrc(invitationData.event.mapUrl);
     const invitationImages = useMemo(() => {
         if (onImageClick) {
             return {
@@ -179,6 +190,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
                     }
                 });
             },
@@ -365,12 +377,8 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
 
 
 
-            <section className="rbi-map-section" id="map" data-rbi-image="left">
-                {invitationData.event.mapUrl && invitationData.event.mapUrl.toLowerCase().includes('<iframe') ? (
-                    <div dangerouslySetInnerHTML={{ __html: invitationData.event.mapUrl }} />
-                ) : (
-                    <iframe title="Bản đồ địa điểm cưới" src={invitationData.event.mapUrl} loading="lazy" />
-                )}
+            <section className="rbi-map-section" id="map">
+                {mapSrc && <iframe title="Bản đồ địa điểm cưới" src={mapSrc} loading="lazy" />}
             </section>
             <section className="rbi-gallery" data-rbi-reveal>
                 <RubySectionTitle title="Our Memories" subtitle={invitationData.couple.quote} />
@@ -398,7 +406,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                 </button>
             </section>
 
-            {isGalleryOpen && (
+            {isGalleryOpen && createPortal(
                 <div className="rbi-gallery-modal" role="dialog" aria-modal="true" aria-label="Album ảnh cưới">
                     <button className="rbi-gallery-backdrop" type="button" aria-label="Đóng album ảnh" onClick={() => setIsGalleryOpen(false)} />
                     <div className="rbi-gallery-panel">
@@ -438,7 +446,8 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                             ))}
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
             <section className="rbi-wishes" data-rbi-reveal>
                 <RubySectionTitle

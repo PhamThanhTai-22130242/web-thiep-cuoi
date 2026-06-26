@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Copy, Eye, Headphones, LinkIcon, MessageSquareText, Pencil, Search, Users, X, Download } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getWeddingTemplateConfig } from '../data/weddingTemplateRegistry';
 import {
     MyWeddingCardResponse,
@@ -39,8 +39,8 @@ const statusLabels: Record<InvitationStatus, string> = {
 
 const sortOptions = ['Mới cập nhật', 'Lượt xem cao', 'Ngày cưới gần nhất'];
 const fallbackThumbnail = '/img/mockup-thiep-cuoi-online-1.webp';
-const zaloContactUrl = 'https://zalo.me/';
-const messageContactUrl = 'https://www.facebook.com/messages';
+const zaloContactUrl = process.env.REACT_APP_ZALO_URL || 'https://zalo.me/0869380447';
+const messageContactUrl = process.env.REACT_APP_FACEBOOK_URL || 'https://www.facebook.com/profile.php?id=61564494647627';
 const zaloIconUrl = 'https://tse2.mm.bing.net/th/id/OIP.1q7tV2cPIRzQCa-n-KMlHwHaHa?cb=thfvnextfalcon&rs=1&pid=ImgDetMain&o=7&rm=3';
 const messageIconUrl = 'https://www.logoshape.com/wp-content/uploads/2024/09/meta-messenger-icon-vector_logoshape.png';
 
@@ -170,6 +170,17 @@ function WeddingInvitationManager() {
     const [rsvpMessage, setRsvpMessage] = useState('');
     const [rsvpFilter, setRsvpFilter] = useState<'all' | 'yes' | 'no'>('all');
     const toastTimerRef = useRef<number | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    useEffect(() => {
+        const activateId = searchParams.get('activate');
+        if (activateId) {
+            setActivationCardId(Number(activateId));
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.delete('activate');
+            setSearchParams(nextParams, { replace: true });
+        }
+    }, [searchParams, setSearchParams]);
 
     const showToast = (content: string) => {
         setToastMessage(content);

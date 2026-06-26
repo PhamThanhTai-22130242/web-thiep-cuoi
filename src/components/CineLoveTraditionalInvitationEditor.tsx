@@ -539,7 +539,7 @@ function CineLoveTraditionalInvitationEditor() {
         console.log(`Đã thực hiện: ${actionName}`);
     };
 
-    const persistDraft = async (status: 'draft' | 'active') => {
+    const persistDraft = async (status: 'draft' | 'active', isPublishing = false) => {
         if (isSaving) return;
 
         // Check authentication first
@@ -558,26 +558,6 @@ function CineLoveTraditionalInvitationEditor() {
             return;
         }
 
-        if (!validateRequiredImages()) {
-            return;
-        }
-
-        // Validate QR images when gift section is enabled (only when publishing)
-        if (status === 'active' && draft.showGiftSection !== false) {
-            const missingGroom = draft.showGroomGift && !draft.images.groomQr;
-            const missingBride = draft.showBrideGift && !draft.images.brideQr;
-            if (missingGroom || missingBride) {
-                const missing = [];
-                if (missingGroom) missing.push('QR chú rể');
-                if (missingBride) missing.push('QR cô dâu');
-                setValidationAlert({
-                    title: 'Thiếu thông tin mã QR',
-                    message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
-                });
-                return;
-            }
-        }
-
         setIsSaving(true);
         setSaveStatus('');
         try {
@@ -585,13 +565,39 @@ function CineLoveTraditionalInvitationEditor() {
             await weddingCardService.checkSlugAvailability(requestedSlug, weddingId);
             setSlugError('');
 
+            if (!validateRequiredImages()) {
+                return;
+            }
+
+            // Validate QR images when gift section is enabled (only when publishing)
+            if ((status === 'active' || isPublishing) && draft.showGiftSection !== false) {
+                const missingGroom = draft.showGroomGift && !draft.images.groomQr;
+                const missingBride = draft.showBrideGift && !draft.images.brideQr;
+                if (missingGroom || missingBride) {
+                    const missing = [];
+                    if (missingGroom) missing.push('QR chú rể');
+                    if (missingBride) missing.push('QR cô dâu');
+                    setValidationAlert({
+                        title: 'Thiếu thông tin mã QR',
+                        message: `Bạn đã chọn hiển thị nhưng chưa tải lên ${missing.join(' và ')}. Vui lòng bổ sung ảnh hoặc tắt tùy chọn trước khi lưu!`,
+                    });
+                    return;
+                }
+            }
+
             const uploadReady = await uploadLocalImages(draft, setSaveStatus);
-            setSaveStatus(status === 'active' ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
-            const payload = toSaveRequest(uploadReady, status);
+            setSaveStatus((status === 'active' || isPublishing) ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
+            const payload = toSaveRequest(uploadReady, isPublishing ? 'draft' : status);
             const card = await weddingCardService.saveMyCard(payload, weddingId);
             const normalized = fromApiCard(card, draft);
             setDraft(normalized);
             setWeddingId(card.weddingId);
+
+            if (isPublishing) {
+                navigate(`/dashboard?activate=${card.weddingId}`);
+                return;
+            }
+
             setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
             setSaveStatus(status === 'active' ? 'Đã xuất bản thiệp thành công!' : 'Đã lưu bản nháp thành công!');
             setShowSaveSuccess(true);
@@ -607,7 +613,7 @@ function CineLoveTraditionalInvitationEditor() {
     };
 
     const handleSaveDraft = () => persistDraft('draft');
-    const handlePublish = () => persistDraft('active');
+    const handlePublish = () => persistDraft('draft', true);
 
     return (
         <main className="clve-page">
@@ -857,7 +863,11 @@ function CineLoveTraditionalInvitationEditor() {
                                 value={draft.mapUrl} 
                                 rows={3}
                                 placeholder="Ví dụ: https://maps.app.goo.gl/... hoặc dán mã nhúng bản đồ"
-                                onChange={(event) => updateField('mapUrl', event.target.value)} 
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    const match = value.match(/src=["']([^"']+)["']/i);
+                                    updateField('mapUrl', value.toLowerCase().includes('<iframe') && match?.[1] ? match[1] : value);
+                                }} 
                                 style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13px', resize: 'vertical' }}
                             />
                         </label>

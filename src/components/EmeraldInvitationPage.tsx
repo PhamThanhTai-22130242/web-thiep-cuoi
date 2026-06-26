@@ -1,5 +1,6 @@
 import { CSSProperties, FormEvent, useEffect, useRef, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { ArrowLeft, X } from 'lucide-react';
 import {
     defaultInvitationTemplate,
     InvitationTemplate,
@@ -165,7 +166,7 @@ function toGoogleMapEmbedUrl(value: string) {
     }
 
     if (trimmedValue.toLowerCase().includes('<iframe')) {
-        return trimmedValue;
+        return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
     }
 
     try {
@@ -433,6 +434,7 @@ function EmeraldInvitation({
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
                     }
                 });
             },
@@ -584,6 +586,8 @@ function EmeraldInvitation({
                     </div>
                     <section className="ei-invite-card" data-ei-reveal>
                         <div className="ei-band">
+                            <img src="/img/flower-hysac-1.png" alt="" className="ei-band-flower ei-band-flower-tl" />
+                            <img src="/img/flower-hysac-3.png" alt="" className="ei-band-flower ei-band-flower-br" />
                             <p>Trân trọng kính mời</p>
                             <h2>Quý khách</h2>
                             <span>Tham dự buổi tiệc thân mật cùng gia đình chúng tôi</span>
@@ -640,12 +644,8 @@ function EmeraldInvitation({
 
                 </section>
 
-                {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map" data-ei-image-reveal="left">
-                    {mapUrl.toLowerCase().includes('<iframe') ? (
-                        <div dangerouslySetInnerHTML={{ __html: mapUrl }} />
-                    ) : (
-                        <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
-                    )}
+                {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map">
+                    <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
                 </section>}
 
                 <section className="ei-gallery" data-ei-reveal>
@@ -678,7 +678,7 @@ function EmeraldInvitation({
                     </button>
                 </section>
 
-                {isGalleryOpen && (
+                {isGalleryOpen && createPortal(
                     <div className="ei-gallery-modal" role="dialog" aria-modal="true" aria-label="Album ảnh cưới">
                         <button className="ei-gallery-backdrop" type="button" aria-label="Đóng album ảnh" onClick={() => setIsGalleryOpen(false)} />
                         <div className="ei-gallery-panel">
@@ -690,8 +690,7 @@ function EmeraldInvitation({
                                     </strong>
                                 </div>
                                 <button className="ei-gallery-close-icon" type="button" aria-label="Quay lại thiệp cưới" onClick={() => setIsGalleryOpen(false)}>
-                                    <ArrowLeft size={22} strokeWidth={2.5} />
-                                    <span>Quay lại</span>
+                                    <X size={22} strokeWidth={2.5} />
                                 </button>
                             </div>
                             <div className="ei-gallery-viewer">
@@ -729,7 +728,8 @@ function EmeraldInvitation({
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
 
                 <section className="ei-wishes" data-ei-reveal>

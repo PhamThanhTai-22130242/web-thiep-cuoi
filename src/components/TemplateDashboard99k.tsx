@@ -19,7 +19,7 @@ import {
 } from '../data/invitationTemplates';
 import { MyWeddingCardResponse, MyWeddingCardSaveRequest, WeddingCardMedia } from '../models/wedding-card.model';
 import { weddingCardService } from '../services/wedding-card.service';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import RubyBasicInvitation from './RubyBasicInvitation';
 import './TemplateDashboard.css';
 
@@ -225,7 +225,7 @@ function toGoogleMapEmbedUrl(value: string) {
     }
 
     if (trimmedValue.toLowerCase().includes('<iframe')) {
-        return trimmedValue;
+        return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
     }
 
     try {
@@ -240,6 +240,13 @@ function toGoogleMapEmbedUrl(value: string) {
     }
 
     return `https://www.google.com/maps?q=${encodeURIComponent(trimmedValue)}&output=embed`;
+}
+
+function normalizeMapInput(value: string) {
+    const trimmedValue = value.trim();
+    return trimmedValue.toLowerCase().includes('<iframe')
+        ? trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || ''
+        : value;
 }
 
 function getGallery(template: InvitationTemplate) {
@@ -368,6 +375,7 @@ function fromApiCard(card: MyWeddingCardResponse): InvitationTemplate {
 
 function TemplateDashboard99k() {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
     const pendingImageFilesRef = useRef<Map<UploadTarget, File>>(new Map());
@@ -384,6 +392,7 @@ function TemplateDashboard99k() {
     const [isMapDetailOpen, setIsMapDetailOpen] = useState(false);
     const [slugError, setSlugError] = useState('');
     const [imageError, setImageError] = useState('');
+    const [validationErrorModal, setValidationErrorModal] = useState('');
 
     const selectedTemplate = useMemo(
         () => templates.find((template) => template.id === selectedId) || templates[0] || defaultInvitationTemplate,
@@ -514,31 +523,46 @@ function TemplateDashboard99k() {
         };
     }, [reset, searchParams]);
 
-    const persistTemplate = async (values: InvitationTemplate, status: 'draft' | 'active', message: string) => {
+    const persistTemplate = async (values: InvitationTemplate, status: 'draft' | 'active', message: string, isPublishing = false) => {
         try {
+            const requestedSlug = values.slug?.trim();
+            if (!requestedSlug) {
+                const nextMessage = 'Vui lòng nhập đường dẫn ngắn (slug) trước khi lưu nháp hoặc xuất bản thiệp.';
+                setSlugError(nextMessage);
+                setSaveStatus(nextMessage);
+                return;
+            }
+
+            setSaveStatus('Đang kiểm tra URL...');
+            await weddingCardService.checkSlugAvailability(requestedSlug, currentWeddingId);
+            setSlugError('');
+
             const missingImages = getMissingRequiredImages(values);
             if (missingImages.length) {
-                const nextMessage = `Vui lòng chọn ${missingImages.join(', ')} trước khi lưu thiệp.`;
-                setImageError(nextMessage);
-                setSaveStatus(nextMessage);
+                setValidationErrorModal(`Vui lòng chọn đầy đủ các ảnh bắt buộc trước khi lưu/xuất bản thiệp: ${missingImages.join(', ')}.`);
+                return;
+            }
+
+            const galleryCount = getGallery(values).length;
+            if (galleryCount < 4) {
+                setValidationErrorModal('Vui lòng chọn ít nhất 4 ảnh album trước khi lưu nháp hoặc xuất bản thiệp.');
                 return;
             }
             setImageError('');
 
-            const requestedSlug = values.slug?.trim();
-            if (requestedSlug) {
-                setSaveStatus('Đang kiểm tra URL...');
-                await weddingCardService.checkSlugAvailability(requestedSlug, currentWeddingId);
-                setSlugError('');
-            }
-
             setIsSaving(true);
             setSaveStatus('Đang lưu thiệp...');
             const uploadReadyValues = await prepareTemplateForSave(values);
-            setSaveStatus(status === 'active' ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
-            const card = await weddingCardService.saveMyCard(toSaveRequest(uploadReadyValues, status), currentWeddingId);
+            setSaveStatus((status === 'active' || isPublishing) ? 'Đang xuất bản thiệp...' : 'Đang lưu bản nháp...');
+            const card = await weddingCardService.saveMyCard(toSaveRequest(uploadReadyValues, isPublishing ? 'draft' : status), currentWeddingId);
             const normalized = fromApiCard(card);
             setCurrentWeddingId(card.weddingId);
+
+            if (isPublishing) {
+                navigate(`/dashboard?activate=${card.weddingId}`);
+                return;
+            }
+
             setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
             setTemplates([normalized]);
             reset(normalized);
@@ -560,6 +584,18 @@ function TemplateDashboard99k() {
     });
 
     const handleOpenPreview = handleSubmit(async (values) => {
+        const missingImages = getMissingRequiredImages(values);
+        if (missingImages.length) {
+            setValidationErrorModal(`Vui lòng chọn đầy đủ các ảnh bắt buộc trước khi xem trước: ${missingImages.join(', ')}.`);
+            return;
+        }
+
+        const galleryCount = getGallery(values).length;
+        if (galleryCount < 4) {
+            setValidationErrorModal('Vui lòng chọn ít nhất 4 ảnh album trước khi xem trước.');
+            return;
+        }
+
         const previewWindow = window.open('about:blank', '_blank');
         if (previewWindow) {
             previewWindow.document.write('<!doctype html><title>Đang tạo bản xem trước</title><body style="font-family:system-ui;padding:32px">Đang tạo bản xem trước...</body>');
@@ -586,7 +622,7 @@ function TemplateDashboard99k() {
     });
 
     const handlePublish = handleSubmit((values) => {
-        persistTemplate(values, 'active', 'Đã xuất bản.');
+        persistTemplate(values, 'draft', 'Đã xuất bản.', true);
     });
 
     const handleEventDateChange = (dateValue: string) => {
@@ -644,7 +680,7 @@ function TemplateDashboard99k() {
     };
 
     const handleMapUrlChange = (mapValue: string) => {
-        setValue('event.mapUrl', mapValue, { shouldDirty: true });
+        setValue('event.mapUrl', normalizeMapInput(mapValue), { shouldDirty: true });
     };
 
     const handleMapUrlBlur = (mapValue: string) => {
@@ -925,6 +961,49 @@ function TemplateDashboard99k() {
                             </button>
                         </div>
                         <iframe title="Chi tiết địa điểm Google Map" src={mapDetailUrl} loading="lazy" />
+                    </section>
+                </div>
+            )}
+
+            {validationErrorModal && (
+                <div className="td-map-detail-backdrop" role="presentation" onClick={() => setValidationErrorModal('')}>
+                    <section
+                        className="td-map-detail-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="td-validation-error-title"
+                        onClick={(event) => event.stopPropagation()}
+                        style={{ maxWidth: '440px', background: '#fffdf8' }}
+                    >
+                        <div className="td-map-detail-head">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <X size={20} style={{ color: '#d32f2f' }} />
+                                <h2 id="td-validation-error-title" style={{ color: '#d32f2f', fontSize: '18px', fontWeight: 'bold', margin: 0 }}>Lưu ý</h2>
+                            </div>
+                            <button type="button" aria-label="Đóng thông báo" onClick={() => setValidationErrorModal('')}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div style={{ padding: '22px 24px', lineHeight: '1.6', fontSize: '15px', color: '#2d4b45' }}>
+                            <p style={{ margin: '0 0 24px 0' }}>{validationErrorModal}</p>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setValidationErrorModal('')}
+                                    style={{
+                                        padding: '8px 24px',
+                                        backgroundColor: '#2d4b45',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        fontWeight: '600',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Đồng ý
+                                </button>
+                            </div>
+                        </div>
                     </section>
                 </div>
             )}

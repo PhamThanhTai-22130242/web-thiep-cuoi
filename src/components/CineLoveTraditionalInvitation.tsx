@@ -1,4 +1,5 @@
 import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import './CineLoveTraditionalInvitation.css';
 import { defaultInvitationTemplate, loadCineLovePreview } from '../data/invitationTemplates';
@@ -125,6 +126,15 @@ function getCurrentTimeInput() {
     const minute = String(now.getMinutes()).padStart(2, '0');
 
     return `${hour}:${minute}`;
+}
+
+function getMapSrc(value: string) {
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return '';
+    if (trimmedValue.toLowerCase().includes('<iframe')) {
+        return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
+    }
+    return trimmedValue;
 }
 
 function createEmptyEditableData(): CineLoveInvitationData {
@@ -287,6 +297,7 @@ function CineLoveTraditionalInvitation({
     const lastInitialWishesRef = useRef<WeddingWish[]>(initialWishes);
 
     const invitationData = data ?? previewData ?? defaultCineLoveInvitationData;
+    const mapSrc = getMapSrc(invitationData.mapUrl);
     
     const calendarDays = useMemo(() => Array.from({ length: 30 }, (_, index) => index + 1), []);
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
@@ -623,19 +634,17 @@ function CineLoveTraditionalInvitation({
                     )}
                     {invitationData.address}
                 </p>
-                {invitationData.mapUrl && invitationData.mapUrl.toLowerCase().includes('<iframe') ? (
-                    <div dangerouslySetInnerHTML={{ __html: invitationData.mapUrl }} />
-                ) : invitationData.mapUrl && (invitationData.mapUrl.includes('embed') || invitationData.mapUrl.includes('maps.google.com/maps?q=')) ? (
+                {mapSrc && (mapSrc.includes('embed') || mapSrc.includes('maps.google.com/maps?q=')) ? (
                     <iframe
                         title="Bản đồ địa điểm tổ chức tiệc cưới"
-                        src={invitationData.mapUrl}
+                        src={mapSrc}
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                     />
-                ) : invitationData.mapUrl ? (
+                ) : mapSrc ? (
                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                         <a 
-                            href={invitationData.mapUrl} 
+                            href={mapSrc} 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#a62d2d', color: '#fff', borderRadius: '30px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
@@ -690,7 +699,7 @@ function CineLoveTraditionalInvitation({
                 </div>
 
                 <button className="clv-memories__open" type="button" onClick={() => openGalleryAt(0)} disabled={!galleryImages.length}>
-                    {`Xem toàn bộ ${galleryImages.length} ảnh`}
+                    Xem toàn bộ <span>{galleryImages.length}</span> ảnh
                 </button>
             </section>
 
@@ -821,7 +830,7 @@ function CineLoveTraditionalInvitation({
                 </div>
             )}
 
-            {isGalleryOpen && (
+            {isGalleryOpen && createPortal(
                 <div className="clv-gallery-modal" role="dialog" aria-modal="true" aria-label="Album ảnh cưới">
                     <button className="clv-gallery-backdrop" type="button" aria-label="Đóng album ảnh" onClick={() => setIsGalleryOpen(false)} />
                     <div className="clv-gallery-panel">
@@ -867,7 +876,8 @@ function CineLoveTraditionalInvitation({
                             ))}
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             <section className="clv-ending">

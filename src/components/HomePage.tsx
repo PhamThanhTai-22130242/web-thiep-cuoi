@@ -1,11 +1,11 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { BadgeCheck, HeartHandshake, Sparkles, Trophy } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthUserBadge from './AuthUserBadge';
 import GoogleLoginButton from './GoogleLoginButton';
 import { authService } from '../services/auth.service';
 import { authTokenService } from '../services/auth-token.service';
-import { ApiError } from '../services/http.service';
+import { ApiError, isApiError } from '../services/http.service';
 import './HomePage.css';
 
 type AuthMode = 'login' | 'register';
@@ -33,7 +33,23 @@ function MaterialStatusIcon({ included }: { included: boolean }) {
 
 function HomePage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [authMode, setAuthMode] = useState<AuthMode | null>(null);
+
+    useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.replace('#', '');
+            const element = document.getElementById(id);
+            if (element) {
+                const timer = setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+                return () => clearTimeout(timer);
+            }
+        }
+        return undefined;
+    }, [location.hash]);
+
     const [openFaq, setOpenFaq] = useState(0);
     const [authMessage, setAuthMessage] = useState('');
     const [authMessageType, setAuthMessageType] = useState<'success' | 'error'>('success');
@@ -76,10 +92,12 @@ function HomePage() {
             formElement.reset();
             setCurrentUser(loggedInUser);
             setAuthMode(null);
-            navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+            const isAdminOrSupport = loggedInUser?.role === 'ADMIN' || loggedInUser?.role === 'SUPPORT';
+            const adminPath = loggedInUser?.role === 'SUPPORT' ? '/admin-invitations' : '/admin-dashboard';
+            navigate(isAdminOrSupport ? adminPath : '/dashboard');
         } catch (error) {
             setAuthMessageType('error');
-            setAuthMessage(error instanceof ApiError ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
+            setAuthMessage(isApiError(error) ? error.message : isRegister ? 'Đăng ký thất bại. Vui lòng thử lại.' : 'Đăng nhập thất bại. Vui lòng thử lại.');
         } finally {
             setIsAuthSubmitting(false);
         }
@@ -94,7 +112,9 @@ function HomePage() {
         setAuthMessage('Đăng nhập Google thành công.');
         setCurrentUser(loggedInUser);
         setAuthMode(null);
-        navigate(loggedInUser?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
+        const isAdminOrSupport = loggedInUser?.role === 'ADMIN' || loggedInUser?.role === 'SUPPORT';
+        const adminPath = loggedInUser?.role === 'SUPPORT' ? '/admin-invitations' : '/admin-dashboard';
+        navigate(isAdminOrSupport ? adminPath : '/dashboard');
     }, [navigate]);
 
     const handleGoogleLoginError = useCallback((message: string) => {
@@ -140,7 +160,7 @@ function HomePage() {
                 <ul className="home-nav-links">
                     <li><a href="#home">Trang chủ</a></li>
                     <li><a href="#pricing">Bảng giá</a></li>
-                    <li><Link to="/chon-mau/co-ban">Mẫu thiệp</Link></li>
+                    <li><Link to="/chon-mau/chuyen-nghiep">Mẫu thiệp</Link></li>
                     <li><a href="#contact">Liên hệ</a></li>
                 </ul>
                 {currentUser ? (
@@ -163,7 +183,7 @@ function HomePage() {
                     </p>
                     <div className="home-hero-actions">
                         <a href="#contact" className="home-btn home-btn-primary">Liên hệ ngay</a>
-                        <Link to="/chon-mau/co-ban" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
+                        <Link to="/chon-mau/chuyen-nghiep" className="home-btn home-btn-ghost">Xem mẫu thiệp</Link>
                     </div>
                 </div>
 
@@ -302,7 +322,7 @@ function HomePage() {
                                 <em>-50%</em>
                             </div>
                         </div>
-                        <Link to="/chon-mau/co-ban">Lựa mẫu</Link>
+                        <Link to="/chon-mau/chuyen-nghiep">Lựa mẫu</Link>
                     </article>
                     <article className="is-featured">
                         <div className="home-plan-badge">
@@ -401,8 +421,8 @@ function HomePage() {
                 <h2>Sẵn sàng tạo thiệp cưới hoàn hảo?</h2>
                 <p>Liên hệ ngay để được tư vấn miễn phí và chọn gói dịch vụ phù hợp nhất.</p>
                 <div>
-                    <a href="#contact" className="home-ready-primary">Liên hệ tư vấn</a>
-                    <Link to="/chon-mau/co-ban" className="home-ready-secondary">Xem mẫu thiệp</Link>
+                    <a href={socialLinks.zalo} target="_blank" rel="noopener noreferrer" className="home-ready-primary">Liên hệ tư vấn</a>
+                    <Link to="/chon-mau/chuyen-nghiep" className="home-ready-secondary">Xem mẫu thiệp</Link>
                 </div>
             </section>
 
@@ -418,7 +438,7 @@ function HomePage() {
                         <span>Mã số thuế: Đang cập nhật</span>
                     </div>
 
-                    <div className="home-footer-contact">
+                    <div className="home-footer-contact" id="contact">
                         <h3>Liên hệ</h3>
                         <p>Chúng tôi luôn sẵn sàng hỗ trợ bạn. Vui lòng liên hệ với chúng tôi qua các kênh dưới đây để được tư vấn.</p>
                         <div className="home-footer-socials">

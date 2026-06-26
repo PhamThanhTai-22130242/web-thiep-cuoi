@@ -478,9 +478,9 @@
   padding: 14px 16px 14px 44px;
   background: linear-gradient(135deg, rgba(45, 75, 69, 0.1), rgba(255, 255, 255, 0.9));
   color: #2d4b45;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.45;
-  box-shadow: 0 14px 28px rgba(45, 75, 69, 0.08);
+  box-shadow: 0 14px 28px rgba(45, 75, 69, 0.04);
 }
 
 .td-save-status::before {
@@ -500,19 +500,17 @@
 }
 
 .td-save-status.is-error {
-  border-color: rgba(177, 46, 41, 0.28);
-  background:
-    linear-gradient(135deg, rgba(255, 247, 244, 0.98), rgba(255, 238, 232, 0.94)),
-    repeating-linear-gradient(135deg, rgba(177, 46, 41, 0.06) 0 8px, transparent 8px 16px);
-  color: #8f211c;
-  box-shadow: 0 16px 36px rgba(177, 46, 41, 0.14);
+  border-color: rgba(229, 115, 115, 0.3);
+  background: linear-gradient(135deg, #fffcfb, #ffebee);
+  color: #c62828;
+  box-shadow: 0 12px 24px rgba(177, 46, 41, 0.06);
 }
 
 .td-save-status.is-error::before {
   content: '!';
-  background: #b12e29;
+  background: #e57373;
   color: #fff;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .td-editor-panel form,
@@ -616,29 +614,29 @@
 }
 
 .td-field input.is-error {
-  border-color: #b12e29;
-  background: #fff8f6;
-  color: #6f1713;
+  border-color: rgba(229, 115, 115, 0.5);
+  background: #fffcfc;
+  color: #c62828;
   box-shadow:
-    0 0 0 4px rgba(177, 46, 41, 0.12),
-    inset 0 0 0 1px rgba(177, 46, 41, 0.12);
+    0 0 0 3px rgba(229, 115, 115, 0.08),
+    inset 0 0 0 1px rgba(229, 115, 115, 0.08);
 }
 
 .td-field input.is-error:focus {
-  border-color: #b12e29;
+  border-color: rgba(229, 115, 115, 0.8);
   box-shadow:
-    0 0 0 4px rgba(177, 46, 41, 0.18),
-    0 12px 24px rgba(177, 46, 41, 0.1);
+    0 0 0 3px rgba(229, 115, 115, 0.15),
+    0 8px 16px rgba(177, 46, 41, 0.06);
 }
 
 .td-field-error {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin-top: -2px;
-  color: #9b2520;
+  margin-top: 4px;
+  color: #c62828;
   font-size: 0.8rem;
-  font-weight: 850;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -650,10 +648,10 @@
   flex: 0 0 16px;
   place-items: center;
   border-radius: 50%;
-  background: #b12e29;
+  background: #e57373;
   color: #fff;
   font-size: 0.68rem;
-  font-weight: 950;
+  font-weight: 700;
 }
 
 .td-field input:disabled {
