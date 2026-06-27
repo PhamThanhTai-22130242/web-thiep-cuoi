@@ -286,7 +286,7 @@ function ElegantInvitation({
                     }
                 });
             },
-            { threshold: 0.16 },
+            { threshold: 0.05 },
         );
 
         items.forEach((item) => observer.observe(item));
@@ -380,8 +380,10 @@ function ElegantInvitation({
         return <InvitationLoadingScreen className="qp-page" />;
     }
 
+    const isOpened = isOpeningOut || editable;
+
     return (
-        <main className={`qp-page${editable ? ' is-editing' : ''}`}>
+        <main className={`qp-page${editable ? ' is-editing' : ''}${isOpened ? ' is-opened' : ''}`}>
             {isOpeningVisible && !editable && (
                 <section className={`qp-opening${isOpeningOut ? ' is-open' : ''}`} aria-label="Mở thiệp cưới">
                     <div className="qp-opening-side qp-opening-left">
@@ -415,8 +417,8 @@ function ElegantInvitation({
                 <div className="qp-hero-copy">
                     <span>Wedding by</span>
                     <h1>
-                        {invitationData.groomName}
-                        <b>{invitationData.brideName}</b>
+                        <span className="qp-hero-groom">{invitationData.groomName}</span>
+                        <b className="qp-hero-bride">{invitationData.brideName}</b>
                     </h1>
                     <p>{eventParts.day}.{eventParts.month.padStart(2, '0')}.{eventParts.year}</p>
                 </div>
@@ -514,7 +516,6 @@ function ElegantInvitation({
             <section className="qp-album" data-qp-reveal>
                 <img className="qp-album-flower is-left" src="/img/flower3.png" alt="" aria-hidden="true" />
                 <img className="qp-album-flower is-right" src="/img/flower2.png" alt="" aria-hidden="true" />
-                <img className="qp-album-petals" src="/img/flower3.png" alt="" aria-hidden="true" />
                 <h2>
                     <span className="qp-album-word is-album">Album</span>
                     <span className="qp-album-word is-of">of</span>
@@ -522,7 +523,11 @@ function ElegantInvitation({
                 </h2>
                 <div className="qp-album-grid">
                     {galleryToRender.map((image, index) => (
-                        <figure key={`album-img-${index}`} className={index % 3 === 0 ? 'is-large' : ''}>
+                        <figure 
+                            key={`album-img-${index}`} 
+                            className={index % 3 === 0 ? 'is-large' : ''}
+                            data-qp-reveal
+                        >
                             <EditablePhoto
                                 src={image}
                                 alt={`Album cưới ${index + 1}`}

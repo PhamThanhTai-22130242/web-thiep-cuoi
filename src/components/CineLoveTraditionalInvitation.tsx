@@ -375,7 +375,7 @@ function CineLoveTraditionalInvitation({
 
     useEffect(() => {
         const revealItems = document.querySelectorAll<HTMLElement>(
-            '.clv-page > section:not(.clv-hero), .clv-family-grid article, .clv-memory-card, .clv-wish-list article, .clv-gift-cards article',
+            '.clv-page > section:not(.clv-hero), .clv-family-grid article, .clv-memory-card, .clv-time-row, .clv-calendar, .clv-wish-list article, .clv-gift-cards article',
         );
 
         const observer = new IntersectionObserver(
