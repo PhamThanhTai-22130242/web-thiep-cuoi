@@ -320,6 +320,16 @@ function EmeraldInvitation({
     const [wishStatus, setWishStatus] = useState('');
     const [rsvpStatus, setRsvpStatus] = useState('');
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
+
+    const closeGallery = () => {
+        setIsClosing(true);
+        setTimeout(() => {
+            setIsGalleryOpen(false);
+            setIsClosing(false);
+        }, 280);
+    };
+
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
     const [activeThemeKey, setActiveThemeKey] = useState(invitationColorThemes[0].key);
     const areImagesLoading = useInvitationImagePreload(onImageClick ? [] : imageLoadTargets, isLoadingSavedPreview);
@@ -389,8 +399,8 @@ function EmeraldInvitation({
 
     useEffect(() => {
         const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
-            initialWishes.every((w, i) => 
-                w.name === lastInitialWishesRef.current[i]?.name && 
+            initialWishes.every((w, i) =>
+                w.name === lastInitialWishesRef.current[i]?.name &&
                 w.message === lastInitialWishesRef.current[i]?.message
             );
         if (!isSame) {
@@ -452,7 +462,7 @@ function EmeraldInvitation({
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                setIsGalleryOpen(false);
+                closeGallery();
             }
 
             if (event.key === 'ArrowLeft') {
@@ -472,7 +482,7 @@ function EmeraldInvitation({
             document.body.style.overflow = previousOverflow;
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [galleryImages.length, isGalleryOpen]);
+    }, [galleryImages.length, isGalleryOpen, closeGallery]);
 
     const handleWish = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -492,7 +502,7 @@ function EmeraldInvitation({
             lastSubmittedWishRef.current = nextWish;
             lastSubmittedWishDeliveredRef.current = false;
             await postWhenConfigured(wishEndpoint || invitationData.api.wishEndpoint, nextWish);
-            
+
             setWishes((current) => {
                 const exists = current.some((item) => item.name === nextWish.name && item.message === nextWish.message);
                 return exists ? current : [nextWish, ...current];
@@ -679,8 +689,8 @@ function EmeraldInvitation({
                 </section>
 
                 {isGalleryOpen && createPortal(
-                    <div className="ei-gallery-modal" role="dialog" aria-modal="true" aria-label="Album ảnh cưới">
-                        <button className="ei-gallery-backdrop" type="button" aria-label="Đóng album ảnh" onClick={() => setIsGalleryOpen(false)} />
+                    <div className={`ei-gallery-modal${isClosing ? ' is-closing' : ''}`} role="dialog" aria-modal="true" aria-label="Album ảnh cưới">
+                        <button className="ei-gallery-backdrop" type="button" aria-label="Đóng album ảnh" onClick={closeGallery} />
                         <div className="ei-gallery-panel">
                             <div className="ei-gallery-panel-head">
                                 <div>
@@ -689,7 +699,7 @@ function EmeraldInvitation({
                                         {activeGalleryIndex + 1}/{galleryImages.length}
                                     </strong>
                                 </div>
-                                <button className="ei-gallery-close-icon" type="button" aria-label="Quay lại thiệp cưới" onClick={() => setIsGalleryOpen(false)}>
+                                <button className="ei-gallery-close-icon" type="button" aria-label="Quay lại thiệp cưới" onClick={closeGallery}>
                                     <X size={22} strokeWidth={2.5} />
                                 </button>
                             </div>

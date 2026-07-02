@@ -181,16 +181,6 @@ function TemplateSelectorPage() {
         };
     }, [selectedPackage]);
 
-    if (loading) {
-        return (
-            <main className="selector-page" style={{ '--selector-accent': selectedPackage.accent } as React.CSSProperties}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px', color: '#90766d', fontFamily: 'system-ui' }}>
-                    Đang tải danh sách mẫu thiệp...
-                </div>
-            </main>
-        );
-    }
-
     return (
         <main className="selector-page" style={{ '--selector-accent': selectedPackage.accent } as React.CSSProperties}>
             <nav className="selector-tabs" aria-label="Lọc mẫu thiệp theo gói">
@@ -205,7 +195,29 @@ function TemplateSelectorPage() {
                 ))}
             </nav>
 
-            {currentPackageTemplates.length > 0 ? (
+            {loading ? (
+                <section className="selector-grid" aria-label="Đang tải danh sách mẫu thiệp cưới">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="selector-card selector-skeleton-card">
+                            <div className="selector-preview-wrap selector-skeleton-preview-wrap">
+                                <div className="selector-skeleton-image selector-skeleton" />
+                            </div>
+                            <div className="selector-card-copy">
+                                <div>
+                                    <div className="selector-skeleton-price selector-skeleton" />
+                                    <div className="selector-skeleton-title selector-skeleton" />
+                                    <div className="selector-skeleton-desc selector-skeleton" />
+                                    <div className="selector-skeleton-desc selector-skeleton" style={{ width: '80%' }} />
+                                </div>
+                                <div className="selector-actions">
+                                    <div className="selector-skeleton-button selector-skeleton-btn-primary selector-skeleton" />
+                                    <div className="selector-skeleton-button selector-skeleton-btn-secondary selector-skeleton" />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </section>
+            ) : currentPackageTemplates.length > 0 ? (
                 <section className="selector-grid" aria-label="Danh sách mẫu thiệp cưới">
                     {currentPackageTemplates.map((dbTpl, index) => {
                         const templateConfig = weddingTemplateRegistry[dbTpl.code];
