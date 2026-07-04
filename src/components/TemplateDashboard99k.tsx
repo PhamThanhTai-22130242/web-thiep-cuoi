@@ -7,6 +7,8 @@ import {
     Save,
     Send,
     X,
+    Check,
+    Loader2,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
@@ -19,7 +21,9 @@ import {
 } from '../data/invitationTemplates';
 import { MyWeddingCardResponse, MyWeddingCardSaveRequest, WeddingCardMedia } from '../models/wedding-card.model';
 import { weddingCardService } from '../services/wedding-card.service';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { authTokenService } from '../services/auth-token.service';
+import { previewSkeletonDocument } from '../utils/preview-skeleton';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import RubyBasicInvitation from './RubyBasicInvitation';
 import './TemplateDashboard.css';
 
@@ -48,6 +52,13 @@ const defaultSampleImages = new Set([
     defaultInvitationTemplate.images.studio,
     defaultInvitationTemplate.images.thank,
     ...(defaultInvitationTemplate.images.gallery || []),
+    defaultRubyInvitationTemplate.images.cover,
+    defaultRubyInvitationTemplate.images.kiss,
+    defaultRubyInvitationTemplate.images.walk,
+    defaultRubyInvitationTemplate.images.smile,
+    defaultRubyInvitationTemplate.images.studio,
+    defaultRubyInvitationTemplate.images.thank,
+    ...(defaultRubyInvitationTemplate.images.gallery || []),
 ]);
 
 const requiredImages: Array<{ field: ImageField; label: string }> = [
@@ -376,16 +387,37 @@ function fromApiCard(card: MyWeddingCardResponse): InvitationTemplate {
 function TemplateDashboard99k() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
     const pendingImageFilesRef = useRef<Map<UploadTarget, File>>(new Map());
     const previewUrlsRef = useRef<Set<string>>(new Set());
+    const hasLoadedRef = useRef(false);
     const [templates, setTemplates] = useState<InvitationTemplate[]>(() => loadTemplates());
     const [selectedId] = useState(templates[0]?.id || defaultInvitationTemplate.id);
-    const [currentWeddingId, setCurrentWeddingId] = useState<number | undefined>(() => {
-        const value = Number(searchParams.get('weddingId'));
-        return Number.isFinite(value) && value > 0 ? value : undefined;
-    });
+
+    const getWeddingId = () => {
+        const stateId = location.state?.weddingId;
+        if (stateId && Number.isFinite(stateId) && stateId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(stateId));
+            return stateId;
+        }
+
+        const queryId = Number(searchParams.get('weddingId'));
+        if (queryId && Number.isFinite(queryId) && queryId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(queryId));
+            return queryId;
+        }
+
+        const storedId = Number(sessionStorage.getItem('edit_wedding_id_' + location.pathname));
+        if (storedId && Number.isFinite(storedId) && storedId > 0) {
+            return storedId;
+        }
+
+        return undefined;
+    };
+
+    const [currentWeddingId, setCurrentWeddingId] = useState<number | undefined>(() => getWeddingId());
     const [saveStatus, setSaveStatus] = useState('');
     const [uploadTarget, setUploadTarget] = useState<UploadTarget | null>(null);
     const [isSaving, setIsSaving] = useState(false);
@@ -393,6 +425,7 @@ function TemplateDashboard99k() {
     const [slugError, setSlugError] = useState('');
     const [imageError, setImageError] = useState('');
     const [validationErrorModal, setValidationErrorModal] = useState('');
+    const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
 
     const selectedTemplate = useMemo(
         () => templates.find((template) => template.id === selectedId) || templates[0] || defaultInvitationTemplate,
@@ -493,8 +526,8 @@ function TemplateDashboard99k() {
     };
 
     useEffect(() => {
-        const value = Number(searchParams.get('weddingId'));
-        if (!Number.isFinite(value) || value <= 0) {
+        const value = getWeddingId();
+        if (!value || hasLoadedRef.current) {
             return;
         }
 
@@ -510,7 +543,9 @@ function TemplateDashboard99k() {
                 setTemplates([loadedTemplate]);
                 reset(loadedTemplate);
                 setEventDateText(formatDateDisplay(loadedTemplate.event.date));
+                setCardStatus(card.status);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
+                hasLoadedRef.current = true;
             })
             .catch((error) => {
                 if (isActive) {
@@ -521,9 +556,14 @@ function TemplateDashboard99k() {
         return () => {
             isActive = false;
         };
-    }, [reset, searchParams]);
+    }, [reset]);
 
     const persistTemplate = async (values: InvitationTemplate, status: 'draft' | 'active', message: string, isPublishing = false) => {
+        if (!authTokenService.isAuthenticated()) {
+            window.dispatchEvent(new CustomEvent('open-auth-modal'));
+            return;
+        }
+
         try {
             const requestedSlug = values.slug?.trim();
             if (!requestedSlug) {
@@ -563,11 +603,18 @@ function TemplateDashboard99k() {
                 return;
             }
 
-            setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
+            if (status === 'active') {
+                navigate('/dashboard');
+                return;
+            }
+
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(card.weddingId));
+            navigate(location.pathname, { replace: true, state: { weddingId: card.weddingId } });
             setTemplates([normalized]);
             reset(normalized);
             setEventDateText(formatDateDisplay(normalized.event.date));
-            setSaveStatus(`${message} Slug: ${card.slug}`);
+            setCardStatus(card.status);
+            setSaveStatus(message);
         } catch (error) {
             const nextMessage = error instanceof Error ? error.message : 'Không thể lưu thiệp. Vui lòng thử lại.';
             if (nextMessage.includes('URL đã tồn tại')) {
@@ -598,7 +645,7 @@ function TemplateDashboard99k() {
 
         const previewWindow = window.open('about:blank', '_blank');
         if (previewWindow) {
-            previewWindow.document.write('<!doctype html><title>Đang tạo bản xem trước</title><body style="font-family:system-ui;padding:32px">Đang tạo bản xem trước...</body>');
+            previewWindow.document.write(previewSkeletonDocument);
             previewWindow.document.close();
         }
 
@@ -623,6 +670,15 @@ function TemplateDashboard99k() {
 
     const handlePublish = handleSubmit((values) => {
         persistTemplate(values, 'draft', 'Đã xuất bản.', true);
+    });
+
+    const handleFinish = handleSubmit((values) => {
+        if (cardStatus === 'active') {
+            persistTemplate(values, 'active', 'Đã hoàn tất chỉnh sửa thiệp!');
+            return;
+        }
+
+        persistTemplate(values, 'draft', 'Đã lưu bản nháp thành công!', true);
     });
 
     const handleEventDateChange = (dateValue: string) => {
@@ -784,13 +840,9 @@ function TemplateDashboard99k() {
                         <Eye size={18} />
                         Xem trước
                     </button>
-                    <button type="button" onClick={handleSaveDraft} disabled={isSaving}>
-                        <Save size={18} />
-                        Lưu nháp
-                    </button>
-                    <button className="is-publish" type="button" onClick={handlePublish} disabled={isSaving}>
-                        <Send size={18} />
-                        Xuất bản
+                    <button className="is-publish" type="button" disabled={isSaving} onClick={handleFinish}>
+                        {isSaving ? <Loader2 size={18} className="td-spin" /> : <Check size={18} />}
+                        Hoàn tất
                     </button>
                 </div>
 

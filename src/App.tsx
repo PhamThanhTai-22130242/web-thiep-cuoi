@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminDashboard from './components/AdminDashboard';
 import AdminInvitationList from './components/AdminInvitationList';
@@ -33,6 +33,48 @@ function RequireAuth({ children, allowedRoles }: { children: ReactNode; allowedR
 }
 
 function App() {
+    // useEffect(() => {
+    //     const handleContextMenu = (e: MouseEvent) => {
+    //         e.preventDefault();
+    //     };
+
+    //     const handleKeyDown = (e: KeyboardEvent) => {
+    //         // Chặn F12
+    //         if (e.key === 'F12') {
+    //             e.preventDefault();
+    //             return;
+    //         }
+    //         // Chặn Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (và Cmd trên Mac)
+    //         if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+    //             e.preventDefault();
+    //             return;
+    //         }
+    //         // Chặn Alt+Cmd+I, Alt+Cmd+J, Alt+Cmd+C (Mac DevTools)
+    //         if ((e.ctrlKey || e.metaKey) && e.altKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+    //             e.preventDefault();
+    //             return;
+    //         }
+    //         // Chặn Ctrl+U / Cmd+U (Xem mã nguồn)
+    //         if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u')) {
+    //             e.preventDefault();
+    //             return;
+    //         }
+    //         // Chặn Ctrl+S / Cmd+S (Lưu trang)
+    //         if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's')) {
+    //             e.preventDefault();
+    //             return;
+    //         }
+    //     };
+
+    //     document.addEventListener('contextmenu', handleContextMenu);
+    //     document.addEventListener('keydown', handleKeyDown);
+
+    //     return () => {
+    //         document.removeEventListener('contextmenu', handleContextMenu);
+    //         document.removeEventListener('keydown', handleKeyDown);
+    //     };
+    // }, []);
+
     return (
         <BrowserRouter>
             <Routes>

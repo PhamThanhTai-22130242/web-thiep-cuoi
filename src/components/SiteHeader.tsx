@@ -119,7 +119,7 @@ function SiteHeader() {
             <header className="site-header-shell">
                 <nav className="home-navbar">
                     <Link to="/" className="home-brand" onClick={handleBrandClick}>
-                        <img className="home-brand-mark" src="/img/logo.png" alt="" />
+                        <img className="home-brand-mark" src="/img/logo/logo-moi.png" alt="" />
                         <div>
                             <strong>Gòi Xong Cưới</strong>
                         </div>

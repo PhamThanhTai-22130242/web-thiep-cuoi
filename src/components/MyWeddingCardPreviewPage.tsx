@@ -9,6 +9,7 @@ import CineLoveTraditionalInvitation, {
     CineLoveInvitationData,
     defaultCineLoveInvitationData,
 } from './CineLoveTraditionalInvitation';
+import InvitationLoadingScreen from './InvitationLoadingScreen';
 import './PublicWeddingCardPage.css';
 
 function getDayName(dateValue: string) {
@@ -131,11 +132,7 @@ function MyWeddingCardPreviewPage() {
     const template = useMemo(() => (card ? mapMyCardToTemplate(card) : null), [card]);
 
     if (isLoading) {
-        return (
-            <main className="public-card-loading" aria-busy="true" aria-label="Đang tải bản xem trước">
-                <span />
-            </main>
-        );
+        return <InvitationLoadingScreen className="public-card-loading" variant="emerald-skeleton" />;
     }
 
     if (message) {

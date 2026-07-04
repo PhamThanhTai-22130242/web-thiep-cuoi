@@ -65,6 +65,11 @@ export type InvitationTemplate = {
         smile: string;
         studio: string;
         thank: string;
+        hero?: string;
+        groom?: string;
+        bride?: string;
+        groomQr?: string;
+        brideQr?: string;
         gallery?: string[];
     };
     timeline: Array<{
@@ -171,6 +176,224 @@ export const defaultRubyInvitationTemplate: InvitationTemplate = {
         scriptFont: 'Great Vibes',
         serifFont: 'Cormorant Garamond',
     },
+    couple: {
+        groom: 'Thế Vinh',
+        bride: 'Tuyết Mai',
+        groomRole: 'Chú rể',
+        brideRole: 'Cô dâu',
+        headline: 'Sự hiện diện của quý khách là niềm vinh hạnh đối với gia đình chúng tôi',
+        quote: 'Tình yêu không chỉ là một danh từ - nó là một động từ; nó là sự chăm sóc, chia sẻ và cùng nhau vượt qua khó khăn',
+    },
+    event: {
+        date: '2026-05-16T11:00:00+07:00',
+        dayName: 'Thứ Bảy',
+        day: '16',
+        month: '05',
+        monthName: 'May',
+        year: '2026',
+        lunar: 'Tức ngày 30 tháng 03 năm Bính Ngọ',
+        time: '11 giờ 00',
+        venue: 'Diamond Palace',
+        address: '91 Láng Hạ, Láng Hạ, Đống Đa, Hà Nội',
+        mapUrl: 'https://www.google.com/maps?q=Diamond%20Palace%2091%20L%C3%A1ng%20H%E1%BA%A1&output=embed',
+    },
+    calendar: {
+        weekdays: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        blanks: 4,
+        days: Array.from({ length: 31 }, (_, index) => index + 1),
+    },
+    images: {
+        cover: 'https://api.vesey.vn/templates/vs-template-lora/img-content-2-1.webp',
+        kiss: 'https://api.vesey.vn/templates/vs-template-lora/img-content-5-1.webp',
+        walk: 'https://api.vesey.vn/templates/vs-template-lora/img-content-3-2.webp',
+        smile: 'https://api.vesey.vn/templates/vs-template-lora/img-content-3-2.webp',
+        studio: 'https://api.vesey.vn/templates/vs-template-lora/img-content-7-3.webp',
+        thank: 'https://images.unsplash.com/photo-1460364117572-c27386c75174?auto=format&fit=crop&w=1200&q=85',
+        gallery: [
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-9-1.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-5-1.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-header-1.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-7-4.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-2-3.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-2-4.webp',
+            'https://api.vesey.vn/templates/vs-template-lora/img-content-3-2.webp',
+
+        ],
+    },
+    timeline: [
+        { time: '10:00', title: 'Đón khách', icon: 'door' },
+        { time: '11:00', title: 'Lễ thành hôn', icon: 'ring' },
+        { time: '12:00', title: 'Khai tiệc', icon: 'glass' },
+    ],
+    bank: {
+        bride: 'Tuyết Mai - Vietcombank 0987 654 321',
+        groom: 'Thế Vinh - Techcombank 0123 456 789',
+    },
+};
+
+export const defaultCineLoveInvitationTemplate: InvitationTemplate = {
+    ...defaultInvitationTemplate,
+    id: 'cine-love-traditional',
+    name: 'Duyên Thắm Miệt Vườn',
+    slug: 'duyen-tham-miet-vuon',
+    templateUrl: '/duyen-tham-miet-vuon',
+    publicUrl: '/duyen-tham-miet-vuon',
+    design: {
+        ...defaultInvitationTemplate.design,
+        primaryColor: '#8a1d22',
+        backgroundColor: '#fbf9f4',
+        accentColor: '#cda851',
+        scriptFont: 'Allura',
+        serifFont: 'Playfair Display',
+    },
+    couple: {
+        groom: 'Thanh Huy',
+        bride: 'Phương Thúy',
+        groomRole: 'Chú rể',
+        brideRole: 'Cô dâu',
+        headline: 'Trân Trọng Kính Mời',
+        quote: 'Yêu nhau trăm năm tình chẳng nhạt, thương nhau bạc đầu nghĩa vẫn sâu',
+    },
+    event: {
+        date: '2026-11-16T12:00:00+07:00',
+        dayName: 'Thứ Hai',
+        day: '16',
+        month: '11',
+        monthName: 'November',
+        year: '2026',
+        lunar: 'Tức ngày 07 tháng 10 năm Bính Ngọ',
+        time: '12 giờ 00',
+        venue: 'Nhà hàng Diamond Palace',
+        address: 'Hai Bà Trưng, Hà Nội',
+        mapUrl: 'https://maps.google.com',
+    },
+    images: {
+        cover: 'https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+        kiss: '	https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+        walk: '	https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+        smile: '	https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+        studio: 'https://i.pinimg.com/736x/e4/c4/f0/e4c4f0b2f8a846c433390c52ebec90c7.jpg',
+        thank: 'https://i.pinimg.com/736x/d6/3c/6f/d63c6f60032e18d6ea8e947716f9479b.jpg',
+        hero: 'https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+        groom: 'https://cdn.chungdoi.com/uploads/c23522cb-416d-4057-a7f2-efb404a603b4.jpg',
+        bride: '	https://cdn.chungdoi.com/uploads/aad57b50-3fb4-41d6-9e89-e4ac116708a3.jpg',
+        groomQr: 'https://img.vietqr.io/image/VCB-9383216200-compact2.png?amount=0&addInfo=Mung%20cuoi%20chu%20re&accountName=Pham%20Ha%20Do',
+        brideQr: 'https://img.vietqr.io/image/MB-1001652007-compact2.png?amount=0&addInfo=Mung%20cuoi%20co%20dau&accountName=Nguyen%20Thi%20Giang%20Thanh',
+        gallery: [
+            'https://cdn.chungdoi.com/uploads/82661139-d397-4e3e-8633-92bfc815f36b.jpg',
+            '	https://cdn.chungdoi.com/uploads/dcc457f3-aa92-48a6-a932-38c919888abf.jpg',
+            'https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
+            'https://cdn.chungdoi.com/uploads/e3e35fc4-fd63-4fb3-b055-7d0e542d3226.jpg',
+            'https://cdn.chungdoi.com/uploads/bbc734ce-d1c2-4c5b-8f84-196272e8b371.jpg',
+            'https://cdn.chungdoi.com/uploads/78c07254-2dbb-4d84-b76b-3bf73e7ca672.jpg',
+            'https://cdn.chungdoi.com/uploads/357c48fa-92bd-48ea-a7f3-36cec6fdfd3b.jpg'
+        ]
+    }
+};
+
+export const defaultElegantInvitationTemplate: InvitationTemplate = {
+    ...defaultInvitationTemplate,
+    id: 'elegant-premium',
+    name: 'Trăm Năm Bến Đợi',
+    slug: 'tram-nam-ben-doi',
+    templateUrl: '/tram-nam-ben-doi',
+    publicUrl: '/tram-nam-ben-doi',
+    design: {
+        ...defaultInvitationTemplate.design,
+        primaryColor: '#0c322c',
+        backgroundColor: '#f6f4f0',
+        accentColor: '#d1a84f',
+        scriptFont: 'Allura',
+        serifFont: 'Playfair Display',
+    },
+    couple: {
+        groom: 'Thanh Sơn',
+        bride: 'Diệu Nhi',
+        groomRole: 'Chú rể',
+        brideRole: 'Cô dâu',
+        headline: 'Trân trọng kính mời',
+        quote: 'Yêu thương đong đầy, trăm năm hạnh phúc',
+    },
+    event: {
+        date: '2026-12-31T08:00:00+07:00',
+        dayName: 'Thứ Năm',
+        day: '31',
+        month: '12',
+        monthName: 'December',
+        year: '2026',
+        lunar: 'Tức ngày 22 tháng 11 năm Bính Ngọ',
+        time: '08 giờ 00',
+        venue: 'Tư gia nhà trai',
+        address: '43A ngõ 26 Phạm Ngọc Thạch, Đống Đa, TP. Hà Nội',
+        mapUrl: 'https://maps.google.com',
+    },
+    images: {
+        cover: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774083011748-1773752594568-1768964174030-615120422_925471073144357_5596178545909683221_n-cropped.webp',
+        kiss: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773827069067-1768964171283-615345224_925470689811062_7585168431261975884_n.webp',
+        walk: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773840525498-1768964164483-615561845_925470776477720_6829025550080629353_n.webp',
+        smile: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078485365-1768964172658-615230427_925470969811034_7650799844769027040_n.webp',
+        studio: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078746116-1768964168632-615384719_925470186477779_6557986561779589458_n.webp',
+        thank: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774079955594-1768964158904-615722702_925470336477764_5506631755238654106_n.webp',
+        gallery: [
+            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078485365-1768964172658-615230427_925470969811034_7650799844769027040_n.webp',
+            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078746116-1768964168632-615384719_925470186477779_6557986561779589458_n.webp',
+            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774079955594-1768964158904-615722702_925470336477764_5506631755238654106_n.webp',
+            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774080179841-1768964157102-615400830_925471493144315_1411328482513847053_n.webp'
+        ]
+    }
+};
+
+export const defaultPinkInvitationTemplate: InvitationTemplate = {
+    ...defaultInvitationTemplate,
+    id: 'pink-wedding',
+    name: 'Hoa Hảo Nguyệt Viên',
+    slug: 'hoa-hao-nguyet-vien',
+    templateUrl: '/hoa-hao-nguyet-vien',
+    publicUrl: '/hoa-hao-nguyet-vien',
+    design: {
+        ...defaultInvitationTemplate.design,
+        primaryColor: '#ea8185',
+        backgroundColor: '#fff2f3',
+        accentColor: '#d39396',
+        scriptFont: 'Allura',
+        serifFont: 'Playfair Display',
+    },
+    couple: {
+        groom: 'Nhật Minh',
+        bride: 'Khánh Vy',
+        groomRole: 'Chú rể',
+        brideRole: 'Cô dâu',
+        headline: 'Trân trọng kính mời',
+        quote: 'Tình yêu đơm hoa kết trái, trăm năm hòa hợp',
+    },
+    event: {
+        date: '2026-10-10T11:00:00+07:00',
+        dayName: 'Thứ Bảy',
+        day: '10',
+        month: '10',
+        monthName: 'October',
+        year: '2026',
+        lunar: 'Tức ngày 29 tháng 08 năm Bính Ngọ',
+        time: '11:00',
+        venue: 'Nhà hàng Wedding Palace',
+        address: 'Hồ Tây, Hà Nội',
+        mapUrl: 'https://maps.google.com',
+    },
+    images: {
+        cover: 'https://cdn.chungdoi.com/uploads/4c1bb136-36f4-40bd-acd7-514250c33150.jpg',
+        kiss: 'https://cdn.chungdoi.com/uploads/4c1bb136-36f4-40bd-acd7-514250c33150.jpg',
+        walk: '	https://cdn.chungdoi.com/uploads/3ef698dd-f3ae-41d7-b6c3-96c963807f9f.jpg',
+        smile: '	https://cdn.chungdoi.com/uploads/dae67a34-f972-432c-b825-b990d6434a44.jpg',
+        studio: 'https://cdn.chungdoi.com/uploads/570c5399-a7be-4adf-8d22-374b628321c0.jpg',
+        thank: 'https://cdn.chungdoi.com/uploads/abf11049-4a12-4353-8562-4646dd6514a1.jpg',
+        gallery: [
+            '	https://cdn.chungdoi.com/uploads/b348b969-a01d-4354-a70c-086d79ecdf71.jpg',
+            'https://cdn.chungdoi.com/uploads/d2ff077c-5a82-4eb4-bd56-0e263dca9b50.jpg',
+            '	https://cdn.chungdoi.com/uploads/0846b5ff-8d55-47d2-8a6f-758dbf5eedf5.jpg',
+            '	https://cdn.chungdoi.com/uploads/0b731ac9-0aee-4779-b751-722d1fef90d5.jpg',
+            'https://cdn.chungdoi.com/uploads/052c6d0b-0eba-42b9-ad38-9e03dcecb34b.jpg'
+        ]
+    }
 };
 
 export const defaultWishes: Wish[] = [

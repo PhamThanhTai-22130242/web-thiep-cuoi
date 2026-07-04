@@ -20,7 +20,7 @@
   top: -22px;
   z-index: 40;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin: -22px -24px 18px;
   padding: 22px 24px 18px;
@@ -968,6 +968,10 @@
   }
 }
 
+.td-spin {
+  animation: td-saving-spin 0.78s linear infinite;
+}
+
 .td-add-image span {
   font-size: 0.8rem;
 }
@@ -1097,7 +1101,7 @@
 
   .td-panel-actions {
     top: 0;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px;
     margin: -18px -16px 18px;
     overflow: visible;

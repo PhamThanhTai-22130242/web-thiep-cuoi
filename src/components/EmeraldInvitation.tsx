@@ -7,6 +7,7 @@ import {
     Rsvp,
     Wish,
 } from '../data/invitationTemplates';
+import { formatVietnameseLunarDate } from '../utils/lunar-calendar';
 import './EmeraldInvitation.css';
 
 type EmeraldInvitationProps = {
@@ -118,6 +119,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
         () => template || loadStoredInvitationTemplate() || defaultInvitationTemplate,
         [template],
     );
+    const lunarDateText = formatVietnameseLunarDate(invitationData.event.date, invitationData.event.lunar);
     const countdownTargetDate = getCountdownTargetDate(invitationData.event);
     const weddingCalendar = getWeddingCalendar(invitationData.event);
     const shouldShowVenue = Boolean(invitationData.event.venue?.trim());
@@ -340,7 +342,7 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
                         <strong>{invitationData.event.day}</strong>
                         <span>Năm {invitationData.event.year}</span>
                     </div>
-                    <em>({invitationData.event.lunar})</em>
+                    <em>({lunarDateText})</em>
                     <div className="ei-rings" aria-hidden="true" />
                     {shouldShowVenue && <h3>Tại: {invitationData.event.venue}</h3>}
                     {shouldShowVenue && <address>{invitationData.event.address}</address>}

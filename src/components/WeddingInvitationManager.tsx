@@ -38,6 +38,7 @@ const statusLabels: Record<InvitationStatus, string> = {
 };
 
 const sortOptions = ['Mới cập nhật', 'Lượt xem cao', 'Ngày cưới gần nhất'];
+const dashboardSkeletonCards = Array.from({ length: 6 }, (_, index) => index);
 const fallbackThumbnail = '/img/mockup-thiep-cuoi-online-1.webp';
 const zaloContactUrl = process.env.REACT_APP_ZALO_URL || 'https://zalo.me/0869380447';
 const messageContactUrl = process.env.REACT_APP_FACEBOOK_URL || 'https://www.facebook.com/profile.php?id=61564494647627';
@@ -125,9 +126,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
     const event = card.events[0];
     const config = getWeddingTemplateConfig(card.template.code);
     const thumbnail = config?.thumbnailPath || card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
-    const editPath = config?.editorPath
-        ? `${config.editorPath}?weddingId=${card.weddingId}`
-        : `/hy-sac-vu-qui/edit?weddingId=${card.weddingId}`;
+    const editPath = config?.editorPath || '/hy-sac-vu-qui/edit';
     const updatedAt = card.updatedAt || card.createdAt;
 
     return {
@@ -148,6 +147,42 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
         updatedAt,
         eventDate: event?.eventDate,
     };
+}
+
+function DashboardCardSkeleton() {
+    return (
+        <>
+            {dashboardSkeletonCards.map((item) => (
+                <article className="wim-card wim-skeleton-card" key={item} aria-hidden="true">
+                    <div className="wim-card-preview">
+                        <div className="wim-skeleton wim-skeleton-image" />
+                    </div>
+
+                    <div className="wim-card-body">
+                        <div className="wim-skeleton wim-skeleton-title" />
+                        <div className="wim-skeleton wim-skeleton-subtitle" />
+                        <div className="wim-skeleton wim-skeleton-slug" />
+
+                        <div className="wim-skeleton-meta">
+                            <div className="wim-skeleton wim-skeleton-chip" />
+                            <div className="wim-skeleton wim-skeleton-chip" />
+                            <div className="wim-skeleton wim-skeleton-chip" />
+                            <div className="wim-skeleton wim-skeleton-chip" />
+                        </div>
+                    </div>
+
+                    <div className="wim-card-actions">
+                        <div className="wim-skeleton-action" />
+                        <div className="wim-skeleton-action" />
+                        <div className="wim-skeleton-action" />
+                        <div className="wim-skeleton-action" />
+                        <div className="wim-skeleton-action" />
+                        <div className="wim-skeleton-action" />
+                    </div>
+                </article>
+            ))}
+        </>
+    );
 }
 
 function WeddingInvitationManager() {
@@ -273,6 +308,12 @@ function WeddingInvitationManager() {
         const url = new URL(publicUrl, window.location.origin).toString();
         await copyText(url);
         showToast('Đã sao chép đường dẫn thiệp cưới.');
+    };
+
+    const copyCommentUrl = async (slug: string) => {
+        const url = new URL('/quan-li-binh-luan/' + slug, window.location.origin).toString();
+        await copyText(url);
+        showToast('Đã sao chép đường dẫn quản lý bình luận.');
     };
 
     const openCommentManager = (invitation: InvitationCard) => {
@@ -443,7 +484,7 @@ function WeddingInvitationManager() {
             </section>
 
             <section className="wim-card-grid" aria-label="Danh sách thiệp cưới">
-                {isLoading && <p className="wim-message">Đang tải danh sách thiệp cưới...</p>}
+                {isLoading && <DashboardCardSkeleton />}
                 {!isLoading && message && <p className="wim-message is-error">{message}</p>}
                 {!isLoading && !message && filteredInvitations.length === 0 && (
                     <p className="wim-message">Chưa có thiệp cưới nào phù hợp.</p>
@@ -482,7 +523,7 @@ function WeddingInvitationManager() {
                         </div>
 
                         <div className="wim-card-actions">
-                            <Link to={invitation.editPath}>
+                            <Link to={invitation.editPath} state={{ weddingId: invitation.id }}>
                                 <Pencil size={15} strokeWidth={2.3} />
                                 <span>Chỉnh sửa</span>
                             </Link>
@@ -494,6 +535,10 @@ function WeddingInvitationManager() {
                             <button type="button" onClick={() => copyPublicUrl(invitation.publicUrl)}>
                                 <LinkIcon size={15} strokeWidth={2.3} />
                                 <span>Chia sẻ đường dẫn</span>
+                            </button>
+                            <button type="button" onClick={() => copyCommentUrl(invitation.slug)}>
+                                <Copy size={15} strokeWidth={2.3} />
+                                <span>Copy link bình luận</span>
                             </button>
                             <button type="button" onClick={() => openCommentManager(invitation)}>
                                 <MessageSquareText size={15} strokeWidth={2.3} />

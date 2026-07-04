@@ -147,6 +147,10 @@
   position: relative;
   z-index: 2;
   animation: clv-fade-drop 0.9s ease both;
+  display: block;
+  width: max-content;
+  margin: 0 auto 16px;
+  text-align: center;
 }
 
 .clv-save,
@@ -166,12 +170,12 @@
 .clv-save {
   max-width: none;
   font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.9rem, 5vw, 2.45rem);
+  font-size: clamp(2.55rem, 6.2vw, 3.1rem);
   font-style: italic;
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
 }
 
@@ -190,11 +194,11 @@
   grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  width: min(92%, 540px);
+  width: min(92%, 460px);
   margin: 0 auto;
   padding-left: 0;
   text-align: center;
-  font-size: clamp(1.28rem, 3.8vw, 1.9rem);
+  font-size: clamp(1.15rem, 3.4vw, 1.7rem);
   line-height: 0.94;
   white-space: normal;
   text-shadow: 0 3px 0 rgba(0, 0, 0, 0.22);
@@ -209,11 +213,13 @@
 }
 
 .clv-hero__name.is-groom {
+  text-align: right;
   animation: clv-groom-name-in 2.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: transform, opacity;
 }
 
 .clv-hero__name.is-bride {
+  text-align: left;
   animation: clv-bride-name-in 2.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: transform, opacity;
 }
@@ -235,6 +241,7 @@
     opacity: 0;
     transform: translateX(-120px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -246,6 +253,7 @@
     opacity: 0;
     transform: translateX(120px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -257,6 +265,7 @@
     opacity: 0;
     transform: scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -579,13 +588,13 @@
 .clv-family-grid h4 {
   display: grid;
   justify-items: center;
-  color: #8f2f24;
+  color: var(--clv-red);
   max-width: 100%;
   font-family: 'Allura', 'Great Vibes', cursive;
   font-size: clamp(0.88rem, calc(var(--clv-name-preferred, 4.8vw) - 0.8vw), calc(var(--clv-name-max, 2.1rem) - 0.38rem));
-  font-weight: 400;
+  font-weight: 600;
   line-height: 0.86;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72), 0 2px 8px rgba(92, 34, 25, 0.1);
   opacity: 0;
   transform: translateY(24px);
@@ -1372,11 +1381,11 @@
   gap: 10px;
   width: min(92%, 510px);
   max-height: 330px;
-  margin: 24px auto 0;
-  padding: 12px 10px 12px 12px;
+  margin: 16px auto 0;
+  padding: 6px;
   overflow-y: auto;
   overflow-x: hidden;
-  border-radius: 18px;
+  border-radius: 12px;
   background: rgba(123, 36, 36, 0.08);
   text-align: left;
   scrollbar-color: rgba(123, 36, 36, 0.42) rgba(123, 36, 36, 0.08);
@@ -1416,8 +1425,8 @@
 
 .clv-wish-empty {
   margin: 0;
-  padding: 18px 16px;
-  border-radius: 13px;
+  padding: 8px 16px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.56);
   color: rgba(47, 33, 29, 0.68);
   font-family: 'Inter', system-ui, sans-serif;

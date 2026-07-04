@@ -125,7 +125,7 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
     inset 0 0 18px rgba(0, 0, 0, 0.42);
   transform-origin: center bottom;
-  animation: selector-gentle-sway 4.6s ease-in-out infinite;
+  animation: selector-phone-shake 5s ease-in-out infinite;
 }
 
 .selector-phone::before {
@@ -180,7 +180,7 @@
     0 8px 28px rgba(100, 60, 20, 0.18),
     0 2px 8px rgba(100, 60, 20, 0.1);
   transform-origin: center bottom;
-  animation: selector-gentle-sway 4.6s ease-in-out infinite;
+  animation: selector-phone-shake 5s ease-in-out infinite;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -195,22 +195,29 @@
 /* Khi có thumbnail ảnh tĩnh — ảnh chiếm full, có padding để thấy full ảnh */
 .selector-card:nth-child(2n) .selector-phone,
 .selector-card:nth-child(2n) .selector-template-image {
-  animation-delay: -1.6s;
+  animation-delay: -1.5s;
 }
 
 .selector-card:nth-child(3n) .selector-phone,
 .selector-card:nth-child(3n) .selector-template-image {
-  animation-duration: 5.2s;
+  animation-duration: 5.5s;
 }
 
-@keyframes selector-gentle-sway {
-  0%,
-  100% {
-    rotate: -1.1deg;
+@keyframes selector-phone-shake {
+  0%, 80%, 100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
   }
-
-  50% {
-    rotate: 1.1deg;
+  84% {
+    transform: rotate(-0.8deg) translate3d(-0.5px, 0, 0);
+  }
+  88% {
+    transform: rotate(0.8deg) translate3d(0.5px, 0, 0);
+  }
+  92% {
+    transform: rotate(-0.4deg) translate3d(-0.2px, 0, 0);
+  }
+  96% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
   }
 }
 

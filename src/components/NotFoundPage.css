@@ -3,11 +3,9 @@
   display: grid;
   place-items: center;
   padding: clamp(28px, 6vw, 76px);
-  background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.78), rgba(255, 246, 240, 0.86)),
-    radial-gradient(circle at 50% 35%, rgba(161, 22, 18, 0.12), transparent 34%),
-    #fffaf6;
+  background: #ffffff;
   color: #3f2d28;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .not-found-hero {
@@ -20,7 +18,7 @@
 .not-found-hero h1 {
   margin: 0;
   color: #9b1a16;
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: inherit;
   font-size: clamp(6.5rem, 19vw, 13.5rem);
   font-weight: 800;
   line-height: 0.9;

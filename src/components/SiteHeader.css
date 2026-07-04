@@ -116,8 +116,18 @@
     padding: 10px 0;
   }
 
+  .site-header-shell .home-brand {
+    gap: 8px;
+  }
+
+  .site-header-shell .home-brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
   .site-header-shell .home-brand strong {
-    font-size: 1.48rem;
+    font-size: 1.35rem;
+    white-space: nowrap;
   }
 
   .site-header-shell .home-nav-links {

@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { defaultInvitationTemplate, defaultRubyInvitationTemplate, InvitationTemplate, Wish } from '../data/invitationTemplates';
+import {
+    defaultInvitationTemplate,
+    defaultRubyInvitationTemplate,
+    defaultCineLoveInvitationTemplate,
+    defaultElegantInvitationTemplate,
+    defaultPinkInvitationTemplate,
+    InvitationTemplate,
+    Wish,
+} from '../data/invitationTemplates';
 import EmeraldInvitation from './EmeraldInvitationPage';
 import RubyBasicInvitation from './RubyBasicInvitation';
 import CineLoveTraditionalInvitation, {
@@ -49,7 +57,16 @@ function toEventDate(dateValue: string, timeValue: string) {
 }
 
 export function mapPublicCardToTemplate(card: PublicWeddingCardResponse): InvitationTemplate {
-    const baseTemplate = card.template.code === 'RubyBasicInvitation' ? defaultRubyInvitationTemplate : defaultInvitationTemplate;
+    let baseTemplate = defaultInvitationTemplate;
+    if (card.template.code === 'RubyBasicInvitation') {
+        baseTemplate = defaultRubyInvitationTemplate;
+    } else if (card.template.code === 'CineLoveTraditionalInvitation') {
+        baseTemplate = defaultCineLoveInvitationTemplate;
+    } else if (card.template.code === 'ElegantInvitation') {
+        baseTemplate = defaultElegantInvitationTemplate;
+    } else if (card.template.code === 'PinkWeddingInvitation') {
+        baseTemplate = defaultPinkInvitationTemplate;
+    }
     const template = JSON.parse(JSON.stringify(baseTemplate)) as InvitationTemplate;
     const groom = card.people.find((person) => person.role === 'groom');
     const bride = card.people.find((person) => person.role === 'bride');

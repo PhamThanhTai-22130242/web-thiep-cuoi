@@ -1,7 +1,7 @@
 .home-app {
   position: relative;
   min-height: 100vh;
-  padding: 0 24px 40px;
+  padding: 120px 24px 40px;
   background:
     radial-gradient(circle at 8% 10%, rgba(255, 255, 255, 0.16), transparent 15%),
     radial-gradient(circle at 92% 8%, rgba(255, 232, 194, 0.14), transparent 19%),
@@ -82,6 +82,39 @@
   white-space: nowrap;
 }
 
+.home-header-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3000;
+  padding: 0 24px;
+  background: transparent;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-header-shell.is-scrolled {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(255, 255, 255, 0.16), transparent 15%),
+    radial-gradient(circle at 92% 8%, rgba(255, 232, 194, 0.14), transparent 19%),
+    linear-gradient(115deg, rgba(255, 250, 243, 0.08) 0 12%, transparent 12% 100%),
+    linear-gradient(180deg, #9d0a06 0%, #850400 42%, #6d0500 100%);
+  background-size: 100% 100vh;
+  background-attachment: fixed;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(50, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.home-header-shell.is-scrolled .home-navbar {
+  padding: 12px 0;
+}
+
+.home-header-shell.is-scrolled .home-nav-links {
+  display: none;
+}
+
 .home-navbar {
   max-width: 1240px;
   margin: 0 auto;
@@ -90,6 +123,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
+  transition: padding 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .home-brand {
@@ -1273,10 +1307,42 @@
   font-size: 0.96rem;
 }
 
-.home-floating-contact {
+.home-floating-back-to-top {
   position: fixed;
   right: 18px;
   bottom: 24px;
+  z-index: 35;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease;
+  width: 58px;
+  height: 58px;
+  padding: 7px;
+  border: none;
+  cursor: pointer;
+  color: #850400;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.home-floating-back-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
+}
+
+.home-floating-back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.home-floating-contact {
+  position: fixed;
+  right: 18px;
+  bottom: 96px;
   z-index: 35;
   display: grid;
   gap: 14px;
@@ -1303,15 +1369,13 @@
 .home-auth-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 18px 12px;
-  background:
-    radial-gradient(circle at 50% 16%, rgba(255, 200, 107, 0.22), transparent 28%),
-    rgba(32, 0, 0, 0.72);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
 }
 
 .home-auth-modal {
@@ -1767,7 +1831,11 @@
 
 @media (max-width: 760px) {
   .home-app {
-    padding: 0 16px 28px;
+    padding: 144px 16px 28px;
+  }
+
+  .home-header-shell {
+    padding: 0 16px;
   }
 
   .home-navbar {
@@ -1778,13 +1846,28 @@
     padding: 16px 0;
   }
 
+  .home-brand {
+    gap: 8px;
+  }
+
+  .home-brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .home-brand strong {
+    font-size: 1.35rem;
+    white-space: nowrap;
+  }
+
   .home-nav-links {
     grid-column: 1 / -1;
     display: flex;
-    gap: 7px;
+    justify-content: center;
+    gap: 8px;
     overflow-x: auto;
     margin: 0 -16px;
-    padding: 2px 16px 6px;
+    padding: 4px 16px 8px;
     scrollbar-width: none;
     white-space: nowrap;
   }
@@ -1797,11 +1880,19 @@
     display: inline-flex;
     min-height: 32px;
     align-items: center;
-    border-radius: 999px;
-    padding: 0 4px;
-    background: transparent;
-    font-size: 0.84rem;
+    padding: 0 10px;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    color: #fff7f2;
+    transition: all 0.25s ease;
+  }
+
+  .home-nav-links a:active,
+  .home-nav-links a:hover {
     opacity: 1;
+    transform: translateY(-2px);
+    background: transparent;
+    border: none;
   }
 
   .home-user-menu {
@@ -1821,10 +1912,6 @@
   .home-auth-register {
     padding-inline: 12px;
     font-size: 0.84rem;
-  }
-
-  .home-brand strong {
-    font-size: 2.15rem;
   }
 
   .home-user-badge {
@@ -1975,9 +2062,17 @@
     font-size: 2.25rem;
   }
 
-  .home-floating-contact {
+  .home-floating-back-to-top {
     right: 12px;
     bottom: 16px;
+    width: 48px;
+    height: 48px;
+    padding: 6px;
+  }
+
+  .home-floating-contact {
+    right: 12px;
+    bottom: 74px;
     gap: 10px;
   }
 

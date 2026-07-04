@@ -4,6 +4,7 @@ import './InvitationLoadingScreen.css';
 type LoadingScreenProps = {
     className?: string;
     style?: CSSProperties;
+    variant?: 'spinner' | 'emerald-skeleton';
 };
 
 function getImageKey(imageUrls: Array<string | undefined | null>) {
@@ -76,7 +77,35 @@ export function useInvitationImagePreload(imageUrls: Array<string | undefined | 
     return isLoading;
 }
 
-function InvitationLoadingScreen({ className = '', style }: LoadingScreenProps) {
+function InvitationLoadingScreen({ className = '', style, variant = 'spinner' }: LoadingScreenProps) {
+    if (variant === 'emerald-skeleton') {
+        return (
+            <main className={`invitation-image-loading invitation-emerald-skeleton${className ? ` ${className}` : ''}`} style={style} aria-busy="true">
+                <section className="invitation-emerald-skeleton__hero" role="status" aria-label="Đang tải bản xem trước">
+                    <div className="invitation-emerald-skeleton__photo is-left" />
+                    <div className="invitation-emerald-skeleton__content">
+                        <span />
+                        <div className="invitation-emerald-skeleton__title" />
+                        <p />
+                        <p />
+                    </div>
+                    <div className="invitation-emerald-skeleton__photo is-right" />
+                </section>
+                <section className="invitation-emerald-skeleton__card">
+                    <div className="invitation-emerald-skeleton__line is-short" />
+                    <div className="invitation-emerald-skeleton__line is-title" />
+                    <div className="invitation-emerald-skeleton__date">
+                        <span />
+                        <strong />
+                        <span />
+                    </div>
+                    <div className="invitation-emerald-skeleton__line" />
+                </section>
+                <span className="sr-only">Đang tải bản xem trước...</span>
+            </main>
+        );
+    }
+
     return (
         <main className={`invitation-image-loading${className ? ` ${className}` : ''}`} style={style} aria-busy="true">
             <div role="status" className="invitation-image-loading-status">

@@ -6,18 +6,23 @@ import {
     Plus,
     Save,
     Send,
+    Trash2,
     X,
+    Check,
+    Loader2,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
     defaultInvitationTemplate,
+    defaultRubyInvitationTemplate,
     InvitationTemplate,
     savePreviewInvitationTemplate,
     templateStorageKey,
 } from '../data/invitationTemplates';
 import { MyWeddingCardResponse, MyWeddingCardSaveRequest, WeddingCardMedia } from '../models/wedding-card.model';
 import { weddingCardService } from '../services/wedding-card.service';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { authTokenService } from '../services/auth-token.service';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import EmeraldInvitation from './EmeraldInvitationPage';
 import './TemplateDashboard.css';
 
@@ -42,6 +47,13 @@ const defaultSampleImages = new Set([
     defaultInvitationTemplate.images.studio,
     defaultInvitationTemplate.images.thank,
     ...(defaultInvitationTemplate.images.gallery || []),
+    defaultRubyInvitationTemplate.images.cover,
+    defaultRubyInvitationTemplate.images.kiss,
+    defaultRubyInvitationTemplate.images.walk,
+    defaultRubyInvitationTemplate.images.smile,
+    defaultRubyInvitationTemplate.images.studio,
+    defaultRubyInvitationTemplate.images.thank,
+    ...(defaultRubyInvitationTemplate.images.gallery || []),
 ]);
 
 const requiredImages: Array<{ field: ImageField; label: string }> = [
@@ -49,6 +61,38 @@ const requiredImages: Array<{ field: ImageField; label: string }> = [
     { field: 'images.kiss', label: 'ảnh khoảnh khắc' },
     { field: 'images.walk', label: 'ảnh cô dâu chú rể' },
 ];
+
+const previewSkeletonDocument = `<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Đang tạo bản xem trước</title>
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:#f8f8f1;color:#2d4b45}
+.preview-skeleton{min-height:100vh;padding:clamp(28px,5vw,72px) 18px;background:radial-gradient(circle at 50% 0,rgba(194,161,19,.12),transparent 32vh),linear-gradient(90deg,rgba(45,75,69,.04) 1px,transparent 1px),#f8f8f1;background-size:auto,32px 32px,auto}
+.preview-skeleton__hero,.preview-skeleton__card{width:min(100%,960px);margin:0 auto}
+.preview-skeleton__hero{display:grid;grid-template-columns:minmax(120px,220px) minmax(220px,1fr) minmax(120px,220px);align-items:center;gap:clamp(18px,4vw,42px);min-height:360px}
+.skel{position:relative;overflow:hidden;background:rgba(45,75,69,.1);border-radius:18px}
+.skel:after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shimmer 1.35s ease-in-out infinite}
+.photo{aspect-ratio:3/4;box-shadow:0 18px 48px rgba(32,59,54,.12)}
+.photo:first-child{transform:rotate(-5deg)}.photo:last-child{transform:rotate(5deg)}
+.content{display:grid;justify-items:center;gap:16px}.pill{width:min(54%,220px);height:18px;border-radius:999px}.title{width:min(82%,420px);height:clamp(56px,8vw,92px);border-radius:28px}.line{width:min(72%,360px);height:16px;border-radius:999px}.line.is-short{width:min(58%,280px)}
+.preview-skeleton__card{display:grid;justify-items:center;gap:18px;margin-top:clamp(16px,4vw,48px);padding:clamp(28px,5vw,48px);border:1px solid rgba(45,75,69,.12);border-radius:28px;background:rgba(255,255,255,.48);box-shadow:0 24px 60px rgba(32,59,54,.1)}
+.card-line{width:min(72%,520px);height:18px;border-radius:999px}.card-line.is-title{width:min(46%,300px);height:42px;border-radius:20px}.date{display:grid;grid-template-columns:110px 92px 110px;align-items:center;gap:18px}.date .skel{height:36px}.date strong.skel{display:block;height:88px;border-radius:24px}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+@media(max-width:760px){.preview-skeleton__hero{grid-template-columns:1fr;min-height:auto}.photo{width:min(62vw,220px);margin:0 auto}.photo:last-child{display:none}.date{grid-template-columns:1fr;width:min(100%,240px)}}
+</style>
+</head>
+<body>
+<main class="preview-skeleton" aria-busy="true">
+<section class="preview-skeleton__hero" role="status" aria-label="Đang tạo bản xem trước">
+<div class="skel photo"></div><div class="content"><div class="skel pill"></div><div class="skel title"></div><div class="skel line"></div><div class="skel line is-short"></div></div><div class="skel photo"></div>
+</section>
+<section class="preview-skeleton__card"><div class="skel card-line"></div><div class="skel card-line is-title"></div><div class="date"><span class="skel"></span><strong class="skel"></strong><span class="skel"></span></div><div class="skel card-line"></div></section>
+</main>
+</body>
+</html>`;
 
 function cloneTemplate(template: InvitationTemplate): InvitationTemplate {
     return JSON.parse(JSON.stringify(template));
@@ -348,16 +392,37 @@ function fromApiCard(card: MyWeddingCardResponse): InvitationTemplate {
 function TemplateDashboard() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
     const pendingImageFilesRef = useRef<Map<UploadTarget, File>>(new Map());
     const previewUrlsRef = useRef<Set<string>>(new Set());
+    const hasLoadedRef = useRef(false);
     const [templates, setTemplates] = useState<InvitationTemplate[]>(() => loadTemplates());
     const [selectedId] = useState(templates[0]?.id || defaultInvitationTemplate.id);
-    const [currentWeddingId, setCurrentWeddingId] = useState<number | undefined>(() => {
-        const value = Number(searchParams.get('weddingId'));
-        return Number.isFinite(value) && value > 0 ? value : undefined;
-    });
+
+    const getWeddingId = () => {
+        const stateId = location.state?.weddingId;
+        if (stateId && Number.isFinite(stateId) && stateId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(stateId));
+            return stateId;
+        }
+
+        const queryId = Number(searchParams.get('weddingId'));
+        if (queryId && Number.isFinite(queryId) && queryId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(queryId));
+            return queryId;
+        }
+
+        const storedId = Number(sessionStorage.getItem('edit_wedding_id_' + location.pathname));
+        if (storedId && Number.isFinite(storedId) && storedId > 0) {
+            return storedId;
+        }
+
+        return undefined;
+    };
+
+    const [currentWeddingId, setCurrentWeddingId] = useState<number | undefined>(() => getWeddingId());
     const [saveStatus, setSaveStatus] = useState('');
     const [uploadTarget, setUploadTarget] = useState<UploadTarget | null>(null);
     const [isSaving, setIsSaving] = useState(false);
@@ -365,6 +430,7 @@ function TemplateDashboard() {
     const [slugError, setSlugError] = useState('');
     const [imageError, setImageError] = useState('');
     const [validationErrorModal, setValidationErrorModal] = useState('');
+    const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
 
     const selectedTemplate = useMemo(
         () => templates.find((template) => template.id === selectedId) || templates[0] || defaultInvitationTemplate,
@@ -465,8 +531,8 @@ function TemplateDashboard() {
     };
 
     useEffect(() => {
-        const value = Number(searchParams.get('weddingId'));
-        if (!Number.isFinite(value) || value <= 0) {
+        const value = getWeddingId();
+        if (!value || hasLoadedRef.current) {
             return;
         }
 
@@ -482,7 +548,9 @@ function TemplateDashboard() {
                 setTemplates([loadedTemplate]);
                 reset(loadedTemplate);
                 setEventDateText(formatDateDisplay(loadedTemplate.event.date));
+                setCardStatus(card.status);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
+                hasLoadedRef.current = true;
             })
             .catch((error) => {
                 if (isActive) {
@@ -493,9 +561,14 @@ function TemplateDashboard() {
         return () => {
             isActive = false;
         };
-    }, [reset, searchParams]);
+    }, [reset]);
 
     const persistTemplate = async (values: InvitationTemplate, status: 'draft' | 'active', message: string, isPublishing = false) => {
+        if (!authTokenService.isAuthenticated()) {
+            window.dispatchEvent(new CustomEvent('open-auth-modal'));
+            return;
+        }
+
         try {
             const requestedSlug = values.slug?.trim();
             if (!requestedSlug) {
@@ -535,11 +608,18 @@ function TemplateDashboard() {
                 return;
             }
 
-            setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
+            if (status === 'active') {
+                navigate('/dashboard');
+                return;
+            }
+
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(card.weddingId));
+            navigate(location.pathname, { replace: true, state: { weddingId: card.weddingId } });
             setTemplates([normalized]);
             reset(normalized);
             setEventDateText(formatDateDisplay(normalized.event.date));
-            setSaveStatus(`${message} Slug: ${card.slug}`);
+            setCardStatus(card.status);
+            setSaveStatus(message);
         } catch (error) {
             const nextMessage = error instanceof Error ? error.message : 'Không thể lưu thiệp. Vui lòng thử lại.';
             if (nextMessage.includes('URL đã tồn tại')) {
@@ -570,7 +650,7 @@ function TemplateDashboard() {
 
         const previewWindow = window.open('about:blank', '_blank');
         if (previewWindow) {
-            previewWindow.document.write('<!doctype html><title>Đang tạo bản xem trước</title><body style="font-family:system-ui;padding:32px">Đang tạo bản xem trước...</body>');
+            previewWindow.document.write(previewSkeletonDocument);
             previewWindow.document.close();
         }
 
@@ -595,6 +675,15 @@ function TemplateDashboard() {
 
     const handlePublish = handleSubmit((values) => {
         persistTemplate(values, 'draft', 'Đã xuất bản.', true);
+    });
+
+    const handleFinish = handleSubmit((values) => {
+        if (cardStatus === 'active') {
+            persistTemplate(values, 'active', 'Đã hoàn tất chỉnh sửa thiệp!');
+            return;
+        }
+
+        persistTemplate(values, 'draft', 'Đã lưu bản nháp thành công!', true);
     });
 
     const handleEventDateChange = (dateValue: string) => {
@@ -756,13 +845,9 @@ function TemplateDashboard() {
                         <Eye size={18} />
                         Xem trước
                     </button>
-                    <button type="button" onClick={handleSaveDraft} disabled={isSaving}>
-                        <Save size={18} />
-                        Lưu nháp
-                    </button>
-                    <button className="is-publish" type="button" onClick={handlePublish} disabled={isSaving}>
-                        <Send size={18} />
-                        Xuất bản
+                    <button className="is-publish" type="button" disabled={isSaving} onClick={handleFinish}>
+                        {isSaving ? <Loader2 size={18} className="td-spin" /> : <Check size={18} />}
+                        Hoàn tất
                     </button>
                 </div>
 

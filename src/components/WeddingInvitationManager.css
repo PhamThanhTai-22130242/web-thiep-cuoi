@@ -361,6 +361,83 @@
   }
 }
 
+.wim-skeleton-card {
+  pointer-events: none;
+}
+
+.wim-skeleton-card:hover {
+  box-shadow: 0 16px 42px rgba(121, 42, 26, 0.08);
+  transform: none;
+}
+
+.wim-skeleton,
+.wim-skeleton-action {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(124, 22, 15, 0.09);
+}
+
+.wim-skeleton::after,
+.wim-skeleton-action::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.68), transparent);
+  animation: wim-skeleton-shimmer 1.25s ease-in-out infinite;
+}
+
+.wim-skeleton-image {
+  width: 100%;
+  height: 100%;
+  min-height: 148px;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(84, 31, 20, 0.08);
+}
+
+.wim-skeleton-title {
+  width: 82%;
+  height: 20px;
+  margin-top: 2px;
+  border-radius: 10px;
+}
+
+.wim-skeleton-subtitle {
+  width: 58%;
+  height: 13px;
+  margin-top: 10px;
+}
+
+.wim-skeleton-slug {
+  width: 48%;
+  height: 24px;
+  margin-top: 12px;
+}
+
+.wim-skeleton-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 10px;
+  margin-top: 16px;
+}
+
+.wim-skeleton-chip {
+  height: 18px;
+}
+
+.wim-skeleton-action {
+  min-height: 48px;
+  border-radius: 0;
+  background: rgba(124, 22, 15, 0.06);
+}
+
+@keyframes wim-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .wim-card {
   display: grid;
   grid-template-columns: 128px minmax(0, 1fr);
@@ -496,6 +573,8 @@
 }
 
 .wim-unlock-card button {
+  position: relative;
+  overflow: hidden;
   min-height: 32px;
   flex: 0 0 auto;
   max-width: 150px;
@@ -512,6 +591,35 @@
   box-shadow: 0 10px 22px rgba(160, 24, 19, 0.16);
 }
 
+.wim-unlock-card button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.38) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: wim-shimmer 5s infinite ease-in-out;
+}
+
+@keyframes wim-shimmer {
+  0% {
+    left: -150%;
+  }
+  15% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
 .wim-unlock-card button:hover {
   background: #7c160f;
   color: #fffaf6;
@@ -520,7 +628,7 @@
 .wim-card-actions {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   border-top: 1px solid rgba(124, 22, 15, 0.1);
   background: rgba(255, 255, 255, 0.44);
 }
@@ -989,9 +1097,7 @@
     border-right: 0;
   }
 
-  .wim-card-actions > :last-child {
-    grid-column: span 2;
-    border-right: 0;
+  .wim-card-actions > :nth-last-child(-n+2) {
     border-bottom: 0;
   }
 

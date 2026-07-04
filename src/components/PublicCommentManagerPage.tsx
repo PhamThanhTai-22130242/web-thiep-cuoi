@@ -146,25 +146,27 @@ function PublicCommentManagerPage() {
 
     return (
         <main className="pcm-page">
-            <section className="pcm-toolbar">
+            <section className={`pcm-toolbar${slug ? ' has-no-form' : ''}`}>
                 <div>
                     <p>Quản lí bình luận</p>
                     <h1>{card ? getCoupleName(card) : 'Chọn thiệp cần quản lí'}</h1>
                 </div>
-                <form onSubmit={submitSlug}>
-                    <label>
-                        <span>URL thiệp</span>
-                        <input
-                            value={slugInput}
-                            onChange={(event) => setSlugInput(event.target.value)}
-                            placeholder="vd: van-bach-khanh-ly"
-                        />
-                    </label>
-                    <button type="submit">
-                        <Search size={18} strokeWidth={2.4} />
-                        <span>Tải thiệp</span>
-                    </button>
-                </form>
+                {!slug && (
+                    <form onSubmit={submitSlug}>
+                        <label>
+                            <span>URL thiệp</span>
+                            <input
+                                value={slugInput}
+                                onChange={(event) => setSlugInput(event.target.value)}
+                                placeholder="vd: van-bach-khanh-ly"
+                            />
+                        </label>
+                        <button type="submit">
+                            <Search size={18} strokeWidth={2.4} />
+                            <span>Tải thiệp</span>
+                        </button>
+                    </form>
+                )}
             </section>
 
             {message && <p className="pcm-message is-error">{message}</p>}

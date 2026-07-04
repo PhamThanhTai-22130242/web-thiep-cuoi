@@ -11,6 +11,7 @@ import {
     rubyTemplateStorageKey,
     Wish,
 } from '../data/invitationTemplates';
+import { formatVietnameseLunarDate } from '../utils/lunar-calendar';
 import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './RubyBasicInvitation.css';
 
@@ -85,6 +86,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
         }
         : rawInvitationData;
     const mapSrc = getMapSrc(invitationData.event.mapUrl);
+    const lunarDateText = formatVietnameseLunarDate(invitationData.event.date, invitationData.event.lunar);
     const invitationImages = useMemo(() => {
         if (onImageClick) {
             return {
@@ -269,7 +271,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
     };
 
     if (areImagesLoading) {
-        return <InvitationLoadingScreen className="rbi-page" style={pageStyle} />;
+        return <InvitationLoadingScreen className="rbi-page" style={pageStyle} variant="emerald-skeleton" />;
     }
 
     return (
@@ -319,11 +321,11 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                         <strong>{invitationData.event.day}</strong>
                         <span>Năm {invitationData.event.year}</span>
                     </div>
-                    <em>({invitationData.event.lunar})</em>
+                    <em>({lunarDateText})</em>
 
                 </section>
 
-                <div className="rbi-countdown">
+                <div className="rbi-countdown" data-rbi-reveal>
                     {[
                         ['Ngày', countdown.days],
                         ['Giờ', countdown.hours],
@@ -362,8 +364,8 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                 </section>
 
                 <div className="rbi-location-card">
-
                     <h3>Tiệc cưới sẽ diễn ra tại</h3>
+                    <h4>Tư Gia Nam</h4>
                     <address>{invitationData.event.address}</address>
                     <a href="#map">Xem chỉ đường</a>
                 </div>
@@ -377,7 +379,7 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
 
 
 
-            <section className="rbi-map-section" id="map">
+            <section className="rbi-map-section" id="map" data-rbi-reveal>
                 {mapSrc && <iframe title="Bản đồ địa điểm cưới" src={mapSrc} loading="lazy" />}
             </section>
             <section className="rbi-gallery" data-rbi-reveal>
@@ -471,10 +473,6 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
             </section>
 
             <footer className="rbi-thanks" data-rbi-reveal>
-                <img
-                    src={invitationImages.thank}
-                    alt="Cô dâu chú rể gửi lời cảm ơn"
-                />
                 <div>
                     <h2>Thank You</h2>
                     <p>Rất hân hạnh được đón tiếp</p>

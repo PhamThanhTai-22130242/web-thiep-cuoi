@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
     CalendarDays,
     Check,
@@ -10,7 +10,6 @@ import {
     Loader2,
     MapPin,
     Plus,
-    Save,
     Upload,
     UserRound,
     UsersRound,
@@ -25,6 +24,7 @@ import { saveElegantPreview } from '../data/invitationTemplates';
 import { MyWeddingCardResponse } from '../models/wedding-card.model';
 import { authTokenService } from '../services/auth-token.service';
 import { weddingCardService } from '../services/wedding-card.service';
+import { previewSkeletonDocument } from '../utils/preview-skeleton';
 import './ElegantInvitationEditor.css';
 
 type ImageTarget = EditableElegantImageTarget;
@@ -260,16 +260,38 @@ function parseDateDisplay(value: string) {
 function ElegantInvitationEditor() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
     const [draft, setDraft] = useState<ElegantInvitationData>(() => cloneData(emptyElegantInvitationData));
     const [showSaveSuccess, setShowSaveSuccess] = useState(false);
     const [validationAlert, setValidationAlert] = useState<{ title: string; message: string; missingImages?: Array<'cover' | 'hero' | 'portraitOne' | 'portraitTwo' | 'gallery'> } | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [saveStatus, setSaveStatus] = useState('');
     const [slugError, setSlugError] = useState('');
-    const [weddingId, setWeddingId] = useState<number | undefined>(() => {
-        const value = Number(searchParams.get('weddingId'));
-        return Number.isFinite(value) && value > 0 ? value : undefined;
-    });
+    const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
+    const hasLoadedRef = useRef(false);
+
+    const getWeddingId = () => {
+        const stateId = location.state?.weddingId;
+        if (stateId && Number.isFinite(stateId) && stateId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(stateId));
+            return stateId;
+        }
+
+        const queryId = Number(searchParams.get('weddingId'));
+        if (queryId && Number.isFinite(queryId) && queryId > 0) {
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(queryId));
+            return queryId;
+        }
+
+        const storedId = Number(sessionStorage.getItem('edit_wedding_id_' + location.pathname));
+        if (storedId && Number.isFinite(storedId) && storedId > 0) {
+            return storedId;
+        }
+
+        return undefined;
+    };
+
+    const [weddingId, setWeddingId] = useState<number | undefined>(() => getWeddingId());
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const galleryStripRef = useRef<HTMLDivElement | null>(null);
     const uploadTargetRef = useRef<ImageTarget>('images.cover');
@@ -323,9 +345,9 @@ function ElegantInvitationEditor() {
     };
 
     useEffect(() => {
-        const value = Number(searchParams.get('weddingId'));
-        if (!Number.isFinite(value) || value <= 0) return;
-
+        const value = getWeddingId();
+        if (!value || hasLoadedRef.current) return;
+ 
         let active = true;
         setSaveStatus('Đang tải bản đã lưu...');
         weddingCardService
@@ -336,16 +358,18 @@ function ElegantInvitationEditor() {
                 setDraft(loaded);
                 setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
+                setCardStatus(card.status);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
+                hasLoadedRef.current = true;
             })
             .catch((error) => {
                 if (active) setSaveStatus(error instanceof Error ? error.message : 'Không thể tải thiệp.');
             });
-
+ 
         return () => {
             active = false;
         };
-    }, [searchParams]);
+    }, []);
 
     useEffect(() => {
         const urls = objectUrlsRef.current;
@@ -489,7 +513,7 @@ function ElegantInvitationEditor() {
 
             const previewWindow = window.open('about:blank', '_blank');
             if (previewWindow) {
-                previewWindow.document.write('<!doctype html><title>Đang chuẩn bị bản xem trước</title><body style="font-family:system-ui;padding:32px;text-align:center"><h2>Đang chuẩn bị bản xem trước...</h2></body>');
+                previewWindow.document.write(previewSkeletonDocument);
                 previewWindow.document.close();
             } else {
                 setValidationAlert({
@@ -572,14 +596,21 @@ function ElegantInvitationEditor() {
             const normalized = fromApiCard(card, draft);
             setDraft(normalized);
             setWeddingId(card.weddingId);
+            setCardStatus(card.status);
 
             if (isPublishing) {
                 navigate(`/dashboard?activate=${card.weddingId}`);
                 return;
             }
 
-            setSearchParams({ weddingId: String(card.weddingId) }, { replace: true });
-            setSaveStatus(status === 'active' ? 'Đã xuất bản thiệp thành công!' : 'Đã lưu bản nháp thành công!');
+            if (status === 'active') {
+                navigate('/dashboard');
+                return;
+            }
+
+            sessionStorage.setItem('edit_wedding_id_' + location.pathname, String(card.weddingId));
+            navigate(location.pathname, { replace: true, state: { weddingId: card.weddingId } });
+            setSaveStatus('Đã lưu bản nháp thành công!');
             setShowSaveSuccess(true);
         } catch (error) {
             const msg = error instanceof Error ? error.message : 'Không thể lưu thiệp. Vui lòng thử lại.';
@@ -592,8 +623,14 @@ function ElegantInvitationEditor() {
         }
     };
 
-    const handleSaveDraft = () => persistDraft('draft');
-    const handlePublish = () => persistDraft('draft', true);
+    const handleFinish = () => {
+        if (cardStatus === 'active') {
+            persistDraft('active');
+            return;
+        }
+
+        persistDraft('draft', true);
+    };
 
     return (
         <main className="clve-page">
@@ -611,13 +648,9 @@ function ElegantInvitationEditor() {
                         <Eye size={17} />
                         Xem trước
                     </button>
-                    <button type="button" disabled={isSaving} onClick={handleSaveDraft}>
-                        {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Save size={17} />}
-                        Lưu nháp
-                    </button>
-                    <button className="is-primary" type="button" disabled={isSaving} onClick={handlePublish}>
-                        <Check size={17} />
-                        Xuất bản
+                    <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                        {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                        Hoàn tất
                     </button>
                 </div>
 

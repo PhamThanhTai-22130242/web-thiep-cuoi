@@ -5,7 +5,7 @@ import InvitationLoadingScreen, { useInvitationImagePreload } from './Invitation
 import './ElegantInvitation.css';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
-import { loadElegantPreview } from '../data/invitationTemplates';
+import { loadElegantPreview, defaultElegantInvitationTemplate } from '../data/invitationTemplates';
 
 export interface ElegantInvitationData {
     slug?: string;
@@ -60,42 +60,33 @@ type ElegantInvitationProps = {
 
 export const defaultElegantInvitationData: ElegantInvitationData = {
     slug: '',
-    groomName: 'Thanh Sơn',
-    brideName: 'Diệu Nhi',
-    groomIntroName: 'Thanh Sơn',
-    brideIntroName: 'Diệu Nhi',
+    groomName: defaultElegantInvitationTemplate.couple.groom || 'Thanh Sơn',
+    brideName: defaultElegantInvitationTemplate.couple.bride || 'Diệu Nhi',
+    groomIntroName: defaultElegantInvitationTemplate.couple.groom || 'Thanh Sơn',
+    brideIntroName: defaultElegantInvitationTemplate.couple.bride || 'Diệu Nhi',
     groomFamilyLabel: 'Nhà trai',
     brideFamilyLabel: 'Nhà gái',
     groomFather: 'Ông: Nguyễn Gia Bảo',
     groomMother: 'Bà: Hoàng Thị Cúc',
     brideFather: 'Ông: Đào Duy Linh',
     brideMother: 'Bà: Tô Thị Như',
-    inviteText: 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
-    eventDate: '2026-12-31',
-    eventTime: '08:00',
-    venueName: 'Tư gia nhà trai',
-    address: '43A ngõ 26 Phạm Ngọc Thạch, Đống Đa, TP. Hà Nội',
-    mapUrl: 'https://maps.google.com',
+    inviteText: defaultElegantInvitationTemplate.couple.headline || 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
+    eventDate: defaultElegantInvitationTemplate.event.date ? defaultElegantInvitationTemplate.event.date.split('T')[0] : '2026-12-31',
+    eventTime: defaultElegantInvitationTemplate.event.time ? defaultElegantInvitationTemplate.event.time.replace(' giờ ', ':') : '08:00',
+    venueName: defaultElegantInvitationTemplate.event.venue || 'Tư gia nhà trai',
+    address: defaultElegantInvitationTemplate.event.address || '43A ngõ 26 Phạm Ngọc Thạch, Đống Đa, TP. Hà Nội',
+    mapUrl: defaultElegantInvitationTemplate.event.mapUrl || 'https://maps.google.com',
     showGroomGift: true,
     showBrideGift: true,
     showGiftSection: true,
     images: {
-        cover: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774083011748-1773752594568-1768964174030-615120422_925471073144357_5596178545909683221_n-cropped.webp',
+        cover: defaultElegantInvitationTemplate.images.cover || '',
         hero: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773752594568-1768964174030-615120422_925471073144357_5596178545909683221_n.webp',
-        portraitOne: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773827069067-1768964171283-615345224_925470689811062_7585168431261975884_n.webp',
-        portraitTwo: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773840525498-1768964164483-615561845_925470776477720_6829025550080629353_n.webp',
+        portraitOne: defaultElegantInvitationTemplate.images.kiss || '',
+        portraitTwo: defaultElegantInvitationTemplate.images.walk || '',
         groomQr: 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=MBBANK%20xxxx%20xxxx%20xxxx%20THANH%20SON%20MUNG%20CUOI',
         brideQr: 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=MBBANK%20xxxx%20xxxx%20xxxx%20DIEU%20NHI%20MUNG%20CUOI',
-        gallery: [
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078485365-1768964172658-615230427_925470969811034_7650799844769027040_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774078746116-1768964168632-615384719_925470186477779_6557986561779589458_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774079955594-1768964158904-615722702_925470336477764_5506631755238654106_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774080179841-1768964157102-615400830_925471493144315_1411328482513847053_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774080805134-1768964165763-615390411_925471636477634_5492652073986767813_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774080805174-1768964160249-616232837_925471769810954_3687612262548518167_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1774081048372-1768964163122-615456040_925470323144432_2903202482121864786_n.webp',
-            'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773827069067-1768964171283-615345224_925470689811062_7585168431261975884_n.webp',
-        ]
+        gallery: defaultElegantInvitationTemplate.images.gallery || [],
     }
 };
 
@@ -377,7 +368,7 @@ function ElegantInvitation({
         : filledGallery;
 
     if (areImagesLoading || isLoadingPreview) {
-        return <InvitationLoadingScreen className="qp-page" />;
+        return <InvitationLoadingScreen className="qp-page" variant="emerald-skeleton" />;
     }
 
     const isOpened = isOpeningOut || editable;

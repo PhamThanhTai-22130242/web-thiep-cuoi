@@ -462,8 +462,8 @@
     0 12px 24px rgba(var(--ei-shadow-rgb), 0.32);
   transform: translateX(-50%);
   animation:
-    ei-seal-spin-bounce calc(1.2s * var(--ei-speed)) calc(0.25s * var(--ei-speed)) cubic-bezier(0.25, 0.46, 0.45, 0.94) both,
-    ei-seal-glow calc(8s * var(--ei-speed)) calc(1.5s * var(--ei-speed)) ease-in-out infinite;
+    ei-seal-spin-bounce calc(2.5s * var(--ei-speed)) calc(0.25s * var(--ei-speed)) cubic-bezier(0.25, 0.46, 0.45, 0.94) both,
+    ei-seal-glow calc(8s * var(--ei-speed)) calc(2.75s * var(--ei-speed)) ease-in-out infinite;
 }
 
 .ei-wax-seal::before {
@@ -1364,10 +1364,14 @@
 
 .ei-gallery-tile {
   position: relative;
+  display: block;
+  width: 100%;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .ei-gallery-grid img {
@@ -1419,9 +1423,10 @@
   display: grid;
   place-items: center;
   color: white;
-  font-family: var(--ei-serif);
-  font-size: clamp(2rem, 10vw, 3rem);
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(2rem, 8vw, 2.6rem);
   font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .ei-gallery-tile .ei-edit-image-hint {
@@ -1437,27 +1442,28 @@
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img {
-  animation: ei-gallery-from-left calc(2.1s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08) both, ei-image-breathe calc(15s * var(--ei-speed)) ease-in-out 2.8s infinite;
+  animation: ei-gallery-zoom calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) both,
+    ei-image-breathe calc(15s * var(--ei-speed)) ease-in-out 2.7s infinite;
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img:nth-child(even) {
-  animation-name: ei-gallery-from-right, ei-image-breathe;
+  animation-name: ei-gallery-zoom, ei-image-breathe;
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img:nth-child(2) {
-  animation-delay: 0.3s, 3.1s;
+  animation-delay: 0.3s, 3.0s;
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img:nth-child(3) {
-  animation-delay: 0.6s, 3.4s;
+  animation-delay: 0.6s, 3.3s;
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img:nth-child(4) {
-  animation-delay: 0.9s, 3.7s;
+  animation-delay: 0.9s, 3.6s;
 }
 
 .ei-gallery.is-visible .ei-gallery-grid img:nth-child(5) {
-  animation-delay: 1.2s, 4s;
+  animation-delay: 1.2s, 3.9s;
 }
 
 .ei-gallery-grid img:first-child {
@@ -1519,7 +1525,7 @@
 .ei-gallery-modal {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: 4000;
   display: grid;
   place-items: center;
   padding: 0;
@@ -1760,13 +1766,13 @@
 [data-ei-reveal] {
   opacity: 0;
   transform: translateY(46px);
-  transition: opacity calc(1.7s * var(--ei-speed)) ease, transform calc(1.7s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
+  transition: opacity calc(0.8s * var(--ei-speed)) ease, transform calc(0.8s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
   will-change: opacity, transform;
 }
 
 [data-ei-image-reveal] {
   opacity: 0;
-  transition: opacity calc(2s * var(--ei-speed)) ease, transform calc(2s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08);
+  transition: opacity calc(0.9s * var(--ei-speed)) ease, transform calc(0.9s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08);
   will-change: opacity, transform;
 }
 
@@ -1789,6 +1795,115 @@
 [data-ei-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.ei-gallery[data-ei-reveal],
+.ei-wishes[data-ei-reveal],
+.ei-thanks[data-ei-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.ei-gallery[data-ei-reveal] .ei-section-title,
+.ei-wishes[data-ei-reveal] .ei-section-title,
+.ei-thanks[data-ei-reveal] h2,
+.ei-thanks[data-ei-reveal] p {
+  opacity: 0;
+  transform: scale(0.2);
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.ei-gallery[data-ei-reveal].is-visible .ei-section-title,
+.ei-wishes[data-ei-reveal].is-visible .ei-section-title,
+.ei-thanks[data-ei-reveal].is-visible h2,
+.ei-thanks[data-ei-reveal].is-visible p {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ei-wishes[data-ei-reveal] form {
+  opacity: 0;
+  transform: translateX(-120px);
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.ei-wishes[data-ei-reveal].is-visible form {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ei-invite-card[data-ei-reveal],
+.ei-calendar-section[data-ei-reveal] {
+  opacity: 0 !important;
+  transform: scale(0.2) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.ei-invite-card[data-ei-reveal].is-visible,
+.ei-calendar-section[data-ei-reveal].is-visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.ei-countdown[data-ei-reveal] {
+  opacity: 0 !important;
+  transform: translateX(30px) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.ei-countdown[data-ei-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ei-map-section[data-ei-reveal] {
+  opacity: 0 !important;
+  transform: translateX(40px) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.ei-map-section[data-ei-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ei-couple-row article:first-of-type[data-ei-reveal] {
+  opacity: 0 !important;
+  transform: translateX(-30px) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+.ei-couple-row article:first-of-type[data-ei-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ei-couple-row article:last-of-type[data-ei-reveal] {
+  opacity: 0 !important;
+  transform: translateX(30px) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+.ei-couple-row article:last-of-type[data-ei-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ei-couple-row div[data-ei-image-reveal] {
+  opacity: 0 !important;
+  transform: scale(0.2) !important;
+  transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+.ei-couple-row div[data-ei-image-reveal].is-visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
 }
 
 [data-ei-image-reveal].is-visible {
@@ -2147,27 +2262,15 @@
   }
 }
 
-@keyframes ei-gallery-from-left {
+@keyframes ei-gallery-zoom {
   from {
     opacity: 0;
-    transform: translateX(-92px) rotate(-5deg) scale(0.96);
+    transform: scale(0.2);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0) rotate(0deg) scale(1);
-  }
-}
-
-@keyframes ei-gallery-from-right {
-  from {
-    opacity: 0;
-    transform: translateX(92px) rotate(5deg) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0) rotate(0deg) scale(1);
+    transform: scale(1);
   }
 }
 

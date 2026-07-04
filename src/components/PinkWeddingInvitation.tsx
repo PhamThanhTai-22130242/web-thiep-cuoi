@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Gift, MapPin, Send, X } from 'lucide-react';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
-import { loadPinkPreview } from '../data/invitationTemplates';
+import { loadPinkPreview, defaultPinkInvitationTemplate } from '../data/invitationTemplates';
+import InvitationLoadingScreen from './InvitationLoadingScreen';
 import './PinkWeddingInvitation.css';
 
 export interface PinkWeddingInvitationData {
@@ -71,45 +72,35 @@ function getTodayDateValue() {
 
 export const defaultPinkWeddingInvitationData: PinkWeddingInvitationData = {
     slug: '',
-    groomName: 'Minh Hoàng',
-    brideName: 'Mai Hương',
-    groomIntroName: 'Minh Hoàng',
-    brideIntroName: 'Mai Hương',
+    groomName: defaultPinkInvitationTemplate.couple.groom || 'Nhật Minh',
+    brideName: defaultPinkInvitationTemplate.couple.bride || 'Khánh Vy',
+    groomIntroName: defaultPinkInvitationTemplate.couple.groom || 'Nhật Minh',
+    brideIntroName: defaultPinkInvitationTemplate.couple.bride || 'Khánh Vy',
     groomFamilyLabel: 'Nhà trai',
     brideFamilyLabel: 'Nhà gái',
     groomFather: 'Ông Trần Quốc Tuấn',
     groomMother: 'Bà Lê Thị Mỹ Duyên',
     brideFather: 'Ông Phạm Gia Long',
     brideMother: 'Bà Nguyễn Thị Ngọc Hạnh',
-    inviteText: 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
-    eventDate: getTodayDateValue(),
-    eventTime: '18:00',
-    venueName: 'Adora Center - Phú Nhuận',
-    address: '431 Hoàng Văn Thụ, Phường 4, TP. Hồ Chí Minh',
-    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4204.701851603388!2d106.6593982!3d10.7984131!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529d96e56d9bd%3A0x205428f74d7f4ddb!2zVHJ1bmcgdMOibSBI4buZaSBuZ2jhu4sgLSBUaeG7h2MgY8aw4bubaSBUaGUgQURPUkE!5e1!3m2!1svi!2s!4v1764416160404!5m2!1svi!2s',
+    inviteText: defaultPinkInvitationTemplate.couple.headline || 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
+    eventDate: defaultPinkInvitationTemplate.event.date ? defaultPinkInvitationTemplate.event.date.split('T')[0] : getTodayDateValue(),
+    eventTime: defaultPinkInvitationTemplate.event.time || '11:00',
+    venueName: defaultPinkInvitationTemplate.event.venue || 'Nhà hàng Wedding Palace',
+    address: defaultPinkInvitationTemplate.event.address || 'Hồ Tây, Hà Nội',
+    mapUrl: defaultPinkInvitationTemplate.event.mapUrl || 'https://maps.google.com',
     showGroomGift: true,
     showBrideGift: true,
     showGiftSection: true,
     images: {
-        cover: 'https://statics.pancake.vn/web-media/80/ef/b5/09/6c1db6a25f68b4dca4e44de83c669091bc58a717a12864f63da21990-w:966-h:644-l:136924-t:image/jpeg.jpg', // standing
-        portraitOne: 'https://statics.pancake.vn/web-media/7f/6f/61/20/2b9e24ef51d59835b6c74e6218402757d78081a5f9bd66fa867b8964-w:966-h:1449-l:61481-t:image/jpeg.jpg', // groom
-        portraitTwo: 'https://statics.pancake.vn/web-media/68/f6/c9/2a/d2232636059e3a84124def4c0061d5efa5a88c4de2a7d962d8ce5d11-w:966-h:1449-l:71766-t:image/jpeg.jpg', // bride
-        embrace: 'https://statics.pancake.vn/web-media/dd/9c/8c/a8/87a897b01d024f8789f8083f9e089b531c2718a9a15d53e8df35459e-w:966-h:1449-l:250805-t:image/jpeg.jpg', // embrace
-        letterCenter: 'https://statics.pancake.vn/web-media/19/2f/08/ba/9cbbd36cdcb549e04381d24960a29385e3cf93c9c871d2441e3e59e6-w:966-h:1449-l:170170-t:image/jpeg.jpg', // invitation center
-        kiss: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000&auto=format&fit=crop', // kiss
+        cover: defaultPinkInvitationTemplate.images.cover || '',
+        portraitOne: defaultPinkInvitationTemplate.images.smile || '',
+        portraitTwo: defaultPinkInvitationTemplate.images.studio || '',
+        embrace: defaultPinkInvitationTemplate.images.walk || '',
+        letterCenter: defaultPinkInvitationTemplate.images.thank || '',
+        kiss: defaultPinkInvitationTemplate.images.kiss || '',
         groomQr: 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=MBBANK%208838683860%20MINH%20HOANG%20MUNG%20CUOI',
         brideQr: 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=MBBANK%200123456789%20MAI%20HUONG%20MUNG%20CUOI',
-        gallery: [
-            'https://statics.pancake.vn/web-media/dd/9c/8c/a8/87a897b01d024f8789f8083f9e089b531c2718a9a15d53e8df35459e-w:966-h:1449-l:250805-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/80/ef/b5/09/6c1db6a25f68b4dca4e44de83c669091bc58a717a12864f63da21990-w:966-h:644-l:136924-t:image/jpeg.jpg',
-            'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000&auto=format&fit=crop',
-            'https://statics.pancake.vn/web-media/19/2f/08/ba/9cbbd36cdcb549e04381d24960a29385e3cf93c9c871d2441e3e59e6-w:966-h:1449-l:170170-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/bf/bd/74/d1/12e5fe573cba95d32bc536066e948593c1e7e8d983e02b6b0da34f89-w:966-h:1449-l:117292-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/1d/8e/aa/61/bbcf792d619ed12ba766e768fedad8ce41647e73b392783b22cde128-w:966-h:1449-l:192299-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/a0/f8/a6/4f/94cc6154da9818df09077753959de47054802f403ee687189cda6b00-w:966-h:1449-l:346091-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/7f/6f/61/20/2b9e24ef51d59835b6c74e6218402757d78081a5f9bd66fa867b8964-w:966-h:1449-l:61481-t:image/jpeg.jpg',
-            'https://statics.pancake.vn/web-media/68/f6/c9/2a/d2232636059e3a84124def4c0061d5efa5a88c4de2a7d962d8ce5d11-w:966-h:1449-l:71766-t:image/jpeg.jpg',
-        ]
+        gallery: defaultPinkInvitationTemplate.images.gallery || [],
     }
 };
 
@@ -224,6 +215,7 @@ function PinkWeddingInvitation({
     const [searchParams] = useSearchParams();
     const isPreviewMode = searchParams.get('preview') === '1';
     const [previewData, setPreviewData] = useState<PinkWeddingInvitationData | null>(null);
+    const [isLoadingPreview, setIsLoadingPreview] = useState(isPreviewMode && !data);
     const [isGiftOpen, setIsGiftOpen] = useState(false);
     const [isRsvpOpen, setIsRsvpOpen] = useState(false);
     const [wishes, setWishes] = useState(initialWishes);
@@ -245,13 +237,15 @@ function PinkWeddingInvitation({
             return;
         }
 
+        setIsLoadingPreview(true);
         loadPinkPreview()
             .then((stored) => {
                 if (stored && typeof stored === 'object') {
                     setPreviewData(stored as PinkWeddingInvitationData);
                 }
             })
-            .catch(() => {});
+            .catch(() => {})
+            .finally(() => setIsLoadingPreview(false));
     }, [isPreviewMode, data]);
 
     useEffect(() => {
@@ -302,6 +296,8 @@ function PinkWeddingInvitation({
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
                     }
                 });
             },
@@ -382,15 +378,14 @@ function PinkWeddingInvitation({
     };
 
     const rawGallery = invitationData.images.gallery || [];
-    const normalizedGallery = [...rawGallery, ...Array(Math.max(0, 9 - rawGallery.length)).fill('')];
-    const galleryWithFallbacks = normalizedGallery.map((image, index) => (
-        image || defaultPinkWeddingInvitationData.images.gallery[
-            index % defaultPinkWeddingInvitationData.images.gallery.length
-        ] || ''
-    )).filter(Boolean);
+    const filledGallery = rawGallery.filter(Boolean);
     const galleryToRender = editable 
-        ? normalizedGallery 
-        : (galleryWithFallbacks.length > 0 ? galleryWithFallbacks : defaultPinkWeddingInvitationData.images.gallery);
+        ? [...rawGallery, ...Array(Math.max(0, 9 - rawGallery.length)).fill('')]
+        : (filledGallery.length > 0 ? filledGallery : defaultPinkWeddingInvitationData.images.gallery.filter(Boolean));
+
+    if (isLoadingPreview) {
+        return <InvitationLoadingScreen className="pwi-page" variant="emerald-skeleton" />;
+    }
 
     return (
         <main className="pwi-page">

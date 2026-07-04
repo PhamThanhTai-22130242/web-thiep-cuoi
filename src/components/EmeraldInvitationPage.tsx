@@ -12,6 +12,7 @@ import {
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { API_CONFIG } from '../config/api.config';
 import { redirectToServerErrorPage, shouldRedirectToServerErrorPage } from '../services/http.service';
+import { formatVietnameseLunarDate } from '../utils/lunar-calendar';
 import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './EmeraldInvitation.css';
 
@@ -280,6 +281,7 @@ function EmeraldInvitation({
     const shouldUseTemplateColors = isPreviewMode || Boolean(template);
     const [savedPreviewTemplate, setSavedPreviewTemplate] = useState<InvitationTemplate | null>(null);
     const invitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultInvitationTemplate : loadStoredInvitationTemplate()) || defaultInvitationTemplate;
+    const lunarDateText = formatVietnameseLunarDate(invitationData.event.date, invitationData.event.lunar);
     const isLoadingSavedPreview = shouldLoadSavedPreview && !savedPreviewTemplate;
     const isEditablePreview = Boolean(onImageClick);
     const gallerySource = isEditablePreview
@@ -548,7 +550,7 @@ function EmeraldInvitation({
     };
 
     if (areImagesLoading) {
-        return <InvitationLoadingScreen className="ei-page ei-page-loading" style={pageStyle} />;
+        return <InvitationLoadingScreen className="ei-page ei-page-loading" style={pageStyle} variant="emerald-skeleton" />;
     }
 
     return (
@@ -609,9 +611,9 @@ function EmeraldInvitation({
                             <strong>{invitationData.event.day}</strong>
                             <span>Năm {invitationData.event.year}</span>
                         </div>
-                        <em>({invitationData.event.lunar})</em>
+                        <em>({lunarDateText})</em>
                     </section>
-                    <div className="ei-countdown">
+                    <div className="ei-countdown" data-ei-reveal>
                         {[
                             ['Ngày', countdown.days],
                             ['Giờ', countdown.hours],
@@ -654,7 +656,7 @@ function EmeraldInvitation({
 
                 </section>
 
-                {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map">
+                {shouldShowMap && <section className="ei-map-section ei-layout-map" id="map" data-ei-reveal>
                     <iframe title="Bản đồ địa điểm cưới" src={mapUrl} loading="lazy" />
                 </section>}
 

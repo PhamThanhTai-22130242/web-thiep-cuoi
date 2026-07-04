@@ -257,7 +257,9 @@
   width: 248px;
   height: 246px;
   transform: rotate(-8deg);
-  animation: rbi-photo-float-left calc(11s * var(--rbi-speed)) ease-in-out infinite;
+  animation:
+    rbi-photo-left calc(1.35s * var(--rbi-speed)) 0.25s cubic-bezier(0.2, 0.82, 0.28, 1.08) both,
+    rbi-photo-float-left calc(11s * var(--rbi-speed)) 1.8s ease-in-out infinite;
 }
 
 .rbi-photo-right {
@@ -268,7 +270,7 @@
   transform-origin: 0 100%;
   transform: rotate(8deg);
   animation:
-    rbi-photo-right-wiggle-in calc(1.35s * var(--rbi-speed)) 0.25s cubic-bezier(0.2, 0.82, 0.28, 1.08) both,
+    rbi-photo-right calc(1.35s * var(--rbi-speed)) 0.25s cubic-bezier(0.2, 0.82, 0.28, 1.08) both,
     rbi-photo-float-right calc(11.5s * var(--rbi-speed)) 1.8s ease-in-out infinite;
 }
 
@@ -299,8 +301,8 @@
   box-shadow: inset 0 0 0 8px rgba(255, 245, 213, 0.2), 0 10px 24px rgba(87, 23, 17, 0.28);
   transform: translateX(-50%);
   animation:
-    rbi-seal-stamp calc(1.25s * var(--rbi-speed)) 0.45s cubic-bezier(0.2, 0.82, 0.28, 1.15) both,
-    rbi-seal-glow calc(8s * var(--rbi-speed)) 1.9s ease-in-out infinite;
+    rbi-seal-stamp calc(2.5s * var(--rbi-speed)) calc(0.25s * var(--rbi-speed)) cubic-bezier(0.25, 0.46, 0.45, 0.94) both,
+    rbi-seal-glow calc(8s * var(--rbi-speed)) calc(2.75s * var(--rbi-speed)) ease-in-out infinite;
 }
 
 .rbi-hero h1,
@@ -357,14 +359,13 @@
 
 .rbi-gallery {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 100%),
     var(--rbi-paper);
 }
 
 .rbi-wishes {
   background:
     linear-gradient(180deg, var(--rbi-paper) 0%, color-mix(in srgb, var(--rbi-red) 8%, var(--rbi-paper)) 100%);
-  border-top: 1px solid rgba(128, 29, 43, 0.12);
 }
 
 .rbi-calendar-card {
@@ -382,16 +383,21 @@
   gap: 12px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--rbi-red);
-  font-family: var(--rbi-serif);
-  font-size: 1.28rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
   font-weight: 700;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.04em;
 }
 
 .rbi-days {
   row-gap: 15px;
   padding-top: 22px;
   color: #7c584d;
-  font-size: 1.14rem;
+  font-size: 1.12rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-variant-numeric: lining-nums;
+  font-weight: 600;
 }
 
 .rbi-days span {
@@ -646,6 +652,15 @@
   text-transform: uppercase;
 }
 
+.rbi-location-card h4 {
+  margin: 0 auto 12px;
+  color: var(--rbi-red);
+  font-family: var(--rbi-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .rbi-invite-card address,
 .rbi-location-card address {
   color: var(--rbi-muted);
@@ -702,13 +717,13 @@
   animation: none !important;
 }
 
-.rbi-map-section > div {
+.rbi-map-section>div {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.rbi-map-section > div iframe {
+.rbi-map-section>div iframe {
   width: 100%;
   height: 100%;
   border: 0;
@@ -857,7 +872,7 @@
 }
 
 .rbi-wishes {
-  background: linear-gradient(180deg, rgba(159, 44, 36, 0.08), rgba(255, 255, 255, 0));
+  background: linear-gradient(180deg, transparent, rgba(159, 44, 36, 0.08));
 }
 
 .rbi-wishes form {
@@ -974,10 +989,14 @@
 
 .rbi-gallery-tile {
   position: relative;
+  display: block;
+  width: 100%;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .rbi-gallery-tile.is-empty {
@@ -1019,41 +1038,42 @@
   background: linear-gradient(180deg, rgba(49, 14, 12, 0.08), rgba(49, 14, 12, 0.68));
 }
 
-.rbi-gallery-tile.is-overlay > span:not(.rbi-edit-image-hint) {
+.rbi-gallery-tile.is-overlay>span:not(.rbi-edit-image-hint) {
   position: absolute;
   inset: 0;
   z-index: 2;
   display: grid;
   place-items: center;
   color: #fff7ef;
-  font-family: var(--rbi-serif);
-  font-size: clamp(2rem, 10vw, 3rem);
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(2rem, 8vw, 2.6rem);
   font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img {
-  animation: rbi-gallery-left calc(2s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08) both,
-    rbi-breathe-image calc(14s * var(--rbi-speed)) ease-in-out 2.6s infinite;
+  animation: rbi-gallery-zoom calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) both,
+    rbi-breathe-image calc(14s * var(--rbi-speed)) ease-in-out 2.7s infinite;
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(even) {
-  animation-name: rbi-gallery-right, rbi-breathe-image;
+  animation-name: rbi-gallery-zoom, rbi-breathe-image;
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(2) {
-  animation-delay: 0.3s, 2.9s;
+  animation-delay: 0.3s, 3.0s;
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(3) {
-  animation-delay: 0.6s, 3.2s;
+  animation-delay: 0.6s, 3.3s;
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(4) {
-  animation-delay: 0.9s, 3.5s;
+  animation-delay: 0.9s, 3.6s;
 }
 
 .rbi-gallery.is-visible .rbi-gallery-grid img:nth-child(5) {
-  animation-delay: 1.2s, 3.8s;
+  animation-delay: 1.2s, 3.9s;
 }
 
 .rbi-gallery-grid img:first-child {
@@ -1213,6 +1233,8 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 72px;
+  justify-content: center;
+  justify-content: safe center;
   gap: 10px;
   overflow-x: auto;
   padding: 10px 4px 4px;
@@ -1250,7 +1272,10 @@
   padding: 0;
   text-align: center;
   overflow: hidden;
-  background: var(--rbi-paper);
+  height: 240px;
+  background:
+    linear-gradient(180deg, rgba(246, 232, 220, 0.1), rgba(246, 232, 220, 0.16)),
+    url('../../public/img/double-dragon.webp') center / cover no-repeat;
 }
 
 .rbi-thanks-hint {
@@ -1264,8 +1289,9 @@
   right: 0;
   top: 0;
   z-index: 1;
-  height: 72px;
-  background: linear-gradient(180deg, var(--rbi-paper) 0%, rgba(246, 232, 220, 0.18) 100%);
+  height: 132px;
+  background:
+    linear-gradient(180deg, rgba(149, 37, 53, 0.12) 0%, rgba(246, 232, 220, 0.72) 62%, rgba(246, 232, 220, 0.16) 100%);
   pointer-events: none;
 }
 
@@ -1279,7 +1305,7 @@
   filter: saturate(0.96) contrast(1.02);
 }
 
-.rbi-thanks div {
+.rbi-thanks > div:not(.rbi-thanks-divider) {
   position: absolute;
   left: 0;
   right: 0;
@@ -1289,6 +1315,19 @@
   background: rgba(255, 248, 240, 0.7);
   backdrop-filter: blur(3px);
   transform: translateY(-50%);
+}
+
+.rbi-thanks[data-rbi-reveal] > div:not(.rbi-thanks-divider) {
+  opacity: 0;
+  transform: translateY(-50%) translateX(-100%);
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.rbi-thanks[data-rbi-reveal].is-visible > div:not(.rbi-thanks-divider) {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .rbi-thanks h2 {
@@ -1308,38 +1347,158 @@
 
 [data-rbi-reveal] {
   opacity: 0;
-  transform: translateY(42px);
-  transition: opacity calc(1.6s * var(--rbi-speed)) ease,
-    transform calc(1.6s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
+  transform: translateY(46px);
+  transition: opacity calc(0.8s * var(--rbi-speed)) ease,
+    transform calc(0.8s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
   will-change: opacity, transform;
 }
 
 [data-rbi-image] {
   opacity: 0;
-  transition: opacity calc(1.9s * var(--rbi-speed)) ease,
-    transform calc(1.9s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08);
+  transition: opacity calc(0.9s * var(--rbi-speed)) ease,
+    transform calc(0.9s * var(--rbi-speed)) cubic-bezier(0.18, 0.88, 0.3, 1.08);
   will-change: opacity, transform;
 }
 
 [data-rbi-image='left'] {
-  transform: translateX(-84px);
+  transform: translateX(-88px);
 }
 
 [data-rbi-image='right'] {
-  transform: translateX(84px);
+  transform: translateX(88px);
 }
 
 [data-rbi-reveal='down'] {
-  transform: translateY(-30px);
+  transform: translateY(-34px);
 }
 
 [data-rbi-reveal='up'] {
-  transform: translateY(42px) scale(0.98);
+  transform: translateY(46px) scale(0.98);
 }
 
 [data-rbi-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.rbi-gallery[data-rbi-reveal],
+.rbi-wishes[data-rbi-reveal],
+.rbi-thanks[data-rbi-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.rbi-gallery[data-rbi-reveal] .rbi-section-title,
+.rbi-wishes[data-rbi-reveal] .rbi-section-title,
+.rbi-thanks[data-rbi-reveal] h2,
+.rbi-thanks[data-rbi-reveal] p {
+  opacity: 0;
+  transform: scale(0.2);
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.rbi-gallery[data-rbi-reveal].is-visible .rbi-section-title,
+.rbi-wishes[data-rbi-reveal].is-visible .rbi-section-title,
+.rbi-thanks[data-rbi-reveal].is-visible h2,
+.rbi-thanks[data-rbi-reveal].is-visible p {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.rbi-wishes[data-rbi-reveal] form {
+  opacity: 0;
+  transform: translateX(-120px);
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.rbi-wishes[data-rbi-reveal].is-visible form {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rbi-invite-card[data-rbi-reveal],
+.rbi-calendar-section[data-rbi-reveal] {
+  opacity: 0 !important;
+  transform: scale(0.2) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-invite-card[data-rbi-reveal].is-visible,
+.rbi-calendar-section[data-rbi-reveal].is-visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.rbi-countdown[data-rbi-reveal] {
+  opacity: 0 !important;
+  transform: translateX(30px) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-countdown[data-rbi-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.rbi-map-section[data-rbi-reveal] {
+  opacity: 0 !important;
+  transform: translateX(40px) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-map-section[data-rbi-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.rbi-couple-row article:first-of-type[data-rbi-reveal] {
+  opacity: 0 !important;
+  transform: translateX(-30px) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-couple-row article:first-of-type[data-rbi-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.rbi-couple-row article:last-of-type[data-rbi-reveal] {
+  opacity: 0 !important;
+  transform: translateX(30px) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-couple-row article:last-of-type[data-rbi-reveal].is-visible {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.rbi-couple-row div[data-rbi-image] {
+  opacity: 0 !important;
+  transform: scale(0.2) !important;
+  transition: opacity calc(2.5s * var(--rbi-speed)) ease,
+    transform calc(2.5s * var(--rbi-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
+  will-change: opacity, transform;
+}
+
+.rbi-couple-row div[data-rbi-image].is-visible {
+  opacity: 1 !important;
+  transform: scale(1) !important;
 }
 
 [data-rbi-image].is-visible {
@@ -1437,28 +1596,27 @@
 @keyframes rbi-seal-stamp {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-128px) scale(1.18) rotate(-10deg);
-    filter: brightness(1.08);
+    transform: translateX(-50%) translateY(0) scale(1) rotate(0);
   }
 
-  54% {
+  30% {
     opacity: 1;
-    transform: translateX(-50%) translateY(8px) scale(0.88) rotate(2deg);
-    filter: brightness(0.95);
-    box-shadow:
-      inset 0 0 0 8px rgba(255, 245, 213, 0.2),
-      0 4px 10px rgba(87, 23, 17, 0.34);
+    transform: translateX(-50%) translateY(-25px) scale(1.08) rotate(180deg);
   }
 
-  72% {
-    transform: translateX(-50%) translateY(-5px) scale(1.04) rotate(-1deg);
-    filter: brightness(1.03);
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(8px) scale(0.92) rotate(360deg);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px) scale(1.02) rotate(360deg);
   }
 
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1) rotate(0);
-    filter: brightness(1);
+    transform: translateX(-50%) translateY(0) scale(1) rotate(360deg);
   }
 }
 
@@ -1661,27 +1819,15 @@
   }
 }
 
-@keyframes rbi-gallery-left {
+@keyframes rbi-gallery-zoom {
   from {
     opacity: 0;
-    transform: translateX(-90px) rotate(-5deg) scale(0.96);
+    transform: scale(0.2);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0) rotate(0deg) scale(1);
-  }
-}
-
-@keyframes rbi-gallery-right {
-  from {
-    opacity: 0;
-    transform: translateX(90px) rotate(5deg) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0) rotate(0deg) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -1769,15 +1915,17 @@
   }
 
   .rbi-photo-left {
-    left: 4px;
-    width: 236px;
-    height: 236px;
+    left: 12px;
+    top: 140px;
+    width: 200px;
+    height: 200px;
   }
 
   .rbi-photo-right {
-    right: 2px;
-    width: 204px;
-    height: 252px;
+    right: 10px;
+    top: 105px;
+    width: 174px;
+    height: 215px;
   }
 
   .rbi-calendar-section,

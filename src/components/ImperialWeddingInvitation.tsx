@@ -8,7 +8,7 @@ function ImperialWeddingInvitation() {
     const areImagesLoading = useInvitationImagePreload([coupleImage]);
 
     if (areImagesLoading) {
-        return <InvitationLoadingScreen className="iwi-page" />;
+        return <InvitationLoadingScreen className="iwi-page" variant="emerald-skeleton" />;
     }
 
     return (

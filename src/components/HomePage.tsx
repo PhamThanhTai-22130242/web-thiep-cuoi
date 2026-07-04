@@ -131,6 +131,18 @@ function HomePage() {
         setCurrentUser(null);
     };
 
+    const [showBackToTop, setShowBackToTop] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowBackToTop(window.scrollY > 400);
+            setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     useEffect(() => {
         const elements = document.querySelectorAll<HTMLElement>('[data-home-reveal]');
         const observer = new IntersectionObserver(
@@ -150,28 +162,30 @@ function HomePage() {
 
     return (
         <div className="home-app">
-            <nav className="home-navbar">
-                <div className="home-brand">
-                    <img className="home-brand-mark" src="/img/logo.png" alt="" />
-                    <div>
-                        <strong>Gòi Xong Cưới</strong>
+            <header className={`home-header-shell ${isScrolled ? 'is-scrolled' : ''}`}>
+                <nav className="home-navbar">
+                    <div className="home-brand">
+                        <img className="home-brand-mark" src="/img/logo/logo-moi.png" alt="" />
+                        <div>
+                            <strong>Gòi Xong Cưới</strong>
+                        </div>
                     </div>
-                </div>
-                <ul className="home-nav-links">
-                    <li><a href="#home">Trang chủ</a></li>
-                    <li><a href="#pricing">Bảng giá</a></li>
-                    <li><Link to="/chon-mau/chuyen-nghiep">Mẫu thiệp</Link></li>
-                    <li><a href="#contact">Liên hệ</a></li>
-                </ul>
-                {currentUser ? (
-                    <AuthUserBadge user={currentUser} onLogout={handleLogout} />
-                ) : (
-                    <div className="home-auth-actions">
-                        <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>Đăng nhập</button>
-                        <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>Đăng ký</button>
-                    </div>
-                )}
-            </nav>
+                    <ul className="home-nav-links">
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="#pricing">Bảng giá</a></li>
+                        <li><Link to="/chon-mau/chuyen-nghiep">Mẫu thiệp</Link></li>
+                        <li><a href="#contact">Liên hệ</a></li>
+                    </ul>
+                    {currentUser ? (
+                        <AuthUserBadge user={currentUser} onLogout={handleLogout} />
+                    ) : (
+                        <div className="home-auth-actions">
+                            <button type="button" className="home-auth-login" onClick={() => setAuthMode('login')}>Đăng nhập</button>
+                            <button type="button" className="home-auth-register" onClick={() => setAuthMode('register')}>Đăng ký</button>
+                        </div>
+                    )}
+                </nav>
+            </header>
 
             <main className="home-hero" id="home">
                 <div className="home-hero-copy">
@@ -478,6 +492,17 @@ function HomePage() {
                     <img src="https://tse2.mm.bing.net/th/id/OIP._-N0rPk3XBfnfR9ZvP892wHaHa?rs=1&pid=ImgDetMain&o=7&rm=3" alt="" />
                 </a>
             </aside>
+
+            <button
+                type="button"
+                className={`home-floating-back-to-top${showBackToTop ? ' is-visible' : ''}`}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                aria-label="Cuộn lên đầu trang"
+            >
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+            </button>
 
             {authMode && (
                 <div className="home-auth-modal-backdrop" role="presentation" onClick={() => setAuthMode(null)}>

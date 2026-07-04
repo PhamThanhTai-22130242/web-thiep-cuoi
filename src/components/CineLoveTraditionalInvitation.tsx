@@ -2,22 +2,10 @@ import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from '
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
 import './CineLoveTraditionalInvitation.css';
-import { defaultInvitationTemplate, loadCineLovePreview } from '../data/invitationTemplates';
+import { defaultCineLoveInvitationTemplate, loadCineLovePreview } from '../data/invitationTemplates';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
-
-
-const thiepMoiImages = defaultInvitationTemplate.images;
-const thiepMoiGallery = [
-    ...(thiepMoiImages.gallery ?? []),
-    thiepMoiImages.cover,
-    thiepMoiImages.kiss,
-    thiepMoiImages.walk,
-    thiepMoiImages.smile,
-    thiepMoiImages.studio,
-    thiepMoiImages.thank,
-].filter(Boolean);
-const memoryGalleryImages = (thiepMoiImages.gallery?.filter(Boolean).length ? thiepMoiImages.gallery : thiepMoiGallery).filter(Boolean);
+import InvitationLoadingScreen from './InvitationLoadingScreen';
 
 type WeddingWish = {
     name: string;
@@ -79,35 +67,35 @@ type CineLoveTraditionalInvitationProps = {
 };
 
 export const defaultCineLoveInvitationData: CineLoveInvitationData = {
-    slug: '',
-    groomName: 'Nguyễn Thanh Huy',
-    brideName: 'Trịnh Phương Thúy',
-    groomIntroName: 'Nguyễn Thanh Huy',
-    brideIntroName: 'Trịnh Phương Thúy',
-    groomFamilyLabel: 'Nhà trai',
-    brideFamilyLabel: 'Nhà gái',
+    slug: defaultCineLoveInvitationTemplate.slug,
+    groomName: defaultCineLoveInvitationTemplate.couple.groom,
+    brideName: defaultCineLoveInvitationTemplate.couple.bride,
+    groomIntroName: defaultCineLoveInvitationTemplate.couple.groom,
+    brideIntroName: defaultCineLoveInvitationTemplate.couple.bride,
+    groomFamilyLabel: defaultCineLoveInvitationTemplate.couple.groomRole,
+    brideFamilyLabel: defaultCineLoveInvitationTemplate.couple.brideRole,
     groomFather: 'Ông Nguyễn Viết Minh',
     groomMother: 'Bà Trịnh Thị Lan',
     brideFather: 'Ông Trịnh Văn Huy',
     brideMother: 'Bà Ngô Mai Hoàn',
-    inviteText: 'Trân Trọng Kính Mời',
+    inviteText: defaultCineLoveInvitationTemplate.couple.headline,
     guestName: 'Anh Dũng',
-    eventDate: '2026-11-16',
-    eventTime: '12:00',
-    venueName: 'Nhà hàng Dinamond Palace',
-    address: 'Hai Bà Trưng, Hà Nội',
-    mapUrl: 'https://maps.google.com/maps?q=Tr%E1%BB%91ng%20%C4%90%E1%BB%93ng%20Palace%20C%E1%BA%A3nh%20H%E1%BB%93%2C%20173B%20%C4%90.%20Tr%C6%B0%E1%BB%9Dng%20Chinh%2C%20H%C3%A0%20N%E1%BB%99i&t=&z=14&ie=UTF8&iwloc=&output=embed',
+    eventDate: defaultCineLoveInvitationTemplate.event.date.slice(0, 10),
+    eventTime: defaultCineLoveInvitationTemplate.event.time.slice(0, 5),
+    venueName: defaultCineLoveInvitationTemplate.event.venue,
+    address: defaultCineLoveInvitationTemplate.event.address,
+    mapUrl: defaultCineLoveInvitationTemplate.event.mapUrl,
     showGroomGift: true,
     showBrideGift: true,
     groomGiftTitle: 'QR Đến Chú Rể',
     brideGiftTitle: 'QR Đến Cô Dâu',
     images: {
-        hero: 'https://i.pinimg.com/736x/0a/0b/a6/0a0ba6a2118e4fd2f686ff876efb80b8.jpg',
-        groom: 'https://tse2.mm.bing.net/th/id/OIP.c189c5Yzun-CiAX_cxmYagHaJm?w=600&h=778&rs=1&pid=ImgDetMain&o=7&rm=3',
-        bride: 'https://afamilycdn.com/150157425591193600/2021/11/25/photo-1-16378362373871156703010-1637841966879-1637841967004902439285.jpg',
-        gallery: memoryGalleryImages,
-        groomQr: 'https://img.vietqr.io/image/VCB-9383216200-compact2.png?amount=0&addInfo=Mung%20cuoi%20chu%20re&accountName=Pham%20Ha%20Do',
-        brideQr: 'https://img.vietqr.io/image/MB-1001652007-compact2.png?amount=0&addInfo=Mung%20cuoi%20co%20dau&accountName=Nguyen%20Thi%20Giang%20Thanh',
+        hero: defaultCineLoveInvitationTemplate.images.hero || '',
+        groom: defaultCineLoveInvitationTemplate.images.groom || '',
+        bride: defaultCineLoveInvitationTemplate.images.bride || '',
+        gallery: defaultCineLoveInvitationTemplate.images.gallery || [],
+        groomQr: defaultCineLoveInvitationTemplate.images.groomQr || '',
+        brideQr: defaultCineLoveInvitationTemplate.images.brideQr || '',
     },
 };
 
@@ -298,7 +286,7 @@ function CineLoveTraditionalInvitation({
 
     const invitationData = data ?? previewData ?? defaultCineLoveInvitationData;
     const mapSrc = getMapSrc(invitationData.mapUrl);
-    
+
     const calendarDays = useMemo(() => Array.from({ length: 30 }, (_, index) => index + 1), []);
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
     const countdownTarget = useMemo(
@@ -339,8 +327,8 @@ function CineLoveTraditionalInvitation({
 
     useEffect(() => {
         const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
-            initialWishes.every((w, i) => 
-                w.name === lastInitialWishesRef.current[i]?.name && 
+            initialWishes.every((w, i) =>
+                w.name === lastInitialWishesRef.current[i]?.name &&
                 w.message === lastInitialWishesRef.current[i]?.message
             );
         if (!isSame) {
@@ -412,11 +400,7 @@ function CineLoveTraditionalInvitation({
     }, []);
 
     if (isLoadingPreview) {
-        return (
-            <main className="clv-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100dvh' }}>
-                <p style={{ fontFamily: 'system-ui', color: '#888', fontSize: '1rem' }}>Đang tải bản xem trước...</p>
-            </main>
-        );
+        return <InvitationLoadingScreen className="clv-page" variant="emerald-skeleton" />;
     }
 
     const galleryImages = invitationData.images.gallery.filter(Boolean);
@@ -518,6 +502,9 @@ function CineLoveTraditionalInvitation({
     return (
         <main className={`clv-page${editable ? ' is-editing' : ''}`}>
             <section className="clv-hero">
+                <div className="clv-hero__top">
+                    <span className="clv-save">Save The Date</span>
+                </div>
                 <h1 className="clv-hero__names">
                     <span className="clv-hero__name is-groom">{invitationData.groomName}</span>
                     <span className="clv-hero__amp">-</span>
@@ -643,10 +630,10 @@ function CineLoveTraditionalInvitation({
                     />
                 ) : mapSrc ? (
                     <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                        <a 
-                            href={mapSrc} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
+                        <a
+                            href={mapSrc}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#a62d2d', color: '#fff', borderRadius: '30px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
                         >
                             Chỉ đường trên Google Maps

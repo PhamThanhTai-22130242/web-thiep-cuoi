@@ -31,3 +31,171 @@
     transform: rotate(360deg);
   }
 }
+
+.invitation-emerald-skeleton {
+  display: block;
+  min-height: 100vh;
+  padding: clamp(28px, 5vw, 72px) 18px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(194, 161, 19, 0.12), transparent 32vh),
+    linear-gradient(90deg, rgba(var(--ei-green-rgb, 45, 75, 69), 0.04) 1px, transparent 1px),
+    var(--ei-paper, #f8f8f1);
+  background-size: auto, 32px 32px, auto;
+  color: var(--ei-green, #2d4b45);
+}
+
+.invitation-emerald-skeleton__hero,
+.invitation-emerald-skeleton__card {
+  width: min(100%, 960px);
+  margin: 0 auto;
+}
+
+.invitation-emerald-skeleton__hero {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) minmax(220px, 1fr) minmax(120px, 220px);
+  align-items: center;
+  gap: clamp(18px, 4vw, 42px);
+  min-height: 360px;
+}
+
+.invitation-emerald-skeleton__photo,
+.invitation-emerald-skeleton__content span,
+.invitation-emerald-skeleton__title,
+.invitation-emerald-skeleton__content p,
+.invitation-emerald-skeleton__line,
+.invitation-emerald-skeleton__date span,
+.invitation-emerald-skeleton__date strong {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(var(--ei-green-rgb, 45, 75, 69), 0.1);
+}
+
+.invitation-emerald-skeleton__photo::after,
+.invitation-emerald-skeleton__content span::after,
+.invitation-emerald-skeleton__title::after,
+.invitation-emerald-skeleton__content p::after,
+.invitation-emerald-skeleton__line::after,
+.invitation-emerald-skeleton__date span::after,
+.invitation-emerald-skeleton__date strong::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: invitation-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+.invitation-emerald-skeleton__photo {
+  aspect-ratio: 3 / 4;
+  box-shadow: 0 18px 48px rgba(var(--ei-shadow-rgb, 32, 59, 54), 0.12);
+}
+
+.invitation-emerald-skeleton__photo.is-left {
+  transform: rotate(-5deg);
+}
+
+.invitation-emerald-skeleton__photo.is-right {
+  transform: rotate(5deg);
+}
+
+.invitation-emerald-skeleton__content {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+.invitation-emerald-skeleton__content span {
+  width: min(54%, 220px);
+  height: 18px;
+  border-radius: 999px;
+}
+
+.invitation-emerald-skeleton__title {
+  width: min(82%, 420px);
+  height: clamp(56px, 8vw, 92px);
+  border-radius: 28px;
+}
+
+.invitation-emerald-skeleton__content p {
+  width: min(72%, 360px);
+  height: 16px;
+  border-radius: 999px;
+}
+
+.invitation-emerald-skeleton__content p:last-child {
+  width: min(58%, 280px);
+}
+
+.invitation-emerald-skeleton__card {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  margin-top: clamp(16px, 4vw, 48px);
+  padding: clamp(28px, 5vw, 48px);
+  border: 1px solid rgba(var(--ei-green-rgb, 45, 75, 69), 0.12);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: 0 24px 60px rgba(var(--ei-shadow-rgb, 32, 59, 54), 0.1);
+}
+
+.invitation-emerald-skeleton__line {
+  width: min(72%, 520px);
+  height: 18px;
+  border-radius: 999px;
+}
+
+.invitation-emerald-skeleton__line.is-short {
+  width: min(36%, 220px);
+}
+
+.invitation-emerald-skeleton__line.is-title {
+  width: min(46%, 300px);
+  height: 42px;
+  border-radius: 20px;
+}
+
+.invitation-emerald-skeleton__date {
+  display: grid;
+  grid-template-columns: 110px 92px 110px;
+  align-items: center;
+  gap: 18px;
+}
+
+.invitation-emerald-skeleton__date span,
+.invitation-emerald-skeleton__date strong {
+  display: block;
+  height: 36px;
+}
+
+.invitation-emerald-skeleton__date strong {
+  height: 88px;
+  border-radius: 24px;
+}
+
+@keyframes invitation-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 760px) {
+  .invitation-emerald-skeleton__hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .invitation-emerald-skeleton__photo {
+    width: min(62vw, 220px);
+    margin: 0 auto;
+  }
+
+  .invitation-emerald-skeleton__photo.is-right {
+    display: none;
+  }
+
+  .invitation-emerald-skeleton__date {
+    grid-template-columns: 1fr;
+    width: min(100%, 240px);
+  }
+}
