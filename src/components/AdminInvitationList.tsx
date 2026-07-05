@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 import { API_CONFIG, API_ENDPOINTS } from '../config/api.config';
 import { authTokenService } from '../services/auth-token.service';
 import { redirectToServerErrorPage, shouldRedirectToServerErrorPage } from '../services/http.service';
+import { weddingTemplateConfigs } from '../data/weddingTemplateRegistry';
 import './AdminDashboard.css';
 import './AdminInvitationList.css';
 
@@ -40,6 +41,7 @@ interface AdminInvitation {
     createdAt?: string;
     viewCount?: number;
     previewImg?: string;
+    templateName?: string;
 }
 
 interface AdminInvitationPage {
@@ -503,9 +505,25 @@ function AdminInvitationList() {
                                                     <Link to={`/thiep/${invitation.slug}`} aria-label="Xem thiệp">
                                                         <Eye size={15} />
                                                     </Link>
-                                                    <Link to="/hy-sac-vu-qui/edit" state={{ weddingId: invitation.weddingId }} aria-label="Chỉnh sửa">
-                                                        <Edit3 size={15} />
-                                                    </Link>
+                                                    {(() => {
+                                                        const config = weddingTemplateConfigs.find((c) => c.name === invitation.templateName);
+                                                        const editPath = config?.editorPath || '';
+                                                        return (
+                                                            <Link
+                                                                to={editPath || '#'}
+                                                                state={{ weddingId: invitation.weddingId }}
+                                                                onClick={(event) => {
+                                                                    if (!editPath) {
+                                                                        event.preventDefault();
+                                                                        alert('Mẫu thiệp "' + (invitation.templateName || 'Không rõ') + '" không tồn tại hoặc chưa được cấu hình trên hệ thống!');
+                                                                    }
+                                                                }}
+                                                                aria-label="Chỉnh sửa"
+                                                            >
+                                                                <Edit3 size={15} />
+                                                            </Link>
+                                                        );
+                                                    })()}
                                                     <Link to={`/quan-li-binh-luan/${invitation.slug}`} aria-label="Quản lí bình luận">
                                                         <MessageCircle size={15} />
                                                     </Link>

@@ -56,6 +56,10 @@ function toEventDate(dateValue: string, timeValue: string) {
     return `${dateValue || '2026-01-01'}T${timeValue || '00:00'}:00+07:00`;
 }
 
+const apiValue = (value: string | null | undefined, fallbackValue: string) => {
+    return (value === undefined || value === null) ? fallbackValue : value;
+};
+
 export function mapPublicCardToTemplate(card: PublicWeddingCardResponse): InvitationTemplate {
     let baseTemplate = defaultInvitationTemplate;
     if (card.template.code === 'RubyBasicInvitation') {
@@ -129,10 +133,10 @@ export function mapPublicCardToCineLoveData(card: PublicWeddingCardResponse): Ci
     data.brideIntroName = bride?.fullName || bride?.shortName || data.brideIntroName;
     data.groomFamilyLabel = groom?.familyLable || data.groomFamilyLabel;
     data.brideFamilyLabel = bride?.familyLable || data.brideFamilyLabel;
-    data.groomFather = groom?.fatherName || data.groomFather;
-    data.groomMother = groom?.motherName || data.groomMother;
-    data.brideFather = bride?.fatherName || data.brideFather;
-    data.brideMother = bride?.motherName || data.brideMother;
+    data.groomFather = apiValue(groom?.fatherName, data.groomFather);
+    data.groomMother = apiValue(groom?.motherName, data.groomMother);
+    data.brideFather = apiValue(bride?.fatherName, data.brideFather);
+    data.brideMother = apiValue(bride?.motherName, data.brideMother);
     data.inviteText = event?.inviteText || data.inviteText;
     data.eventDate = event?.eventDate || data.eventDate;
     data.eventTime = (event?.eventTime || data.eventTime).slice(0, 5);
@@ -173,10 +177,10 @@ export function mapPublicCardToElegantData(card: PublicWeddingCardResponse): Ele
     data.brideIntroName = bride?.fullName || bride?.shortName || data.brideIntroName;
     data.groomFamilyLabel = groom?.familyLable || data.groomFamilyLabel;
     data.brideFamilyLabel = bride?.familyLable || data.brideFamilyLabel;
-    data.groomFather = groom?.fatherName || data.groomFather;
-    data.groomMother = groom?.motherName || data.groomMother;
-    data.brideFather = bride?.fatherName || data.brideFather;
-    data.brideMother = bride?.motherName || data.brideMother;
+    data.groomFather = apiValue(groom?.fatherName, data.groomFather);
+    data.groomMother = apiValue(groom?.motherName, data.groomMother);
+    data.brideFather = apiValue(bride?.fatherName, data.brideFather);
+    data.brideMother = apiValue(bride?.motherName, data.brideMother);
     data.inviteText = event?.inviteText || data.inviteText;
     data.eventDate = event?.eventDate || data.eventDate;
     data.eventTime = (event?.eventTime || data.eventTime).slice(0, 5);
@@ -219,10 +223,10 @@ export function mapPublicCardToPinkData(card: PublicWeddingCardResponse): PinkWe
     data.brideIntroName = bride?.fullName || bride?.shortName || data.brideIntroName;
     data.groomFamilyLabel = groom?.familyLable || data.groomFamilyLabel;
     data.brideFamilyLabel = bride?.familyLable || data.brideFamilyLabel;
-    data.groomFather = groom?.fatherName || data.groomFather;
-    data.groomMother = groom?.motherName || data.groomMother;
-    data.brideFather = bride?.fatherName || data.brideFather;
-    data.brideMother = bride?.motherName || data.brideMother;
+    data.groomFather = apiValue(groom?.fatherName, data.groomFather);
+    data.groomMother = apiValue(groom?.motherName, data.groomMother);
+    data.brideFather = apiValue(bride?.fatherName, data.brideFather);
+    data.brideMother = apiValue(bride?.motherName, data.brideMother);
     data.inviteText = event?.inviteText || data.inviteText;
     data.eventDate = event?.eventDate || data.eventDate;
     data.eventTime = (event?.eventTime || data.eventTime).slice(0, 5);
@@ -309,7 +313,14 @@ function PublicWeddingCardPage() {
     }
 
     if (card.template.code === 'RubyBasicInvitation') {
-        return <RubyBasicInvitation template={template} />;
+        return (
+            <RubyBasicInvitation
+                template={template}
+                initialWishes={wishes}
+                wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
+                wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}
+            />
+        );
     }
 
     if (card.template.code === 'CineLoveTraditionalInvitation') {

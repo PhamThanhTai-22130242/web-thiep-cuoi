@@ -9,6 +9,7 @@ import {
     X,
     Check,
     Loader2,
+    Trash2,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import {
@@ -802,6 +803,13 @@ function TemplateDashboard99k() {
         fileInputRef.current?.click();
     };
 
+    const deleteGalleryImage = (index: number) => {
+        const gallery = getGallery(getValues());
+        const nextGallery = [...gallery];
+        nextGallery.splice(index, 1);
+        setValue('images.gallery', nextGallery, { shouldDirty: true, shouldTouch: true });
+    };
+
     return (
         <main className="td-page">
             <input ref={fileInputRef} className="td-file-input" type="file" accept="image/*" onChange={handleFileChange} />
@@ -962,9 +970,24 @@ function TemplateDashboard99k() {
                             <span>Thêm ảnh</span>
                         </button>
                         {galleryImages.map((image, index) => (
-                            <button key={`${image}-${index}`} type="button" onClick={() => requestImage(`images.gallery.${index}`)}>
-                                <img src={image} alt={`Album ${index + 1}`} />
-                            </button>
+                            <div key={`${image}-${index}`} className="td-gallery-thumbnail-container" style={{ position: 'relative', width: '88px', height: '76px' }}>
+                                <button type="button" onClick={() => requestImage(`images.gallery.${index}`)} style={{ width: '100%', height: '100%', display: 'block' }}>
+                                    <img src={image} alt={`Album ${index + 1}`} />
+                                </button>
+                                {index >= 4 && (
+                                    <button
+                                        type="button"
+                                        className="td-delete-gallery-btn"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteGalleryImage(index);
+                                        }}
+                                        aria-label="Xóa ảnh"
+                                    >
+                                        <Trash2 size={12} />
+                                    </button>
+                                )}
+                            </div>
                         ))}
                     </div>
 

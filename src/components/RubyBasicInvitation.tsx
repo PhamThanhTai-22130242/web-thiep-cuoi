@@ -1,4 +1,4 @@
-import { CSSProperties, FormEvent, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
     defaultInvitationTemplate,
@@ -11,14 +11,29 @@ import {
     rubyTemplateStorageKey,
     Wish,
 } from '../data/invitationTemplates';
+import { subscribeToStompTopic } from '../services/stomp.service';
 import { formatVietnameseLunarDate } from '../utils/lunar-calendar';
 import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './RubyBasicInvitation.css';
+
+import { httpRequest } from '../services/http.service';
+
+async function postWhenConfigured<T>(endpoint: string, payload: T) {
+    if (!endpoint) return;
+    await httpRequest(endpoint, {
+        method: 'POST',
+        body: payload,
+    });
+}
 
 type RubyBasicInvitationProps = {
     template?: InvitationTemplate;
     preview?: boolean;
     onImageClick?: (target: string) => void;
+    initialWishes?: Wish[];
+    wishEndpoint?: string;
+    wishTopic?: string;
+    rsvpEndpoint?: string;
 };
 
 const rubyFallbackImages = {
@@ -70,7 +85,14 @@ function RubyPhoto({ src, alt, className, onClick }: { src: string; alt: string;
     );
 }
 
-function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBasicInvitationProps) {
+function RubyBasicInvitation({
+    template,
+    preview = false,
+    onImageClick,
+    initialWishes,
+    wishEndpoint,
+    wishTopic,
+}: RubyBasicInvitationProps) {
     const shouldLoadSavedPreview = !template && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1';
     const [savedPreviewTemplate, setSavedPreviewTemplate] = useState<InvitationTemplate | null>(null);
     const rawInvitationData = template || savedPreviewTemplate || (shouldLoadSavedPreview ? defaultRubyInvitationTemplate : loadStoredInvitationTemplate(rubyTemplateStorageKey, defaultRubyInvitationTemplate)) || defaultRubyInvitationTemplate;
@@ -139,8 +161,48 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
         return match ? { hour: match[1], minute: match[2] } : null;
     }, [invitationData.event.time]);
     const [countdown, setCountdown] = useState(() => getCountdown(invitationData.event.date));
-    const [wishes, setWishes] = useState<Wish[]>(defaultWishes);
+    const [wishes, setWishes] = useState<Wish[]>(() => initialWishes || defaultWishes);
     const [wishStatus, setWishStatus] = useState('');
+    const lastSubmittedWishRef = useRef<Wish | null>(null);
+    const lastSubmittedWishDeliveredRef = useRef(false);
+    const lastInitialWishesRef = useRef<Wish[]>(initialWishes || defaultWishes);
+
+    useEffect(() => {
+        if (!initialWishes) return;
+        const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
+            initialWishes.every((w, i) =>
+                w.name === lastInitialWishesRef.current[i]?.name &&
+                w.message === lastInitialWishesRef.current[i]?.message
+            );
+        if (!isSame) {
+            lastInitialWishesRef.current = initialWishes;
+            setWishes(initialWishes);
+        }
+    }, [initialWishes]);
+
+    useEffect(() => {
+        if (!wishTopic || preview) {
+            return undefined;
+        }
+
+        const subscription = subscribeToStompTopic<Wish & { guestName?: string }>(wishTopic, (incomingWish) => {
+            const wish = {
+                name: incomingWish.name || incomingWish.guestName || '',
+                message: incomingWish.message,
+            };
+            const submittedWish = lastSubmittedWishRef.current;
+            if (submittedWish && submittedWish.name === wish.name && submittedWish.message === wish.message) {
+                lastSubmittedWishDeliveredRef.current = true;
+                setWishStatus('Cảm ơn bạn, lời chúc đã được gửi thành công.');
+            }
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === wish.name && item.message === wish.message);
+                return exists ? current : [wish, ...current];
+            });
+        });
+
+        return () => subscription.unsubscribe();
+    }, [preview, wishTopic]);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
     const areImagesLoading = useInvitationImagePreload(onImageClick ? [] : imageLoadTargets, isLoadingSavedPreview);
@@ -239,9 +301,10 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
         };
     }, [isGalleryOpen]);
 
-    const handleWish = (event: FormEvent<HTMLFormElement>) => {
+    const handleWish = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const form = new FormData(event.currentTarget);
+        const formElement = event.currentTarget;
+        const form = new FormData(formElement);
         const nextWish = {
             name: String(form.get('name') || '').trim(),
             message: String(form.get('message') || '').trim(),
@@ -252,9 +315,28 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
             return;
         }
 
-        setWishes((current) => [nextWish, ...current]);
-        setWishStatus('Cảm ơn bạn, lời chúc đã được gửi thành công.');
-        event.currentTarget.reset();
+        try {
+            lastSubmittedWishRef.current = nextWish;
+            lastSubmittedWishDeliveredRef.current = false;
+            await postWhenConfigured(wishEndpoint || invitationData.api.wishEndpoint, nextWish);
+
+            setWishes((current) => {
+                const exists = current.some((item) => item.name === nextWish.name && item.message === nextWish.message);
+                return exists ? current : [nextWish, ...current];
+            });
+
+            setWishStatus('Cảm ơn bạn, lời chúc đã được gửi thành công.');
+            formElement.reset();
+        } catch {
+            if (lastSubmittedWishDeliveredRef.current) {
+                setWishStatus('Cảm ơn bạn, lời chúc đã được gửi thành công.');
+                formElement.reset();
+                return;
+            }
+            setWishStatus('Không thể gửi lời chúc. Vui lòng thử lại.');
+        } finally {
+            lastSubmittedWishRef.current = null;
+        }
     };
 
     const openGalleryAt = (index: number) => {
@@ -462,14 +544,16 @@ function RubyBasicInvitation({ template, preview = false, onImageClick }: RubyBa
                     <button type="submit">Gửi</button>
                 </form>
                 {wishStatus && <p className="rbi-status">{wishStatus}</p>}
-                <div className="rbi-wish-list">
-                    {wishes.map((wish) => (
-                        <article key={`${wish.name}-${wish.message}`}>
-                            <strong>{wish.name}</strong>
-                            <p>{wish.message}</p>
-                        </article>
-                    ))}
-                </div>
+                {wishes.length > 0 && (
+                    <div className="rbi-wish-list">
+                        {wishes.map((wish) => (
+                            <article key={`${wish.name}-${wish.message}`}>
+                                <strong>{wish.name}</strong>
+                                <p>{wish.message}</p>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <footer className="rbi-thanks" data-rbi-reveal>

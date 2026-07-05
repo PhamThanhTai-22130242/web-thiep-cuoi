@@ -11,12 +11,15 @@ import {
     Loader2,
     MapPin,
     Plus,
+    Save,
     Upload,
     UserRound,
     UsersRound,
+    Trash2,
 } from 'lucide-react';
 import CineLoveTraditionalInvitation, {
     CineLoveInvitationData,
+    defaultCineLoveInvitationData,
     emptyCineLoveInvitationData,
 } from './CineLoveTraditionalInvitation';
 import { saveCineLovePreview } from '../data/invitationTemplates';
@@ -33,6 +36,15 @@ type ImageTarget =
     | `images.gallery.${number}`
     | 'images.groomQr'
     | 'images.brideQr';
+
+type FamilyMemberField = 'groomFather' | 'groomMother' | 'brideFather' | 'brideMother';
+
+const defaultFamilyMembers: Record<FamilyMemberField, string> = {
+    groomFather: defaultCineLoveInvitationData.groomFather,
+    groomMother: defaultCineLoveInvitationData.groomMother,
+    brideFather: defaultCineLoveInvitationData.brideFather,
+    brideMother: defaultCineLoveInvitationData.brideMother,
+};
 
 function cloneData(data: CineLoveInvitationData): CineLoveInvitationData {
     return {
@@ -275,6 +287,7 @@ function CineLoveTraditionalInvitationEditor() {
     const [saveStatus, setSaveStatus] = useState('');
     const [slugError, setSlugError] = useState('');
     const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
+    const [hasPersistedCard, setHasPersistedCard] = useState(false);
     const hasLoadedRef = useRef(false);
 
     const getWeddingId = () => {
@@ -306,6 +319,22 @@ function CineLoveTraditionalInvitationEditor() {
     const shouldScrollGalleryEndRef = useRef(false);
     const objectUrlsRef = useRef<string[]>([]);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
+    const familyMemberBackupRef = useRef<Record<FamilyMemberField, string>>({ ...defaultFamilyMembers });
+    const isFamilyMemberEnabled = (field: FamilyMemberField) => draft[field].trim().length > 0;
+
+    const handleFamilyMemberEnabledChange = (field: FamilyMemberField, checked: boolean) => {
+        setDraft((current) => {
+            if (!checked) {
+                familyMemberBackupRef.current[field] = current[field] || familyMemberBackupRef.current[field];
+                return { ...current, [field]: '' };
+            }
+
+            return {
+                ...current,
+                [field]: current[field] || familyMemberBackupRef.current[field] || defaultFamilyMembers[field],
+            };
+        });
+    };
     const [eventDateText, setEventDateText] = useState(() => formatDateDisplay(draft.eventDate || ''));
 
     useEffect(() => {
@@ -366,6 +395,7 @@ function CineLoveTraditionalInvitationEditor() {
                 setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
                 setCardStatus(card.status);
+                setHasPersistedCard(true);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
                 hasLoadedRef.current = true;
             })
@@ -407,6 +437,23 @@ function CineLoveTraditionalInvitationEditor() {
         }
 
         requestImage(`images.gallery.${draft.images.gallery.length}`, 'replace');
+    };
+
+    const deleteGalleryImage = (index: number) => {
+        setDraft((current) => {
+            const nextGallery = [...current.images.gallery];
+            nextGallery.splice(index, 1);
+            while (nextGallery.length < 9) {
+                nextGallery.push('');
+            }
+            return {
+                ...current,
+                images: {
+                    ...current.images,
+                    gallery: nextGallery,
+                },
+            };
+        });
     };
 
     const applyImage = (target: ImageTarget, url: string) => {
@@ -615,6 +662,7 @@ function CineLoveTraditionalInvitationEditor() {
             setDraft(normalized);
             setWeddingId(card.weddingId);
             setCardStatus(card.status);
+            setHasPersistedCard(true);
 
             if (isPublishing) {
                 navigate(`/dashboard?activate=${card.weddingId}`);
@@ -661,15 +709,34 @@ function CineLoveTraditionalInvitationEditor() {
             </section>
 
             <aside className="clve-editor">
-                <div className="clve-actions">
-                    <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
-                        <Eye size={17} />
-                        Xem trước
-                    </button>
-                    <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
-                        {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
-                        Hoàn tất
-                    </button>
+                <div className={`clve-actions${!hasPersistedCard ? ' has-save-draft' : ''}`}>
+                    {!hasPersistedCard ? (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button type="button" disabled={isSaving} onClick={() => persistDraft('draft')}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Save size={17} />}
+                                Bản nháp
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                                Xuất bản
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                                Hoàn tất
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {saveStatus && (
@@ -690,7 +757,6 @@ function CineLoveTraditionalInvitationEditor() {
                 <header className="clve-header">
                     <span>Chỉnh sửa thiệp</span>
                     <h1>Duyên Thắm Miệt Vườn</h1>
-                    <p>Thay đổi nội dung bên dưới sẽ cập nhật trực tiếp trên khung preview.</p>
                 </header>
 
                 <form className="clve-form">
@@ -764,20 +830,68 @@ function CineLoveTraditionalInvitationEditor() {
 
                         <div className="clve-grid-2">
                             <label className="clve-field">
-                                <span>Bố chú rể</span>
-                                <input value={draft.groomFather} type="text" onChange={(event) => updateField('groomFather', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomFather', event.target.checked)}
+                                    />
+                                    Bố chú rể
+                                </span>
+                                <input
+                                    value={draft.groomFather}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('groomFather')}
+                                    onChange={(event) => updateField('groomFather', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Mẹ chú rể</span>
-                                <input value={draft.groomMother} type="text" onChange={(event) => updateField('groomMother', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomMother', event.target.checked)}
+                                    />
+                                    Mẹ chú rể
+                                </span>
+                                <input
+                                    value={draft.groomMother}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('groomMother')}
+                                    onChange={(event) => updateField('groomMother', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Bố cô dâu</span>
-                                <input value={draft.brideFather} type="text" onChange={(event) => updateField('brideFather', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideFather', event.target.checked)}
+                                    />
+                                    Bố cô dâu
+                                </span>
+                                <input
+                                    value={draft.brideFather}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('brideFather')}
+                                    onChange={(event) => updateField('brideFather', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Mẹ cô dâu</span>
-                                <input value={draft.brideMother} type="text" onChange={(event) => updateField('brideMother', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideMother', event.target.checked)}
+                                    />
+                                    Mẹ cô dâu
+                                </span>
+                                <input
+                                    value={draft.brideMother}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('brideMother')}
+                                    onChange={(event) => updateField('brideMother', event.target.value)}
+                                />
                             </label>
                         </div>
                     </section>
@@ -845,11 +959,6 @@ function CineLoveTraditionalInvitationEditor() {
                                 <span>Giờ cưới</span>
                                 <input value={draft.eventTime} type="time" onChange={(event) => updateField('eventTime', event.target.value)} />
                             </label>
-                        </div>
-
-                        <div className="clve-inline-note">
-                            <Clock size={16} />
-                            <span>Thứ, ngày, tháng, năm và lịch mini tự cập nhật theo ngày cưới.</span>
                         </div>
                     </section>
 
@@ -922,9 +1031,24 @@ function CineLoveTraditionalInvitationEditor() {
                             </button>
                             {draft.images.gallery.map((image, index) => (
                                 image && (
-                                    <button key={`${image}-${index}`} type="button" onClick={() => requestImage(`images.gallery.${index}`)}>
-                                        <img src={image} alt={`Album ${index + 1}`} />
-                                    </button>
+                                    <div key={`${image}-${index}`} className="clve-gallery-thumbnail-container" style={{ position: 'relative', width: '88px', height: '76px' }}>
+                                        <button type="button" onClick={() => requestImage(`images.gallery.${index}`)} style={{ width: '100%', height: '100%', display: 'block' }}>
+                                            <img src={image} alt={`Album ${index + 1}`} />
+                                        </button>
+                                        {index >= 4 && (
+                                            <button
+                                                type="button"
+                                                className="clve-delete-gallery-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteGalleryImage(index);
+                                                }}
+                                                aria-label="Xóa ảnh"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                        )}
+                                    </div>
                                 )
                             ))}
                         </div>

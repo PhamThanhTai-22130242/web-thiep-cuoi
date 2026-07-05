@@ -10,8 +10,10 @@ import {
     Loader2,
     MapPin,
     Plus,
+    Save,
     Upload,
     UsersRound,
+    Trash2,
 } from 'lucide-react';
 import PinkWeddingInvitation, {
     PinkWeddingInvitationData,
@@ -27,6 +29,14 @@ import { previewSkeletonDocument } from '../utils/preview-skeleton';
 import './PinkWeddingInvitationEditor.css';
 
 type ImageTarget = EditablePinkImageTarget;
+type FamilyMemberField = 'groomFather' | 'groomMother' | 'brideFather' | 'brideMother';
+
+const defaultFamilyMembers: Record<FamilyMemberField, string> = {
+    groomFather: defaultPinkWeddingInvitationData.groomFather,
+    groomMother: defaultPinkWeddingInvitationData.groomMother,
+    brideFather: defaultPinkWeddingInvitationData.brideFather,
+    brideMother: defaultPinkWeddingInvitationData.brideMother,
+};
 
 function cloneData(data: PinkWeddingInvitationData): PinkWeddingInvitationData {
     return {
@@ -281,6 +291,7 @@ function PinkWeddingInvitationEditor() {
     const [saveStatus, setSaveStatus] = useState('');
     const [slugError, setSlugError] = useState('');
     const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
+    const [hasPersistedCard, setHasPersistedCard] = useState(false);
     const hasLoadedRef = useRef(false);
 
     const getWeddingId = () => {
@@ -312,6 +323,22 @@ function PinkWeddingInvitationEditor() {
     const shouldScrollGalleryEndRef = useRef(false);
     const objectUrlsRef = useRef<string[]>([]);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
+    const familyMemberBackupRef = useRef<Record<FamilyMemberField, string>>({ ...defaultFamilyMembers });
+    const isFamilyMemberEnabled = (field: FamilyMemberField) => draft[field].trim().length > 0;
+
+    const handleFamilyMemberEnabledChange = (field: FamilyMemberField, checked: boolean) => {
+        setDraft((current) => {
+            if (!checked) {
+                familyMemberBackupRef.current[field] = current[field] || familyMemberBackupRef.current[field];
+                return { ...current, [field]: '' };
+            }
+
+            return {
+                ...current,
+                [field]: current[field] || familyMemberBackupRef.current[field] || defaultFamilyMembers[field],
+            };
+        });
+    };
     const [eventDateText, setEventDateText] = useState(() => formatDateDisplay(draft.eventDate || ''));
 
     useEffect(() => {
@@ -372,6 +399,7 @@ function PinkWeddingInvitationEditor() {
                 setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
                 setCardStatus(card.status);
+                setHasPersistedCard(true);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
                 hasLoadedRef.current = true;
             })
@@ -423,6 +451,23 @@ function PinkWeddingInvitationEditor() {
         } else {
             alert('Album chỉ giới hạn tối đa 20 ảnh!');
         }
+    };
+
+    const deleteGalleryImage = (index: number) => {
+        setDraft((current) => {
+            const nextGallery = [...current.images.gallery];
+            nextGallery.splice(index, 1);
+            while (nextGallery.length < 9) {
+                nextGallery.push('');
+            }
+            return {
+                ...current,
+                images: {
+                    ...current.images,
+                    gallery: nextGallery,
+                },
+            };
+        });
     };
 
     const applyImage = (target: ImageTarget, url: string) => {
@@ -619,6 +664,7 @@ function PinkWeddingInvitationEditor() {
             setDraft(normalized);
             setWeddingId(card.weddingId);
             setCardStatus(card.status);
+            setHasPersistedCard(true);
 
             if (isPublishing) {
                 navigate(`/dashboard?activate=${card.weddingId}`);
@@ -660,20 +706,59 @@ function PinkWeddingInvitationEditor() {
 
             <section className="pwie-preview">
                 <div className="pwie-phone-frame">
-                    <PinkWeddingInvitation data={draft} editable onImageClick={requestImage} />
+                    <PinkWeddingInvitation
+                        data={draft}
+                        editable
+                        onImageClick={requestImage}
+                        onImageDelete={(index) => {
+                            setDraft((current) => {
+                                const nextGallery = [...current.images.gallery];
+                                nextGallery.splice(index, 1);
+                                while (nextGallery.length < 9) {
+                                    nextGallery.push('');
+                                }
+                                return {
+                                    ...current,
+                                    images: {
+                                        ...current.images,
+                                        gallery: nextGallery,
+                                    },
+                                };
+                            });
+                        }}
+                    />
                 </div>
             </section>
 
             <aside className="pwie-editor">
-                <div className="pwie-actions">
-                    <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
-                        <Eye size={17} />
-                        Xem trước
-                    </button>
-                    <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
-                        {isSaving ? <Loader2 size={17} className="pwie-spin" /> : <Check size={17} />}
-                        Hoàn tất
-                    </button>
+                <div className={`pwie-actions${!hasPersistedCard ? ' has-save-draft' : ''}`}>
+                    {!hasPersistedCard ? (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button type="button" disabled={isSaving} onClick={() => persistDraft('draft')}>
+                                {isSaving ? <Loader2 size={17} className="pwie-spin" /> : <Save size={17} />}
+                                Bản nháp
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="pwie-spin" /> : <Check size={17} />}
+                                Xuất bản
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                                Hoàn tất
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {saveStatus && (
@@ -762,18 +847,34 @@ function PinkWeddingInvitationEditor() {
 
                         <div className="pwie-grid-2">
                             <label className="pwie-field">
-                                <span>Họ tên bố chú rể</span>
+                                <span className="pwie-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomFather', event.target.checked)}
+                                    />
+                                    Họ tên bố chú rể
+                                </span>
                                 <input
                                     value={draft.groomFather}
                                     placeholder="Ví dụ: Ông Trần Quốc Tuấn"
+                                    disabled={!isFamilyMemberEnabled('groomFather')}
                                     onChange={(event) => updateField('groomFather', event.target.value)}
                                 />
                             </label>
                             <label className="pwie-field">
-                                <span>Họ tên mẹ chú rể</span>
+                                <span className="pwie-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomMother', event.target.checked)}
+                                    />
+                                    Họ tên mẹ chú rể
+                                </span>
                                 <input
                                     value={draft.groomMother}
                                     placeholder="Ví dụ: Bà Lê Thị Mỹ Duyên"
+                                    disabled={!isFamilyMemberEnabled('groomMother')}
                                     onChange={(event) => updateField('groomMother', event.target.value)}
                                 />
                             </label>
@@ -781,18 +882,34 @@ function PinkWeddingInvitationEditor() {
 
                         <div className="pwie-grid-2">
                             <label className="pwie-field">
-                                <span>Họ tên bố cô dâu</span>
+                                <span className="pwie-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideFather', event.target.checked)}
+                                    />
+                                    Họ tên bố cô dâu
+                                </span>
                                 <input
                                     value={draft.brideFather}
                                     placeholder="Ví dụ: Ông Phạm Gia Long"
+                                    disabled={!isFamilyMemberEnabled('brideFather')}
                                     onChange={(event) => updateField('brideFather', event.target.value)}
                                 />
                             </label>
                             <label className="pwie-field">
-                                <span>Họ tên mẹ cô dâu</span>
+                                <span className="pwie-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideMother', event.target.checked)}
+                                    />
+                                    Họ tên mẹ cô dâu
+                                </span>
                                 <input
                                     value={draft.brideMother}
                                     placeholder="Ví dụ: Bà Nguyễn Thị Ngọc Hạnh"
+                                    disabled={!isFamilyMemberEnabled('brideMother')}
                                     onChange={(event) => updateField('brideMother', event.target.value)}
                                 />
                             </label>
@@ -804,16 +921,6 @@ function PinkWeddingInvitationEditor() {
                             <CalendarDays size={18} />
                             <h2>Ngày giờ & Địa điểm tổ chức</h2>
                         </div>
-
-                        <label className="pwie-field">
-                            <span>Lời mời trân trọng</span>
-                            <textarea
-                                value={draft.inviteText}
-                                rows={2}
-                                placeholder="Lời mời tham dự đám cưới..."
-                                onChange={(event) => updateField('inviteText', event.target.value)}
-                            />
-                        </label>
 
                         <div className="pwie-grid-2">
                             <label className="pwie-field">
@@ -932,9 +1039,24 @@ function PinkWeddingInvitationEditor() {
                             </button>
                             {draft.images.gallery.map((image, index) => (
                                 image && (
-                                    <button key={`album-strip-btn-${index}`} type="button" onClick={() => requestImage(`images.gallery.${index}`)}>
-                                        <img src={image} alt={`Album ${index + 1}`} />
-                                    </button>
+                                    <div key={`album-strip-btn-${index}`} className="pwie-gallery-thumbnail-container" style={{ position: 'relative', width: '88px', height: '76px', display: 'inline-block' }}>
+                                        <button type="button" onClick={() => requestImage(`images.gallery.${index}`)} style={{ width: '100%', height: '100%', display: 'block' }}>
+                                            <img src={image} alt={`Album ${index + 1}`} />
+                                        </button>
+                                        {index >= 4 && (
+                                            <button
+                                                type="button"
+                                                className="pwie-delete-gallery-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteGalleryImage(index);
+                                                }}
+                                                aria-label="Xóa ảnh"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                        )}
+                                    </div>
                                 )
                             ))}
                         </div>
@@ -958,7 +1080,7 @@ function PinkWeddingInvitationEditor() {
                             </button>
                             <button className={`pwie-upload-tile${draft.images.letterCenter ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.letterCenter')}>
                                 <Upload size={18} />
-                                <span>{draft.images.letterCenter ? 'Doi anh thu moi 2' : 'Them anh thu moi 2'}</span>
+                                <span>{draft.images.letterCenter ? 'Đổi ảnh thư mời 2' : 'Thêm ảnh thư mời 2'}</span>
                             </button>
                             <button className={`pwie-upload-tile${draft.images.kiss ? ' has-image' : ''}`} type="button" onClick={() => requestImage('images.kiss')}>
                                 <Upload size={18} />

@@ -182,7 +182,12 @@ function PublicCommentManagerPage() {
                         {!isLoading && !template && <p className="pcm-empty">Nhập URL thiệp để xem bản thiệp ở đây.</p>}
                         {!isLoading && template && card && (
                             card.template.code === 'RubyBasicInvitation' ? (
-                                <RubyBasicInvitation template={template} />
+                                <RubyBasicInvitation
+                                    template={template}
+                                    initialWishes={visibleWishes}
+                                    wishEndpoint={`/api/wedding-cards/${card.slug}/wishes`}
+                                    wishTopic={`/topic/wedding-cards/${card.slug}/wishes`}
+                                />
                             ) : card.template.code === 'CineLoveTraditionalInvitation' ? (
                                 <CineLoveTraditionalInvitation
                                     data={mapPublicCardToCineLoveData(card)}

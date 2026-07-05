@@ -126,7 +126,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
     const event = card.events[0];
     const config = getWeddingTemplateConfig(card.template.code);
     const thumbnail = config?.thumbnailPath || card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
-    const editPath = config?.editorPath || '/hy-sac-vu-qui/edit';
+    const editPath = config?.editorPath || '';
     const updatedAt = card.updatedAt || card.createdAt;
 
     return {
@@ -523,7 +523,16 @@ function WeddingInvitationManager() {
                         </div>
 
                         <div className="wim-card-actions">
-                            <Link to={invitation.editPath} state={{ weddingId: invitation.id }}>
+                            <Link
+                                to={invitation.editPath || '#'}
+                                state={{ weddingId: invitation.id }}
+                                onClick={(event) => {
+                                    if (!invitation.editPath) {
+                                        event.preventDefault();
+                                        alert('Mẫu thiệp "' + invitation.template + '" không tồn tại hoặc chưa được cấu hình trên hệ thống!');
+                                    }
+                                }}
+                            >
                                 <Pencil size={15} strokeWidth={2.3} />
                                 <span>Chỉnh sửa</span>
                             </Link>

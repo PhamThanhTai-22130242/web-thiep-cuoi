@@ -512,6 +512,7 @@ body:has(.pwi-page)::-webkit-scrollbar-button {
   line-height: 1.45;
   font-weight: 500;
   text-transform: none;
+  white-space: nowrap;
 }
 
 .pwi-person-row p {
@@ -954,6 +955,29 @@ body:has(.pwi-page)::-webkit-scrollbar-button {
 .pwi-gallery-grid .is-wide {
   grid-column: span 2;
   min-height: 230px;
+}
+
+.pwi-delete-image {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: #e53935;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.pwi-delete-image:hover {
+  background: #b71c1c;
+  transform: scale(1.1);
 }
 
 .pwi-gallery-grid img {

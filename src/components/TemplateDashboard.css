@@ -1209,3 +1209,26 @@
     width: 44px;
   }
 }
+
+.td-delete-gallery-btn {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  z-index: 10;
+  display: grid !important;
+  place-items: center;
+  width: 20px !important;
+  height: 20px !important;
+  border: 0;
+  border-radius: 50% !important;
+  background: #e53935 !important;
+  color: #fff !important;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.td-delete-gallery-btn:hover {
+  background: #b71c1c !important;
+  transform: scale(1.1);
+}

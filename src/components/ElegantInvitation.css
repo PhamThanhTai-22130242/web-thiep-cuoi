@@ -282,8 +282,8 @@ body::-webkit-scrollbar-button {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.42)),
-    radial-gradient(circle at 50% 28%, transparent 0 34%, rgba(0, 0, 0, 0.18) 70%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.24)),
+    radial-gradient(circle at 50% 28%, transparent 0 34%, rgba(0, 0, 0, 0.08) 70%);
   pointer-events: none;
 }
 
@@ -471,7 +471,7 @@ body::-webkit-scrollbar-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
   gap: 28px;
-  align-items: center;
+  align-items: start;
   margin: 34px 0 64px;
 }
 
@@ -500,6 +500,7 @@ body::-webkit-scrollbar-button {
   transform: scaleY(0);
   transform-origin: center;
   transition: transform 1.2s cubic-bezier(0.18, 0.88, 0.3, 1) 0.28s;
+  align-self: center;
 }
 
 .qp-formal-family h2,
@@ -518,6 +519,7 @@ body::-webkit-scrollbar-button {
   font-family: var(--qp-serif);
   font-size: clamp(1rem, 4.45vw, 1.28rem);
   line-height: 1.32;
+  white-space: nowrap;
 }
 
 .qp-formal-intro {
@@ -962,12 +964,14 @@ body::-webkit-scrollbar-button {
 }
 
 .qp-profile-copy h2 {
+  max-width: min(100%, 360px);
   color: #8f5f23;
   font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   font-size: clamp(2.18rem, 8.2vw, 3.18rem);
   font-weight: 700;
   letter-spacing: 0.018em;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .qp-profile-copy p {
@@ -1036,7 +1040,16 @@ body::-webkit-scrollbar-button {
 }
 
 .qp-profile-bride .qp-profile-copy {
-  width: min(70%, 260px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.qp-profile-bride .qp-profile-copy h2 {
+  display: inline-block;
+  width: max-content;
+  max-width: none;
   text-align: right;
 }
 
@@ -1227,6 +1240,12 @@ body::-webkit-scrollbar-button {
 /* Center large initial state */
 .qp-album figure:nth-child(3n + 1) {
   transform: scale(0.1);
+}
+
+.qp-page.is-editing .qp-album figure {
+  opacity: 1;
+  transform: none;
+  animation: none;
 }
 
 .qp-album figure.is-large {
@@ -2052,9 +2071,7 @@ body::-webkit-scrollbar-button {
     width: min(66vw, 280px);
   }
 
-  .qp-profile-bride .qp-profile-copy {
-    width: min(82%, 250px);
-  }
+
 
   .qp-profile-seal {
     width: 68px;

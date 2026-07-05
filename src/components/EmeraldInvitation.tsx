@@ -427,10 +427,8 @@ function EmeraldInvitation({ template, preview = false }: EmeraldInvitationProps
 
 
             <footer className="ei-thanks" data-ei-reveal>
-                <img src={invitationData.images.thank} alt="Cô dâu chú rể gửi lời cảm ơn" />
                 <div>
                     <h2>Thank You!</h2>
-                    <p>Rất hân hạnh được đón tiếp</p>
                 </div>
             </footer>
         </main>

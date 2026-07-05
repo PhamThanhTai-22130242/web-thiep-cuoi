@@ -539,6 +539,14 @@
   background: rgba(123, 36, 36, 0.4);
 }
 
+.clv-parents-wrap {
+  min-height: 2.6rem;
+}
+
+.clv-parents-wrap:empty {
+  min-height: 0;
+}
+
 .clv-family-grid p {
   color: #1b1715;
   font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
@@ -591,11 +599,11 @@
   color: var(--clv-red);
   max-width: 100%;
   font-family: 'Allura', 'Great Vibes', cursive;
-  font-size: clamp(0.88rem, calc(var(--clv-name-preferred, 4.8vw) - 0.8vw), calc(var(--clv-name-max, 2.1rem) - 0.38rem));
-  font-weight: 600;
+  font-size: clamp(1.15rem, calc(var(--clv-name-preferred, 4.8vw) - 0.2vw), calc(var(--clv-name-max, 2.1rem) - 0.05rem));
+  font-weight: 550;
   line-height: 0.86;
   letter-spacing: 0.02em;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72), 0 2px 8px rgba(92, 34, 25, 0.1);
+  text-shadow: none;
   opacity: 0;
   transform: translateY(24px);
   transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.6s ease;
@@ -614,13 +622,11 @@
 .clv-family-grid article:first-child.is-visible h4 {
   opacity: 1;
   transform: translateY(0);
-  animation: clv-name-float 4.8s ease-in-out infinite 3.7s;
 }
 
 .clv-family-grid article:last-child.is-visible h4 {
   opacity: 1;
   transform: translateY(0);
-  animation: clv-name-float 4.8s ease-in-out infinite 4.1s;
 }
 
 .clv-name-family,
@@ -628,7 +634,6 @@
   display: block;
   max-width: 100%;
   white-space: nowrap;
-  animation: clv-name-ink 3.8s ease-in-out infinite;
 }
 
 .clv-name-given {
@@ -996,8 +1001,8 @@
 
 .clv-location iframe {
   display: block;
-  width: min(76%, 520px);
-  height: 326px;
+  width: min(90%, 540px);
+  height: 270px;
   margin: 0 auto 14px;
   border: 0;
 }

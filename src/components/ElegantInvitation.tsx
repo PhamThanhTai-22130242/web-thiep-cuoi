@@ -58,6 +58,14 @@ type ElegantInvitationProps = {
     rsvpEndpoint?: string;
 };
 
+function getTodayDateValue() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export const defaultElegantInvitationData: ElegantInvitationData = {
     slug: '',
     groomName: defaultElegantInvitationTemplate.couple.groom || 'Thanh Sơn',
@@ -71,7 +79,7 @@ export const defaultElegantInvitationData: ElegantInvitationData = {
     brideFather: 'Ông: Đào Duy Linh',
     brideMother: 'Bà: Tô Thị Như',
     inviteText: defaultElegantInvitationTemplate.couple.headline || 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
-    eventDate: defaultElegantInvitationTemplate.event.date ? defaultElegantInvitationTemplate.event.date.split('T')[0] : '2026-12-31',
+    eventDate: getTodayDateValue(),
     eventTime: defaultElegantInvitationTemplate.event.time ? defaultElegantInvitationTemplate.event.time.replace(' giờ ', ':') : '08:00',
     venueName: defaultElegantInvitationTemplate.event.venue || 'Tư gia nhà trai',
     address: defaultElegantInvitationTemplate.event.address || '43A ngõ 26 Phạm Ngọc Thạch, Đống Đa, TP. Hà Nội',
@@ -160,7 +168,6 @@ function getEventParts(dateValue: string) {
     };
 }
 
-
 const DEFAULT_INITIAL_WISHES: Array<{ name: string; message: string }> = [];
 
 function ElegantInvitation({
@@ -220,7 +227,7 @@ function ElegantInvitation({
                     setPreviewData(stored as ElegantInvitationData);
                 }
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => {
                 setIsLoadingPreview(false);
             });
@@ -228,8 +235,8 @@ function ElegantInvitation({
 
     useEffect(() => {
         const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
-            initialWishes.every((w, i) => 
-                w.name === lastInitialWishesRef.current[i]?.name && 
+            initialWishes.every((w, i) =>
+                w.name === lastInitialWishesRef.current[i]?.name &&
                 w.message === lastInitialWishesRef.current[i]?.message
             );
         if (!isSame) {
@@ -363,9 +370,11 @@ function ElegantInvitation({
     const filledGallery = normalizedGallery.filter(Boolean);
     const lastFilledIndex = normalizedGallery.reduce((acc, curr, idx) => curr ? idx : acc, -1);
     const visibleCount = Math.min(20, Math.max(6, lastFilledIndex + 2));
-    const galleryToRender = editable 
-        ? normalizedGallery.slice(0, visibleCount) 
+    const galleryToRender = editable
+        ? normalizedGallery.slice(0, visibleCount)
         : filledGallery;
+    const groomFamilyMembers = [invitationData.groomFather, invitationData.groomMother].filter((member) => member.trim());
+    const brideFamilyMembers = [invitationData.brideFather, invitationData.brideMother].filter((member) => member.trim());
 
     if (areImagesLoading || isLoadingPreview) {
         return <InvitationLoadingScreen className="qp-page" variant="emerald-skeleton" />;
@@ -420,14 +429,16 @@ function ElegantInvitation({
                 <div className="qp-formal-family">
                     <article>
                         <h2>{invitationData.groomFamilyLabel}</h2>
-                        <p>{invitationData.groomFather}</p>
-                        <p>{invitationData.groomMother}</p>
+                        {groomFamilyMembers.map((member, index) => (
+                            <p key={`groom-family-${index}`}>{member}</p>
+                        ))}
                     </article>
                     <span aria-hidden="true" />
                     <article>
                         <h2>{invitationData.brideFamilyLabel}</h2>
-                        <p>{invitationData.brideFather}</p>
-                        <p>{invitationData.brideMother}</p>
+                        {brideFamilyMembers.map((member, index) => (
+                            <p key={`bride-family-${index}`}>{member}</p>
+                        ))}
                     </article>
                 </div>
                 <p className="qp-formal-intro">Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.</p>
@@ -514,8 +525,8 @@ function ElegantInvitation({
                 </h2>
                 <div className="qp-album-grid">
                     {galleryToRender.map((image, index) => (
-                        <figure 
-                            key={`album-img-${index}`} 
+                        <figure
+                            key={`album-img-${index}`}
                             className={index % 3 === 0 ? 'is-large' : ''}
                             data-qp-reveal
                         >

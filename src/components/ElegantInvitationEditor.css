@@ -143,6 +143,10 @@
   background: linear-gradient(180deg, #fffdf9 0%, rgba(255, 253, 249, 0.96) 78%, rgba(255, 253, 249, 0) 100%);
 }
 
+.clve-actions.has-save-draft {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .clve-actions .is-primary {
   border-color: #734812;
   background: #8d5f25;
@@ -264,6 +268,12 @@
   opacity: 0.46;
 }
 
+.clve-field-check-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .clve-field input,
 .clve-field textarea {
   width: 100%;
@@ -275,6 +285,15 @@
   background: #fffdfb;
   color: #242838;
   font: inherit;
+}
+
+.clve-field-check-head input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: #8d5f25;
 }
 
 .clve-field textarea {
@@ -431,6 +450,17 @@
   border-color: rgba(141, 95, 37, 0.46) !important;
   background: #fffdf9 !important;
   color: #8d5f25;
+}
+
+.clve-add-image:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.clve-add-image:disabled:hover {
+  border-color: rgba(141, 95, 37, 0.26) !important;
+  background: rgba(255, 250, 241, 0.95) !important;
+  color: #625846;
 }
 
 .clve-add-image span {

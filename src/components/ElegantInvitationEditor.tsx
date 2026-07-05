@@ -10,6 +10,7 @@ import {
     Loader2,
     MapPin,
     Plus,
+    Save,
     Upload,
     UserRound,
     UsersRound,
@@ -28,6 +29,15 @@ import { previewSkeletonDocument } from '../utils/preview-skeleton';
 import './ElegantInvitationEditor.css';
 
 type ImageTarget = EditableElegantImageTarget;
+type FamilyMemberField = 'groomFather' | 'groomMother' | 'brideFather' | 'brideMother';
+const MAX_GALLERY_IMAGES = 20;
+
+const defaultFamilyMembers: Record<FamilyMemberField, string> = {
+    groomFather: defaultElegantInvitationData.groomFather,
+    groomMother: defaultElegantInvitationData.groomMother,
+    brideFather: defaultElegantInvitationData.brideFather,
+    brideMother: defaultElegantInvitationData.brideMother,
+};
 
 function cloneData(data: ElegantInvitationData): ElegantInvitationData {
     return {
@@ -136,6 +146,7 @@ function fromApiCard(card: MyWeddingCardResponse, fallback: ElegantInvitationDat
 
     const groomQr = mediaBySlot.get('images.groomQr') || '';
     const brideQr = mediaBySlot.get('images.brideQr') || '';
+    const apiValue = (value: string | null | undefined, fallbackValue: string) => value === undefined ? fallbackValue : (value === null ? '' : value);
 
     return {
         ...fallback,
@@ -144,12 +155,12 @@ function fromApiCard(card: MyWeddingCardResponse, fallback: ElegantInvitationDat
         brideName: bride?.shortName || bride?.fullName || fallback.brideName,
         groomIntroName: groom?.shortName || groom?.fullName || fallback.groomIntroName,
         brideIntroName: bride?.shortName || bride?.fullName || fallback.brideIntroName,
-        groomFamilyLabel: groom?.familyLable || fallback.groomFamilyLabel,
-        brideFamilyLabel: bride?.familyLable || fallback.brideFamilyLabel,
-        groomFather: groom?.fatherName || fallback.groomFather,
-        groomMother: groom?.motherName || fallback.groomMother,
-        brideFather: bride?.fatherName || fallback.brideFather,
-        brideMother: bride?.motherName || fallback.brideMother,
+        groomFamilyLabel: apiValue(groom?.familyLable, fallback.groomFamilyLabel),
+        brideFamilyLabel: apiValue(bride?.familyLable, fallback.brideFamilyLabel),
+        groomFather: apiValue(groom?.fatherName, fallback.groomFather),
+        groomMother: apiValue(groom?.motherName, fallback.groomMother),
+        brideFather: apiValue(bride?.fatherName, fallback.brideFather),
+        brideMother: apiValue(bride?.motherName, fallback.brideMother),
         inviteText: event?.inviteText || fallback.inviteText,
         eventDate: event?.eventDate || fallback.eventDate,
         eventTime: (event?.eventTime || fallback.eventTime).slice(0, 5),
@@ -268,6 +279,7 @@ function ElegantInvitationEditor() {
     const [saveStatus, setSaveStatus] = useState('');
     const [slugError, setSlugError] = useState('');
     const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
+    const [hasPersistedCard, setHasPersistedCard] = useState(false);
     const hasLoadedRef = useRef(false);
 
     const getWeddingId = () => {
@@ -299,6 +311,7 @@ function ElegantInvitationEditor() {
     const shouldScrollGalleryEndRef = useRef(false);
     const objectUrlsRef = useRef<string[]>([]);
     const dateInputRef = useRef<HTMLInputElement | null>(null);
+    const familyMemberBackupRef = useRef<Record<FamilyMemberField, string>>({ ...defaultFamilyMembers });
     const [eventDateText, setEventDateText] = useState(() => formatDateDisplay(draft.eventDate || ''));
 
     useEffect(() => {
@@ -359,6 +372,7 @@ function ElegantInvitationEditor() {
                 setEventDateText(formatDateDisplay(loaded.eventDate));
                 setWeddingId(card.weddingId);
                 setCardStatus(card.status);
+                setHasPersistedCard(true);
                 setSaveStatus('Đã tải bản chỉnh sửa.');
                 hasLoadedRef.current = true;
             })
@@ -385,6 +399,20 @@ function ElegantInvitationEditor() {
         }));
     };
 
+    const handleFamilyMemberEnabledChange = (field: FamilyMemberField, checked: boolean) => {
+        setDraft((current) => {
+            if (!checked) {
+                familyMemberBackupRef.current[field] = current[field] || familyMemberBackupRef.current[field];
+                return { ...current, [field]: '' };
+            }
+
+            return {
+                ...current,
+                [field]: current[field] || familyMemberBackupRef.current[field] || defaultFamilyMembers[field],
+            };
+        });
+    };
+
     const requestImage = (target: ImageTarget, mode: 'replace' | 'insert' = 'replace') => {
         uploadTargetRef.current = target;
         shouldInsertGalleryImageRef.current = mode === 'insert';
@@ -392,17 +420,29 @@ function ElegantInvitationEditor() {
     };
 
     const addGalleryImage = () => {
-        const firstEmptyIndex = draft.images.gallery.findIndex((image) => !image);
+        const gallerySlots = draft.images.gallery.slice(0, MAX_GALLERY_IMAGES);
+        const firstEmptyIndex = gallerySlots.findIndex((image) => !image);
 
         if (firstEmptyIndex >= 0) {
             requestImage(`images.gallery.${firstEmptyIndex}`, 'replace');
             return;
         }
 
-        if (draft.images.gallery.length < 20) {
+        if (gallerySlots.filter(Boolean).length >= MAX_GALLERY_IMAGES) {
+            setValidationAlert({
+                title: 'Album đã đủ ảnh',
+                message: `Album chỉ giới hạn tối đa ${MAX_GALLERY_IMAGES} ảnh. Bạn có thể bấm vào ảnh cũ để đổi ảnh.`,
+            });
+            return;
+        }
+
+        if (draft.images.gallery.length < MAX_GALLERY_IMAGES) {
             requestImage(`images.gallery.${draft.images.gallery.length}`, 'replace');
         } else {
-            alert('Album chỉ giới hạn tối đa 20 ảnh!');
+            setValidationAlert({
+                title: 'Album đã đủ ảnh',
+                message: `Album chỉ giới hạn tối đa ${MAX_GALLERY_IMAGES} ảnh. Bạn có thể bấm vào ảnh cũ để đổi ảnh.`,
+            });
         }
     };
 
@@ -417,7 +457,16 @@ function ElegantInvitationEditor() {
                 }
 
                 const index = Number(target.split('.').at(-1));
+                if (!Number.isFinite(index) || index < 0 || index >= MAX_GALLERY_IMAGES) {
+                    setValidationAlert({
+                        title: 'Album đã đủ ảnh',
+                        message: `Album chỉ giới hạn tối đa ${MAX_GALLERY_IMAGES} ảnh. Bạn có thể bấm vào ảnh cũ để đổi ảnh.`,
+                    });
+                    return current;
+                }
+
                 next.images.gallery[index] = url;
+                next.images.gallery = next.images.gallery.slice(0, MAX_GALLERY_IMAGES);
                 return next;
             }
 
@@ -597,6 +646,7 @@ function ElegantInvitationEditor() {
             setDraft(normalized);
             setWeddingId(card.weddingId);
             setCardStatus(card.status);
+            setHasPersistedCard(true);
 
             if (isPublishing) {
                 navigate(`/dashboard?activate=${card.weddingId}`);
@@ -632,6 +682,8 @@ function ElegantInvitationEditor() {
         persistDraft('draft', true);
     };
 
+    const isFamilyMemberEnabled = (field: FamilyMemberField) => draft[field].trim().length > 0;
+
     return (
         <main className="clve-page">
             <input ref={fileInputRef} className="clve-file-input" type="file" accept="image/*" onChange={handleFileChange} />
@@ -643,15 +695,34 @@ function ElegantInvitationEditor() {
             </section>
 
             <aside className="clve-editor">
-                <div className="clve-actions">
-                    <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
-                        <Eye size={17} />
-                        Xem trước
-                    </button>
-                    <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
-                        {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
-                        Hoàn tất
-                    </button>
+                <div className={`clve-actions${!hasPersistedCard ? ' has-save-draft' : ''}`}>
+                    {!hasPersistedCard ? (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button type="button" disabled={isSaving} onClick={() => persistDraft('draft')}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Save size={17} />}
+                                Bản nháp
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                                Xuất bản
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button type="button" disabled={isSaving} onClick={() => handleValidateAndAction('Xem trước')}>
+                                <Eye size={17} />
+                                Xem trước
+                            </button>
+                            <button className="is-primary" type="button" disabled={isSaving} onClick={handleFinish}>
+                                {isSaving ? <Loader2 size={17} className="clve-spin" /> : <Check size={17} />}
+                                Hoàn tất
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {saveStatus && (
@@ -728,20 +799,68 @@ function ElegantInvitationEditor() {
 
                         <div className="clve-grid-2">
                             <label className="clve-field">
-                                <span>Cha chú rể</span>
-                                <input value={draft.groomFather} type="text" onChange={(event) => updateField('groomFather', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomFather', event.target.checked)}
+                                    />
+                                    Cha chú rể
+                                </span>
+                                <input
+                                    value={draft.groomFather}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('groomFather')}
+                                    onChange={(event) => updateField('groomFather', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Cha cô dâu</span>
-                                <input value={draft.brideFather} type="text" onChange={(event) => updateField('brideFather', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideFather')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideFather', event.target.checked)}
+                                    />
+                                    Cha cô dâu
+                                </span>
+                                <input
+                                    value={draft.brideFather}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('brideFather')}
+                                    onChange={(event) => updateField('brideFather', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Mẹ chú rể</span>
-                                <input value={draft.groomMother} type="text" onChange={(event) => updateField('groomMother', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('groomMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('groomMother', event.target.checked)}
+                                    />
+                                    Mẹ chú rể
+                                </span>
+                                <input
+                                    value={draft.groomMother}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('groomMother')}
+                                    onChange={(event) => updateField('groomMother', event.target.value)}
+                                />
                             </label>
                             <label className="clve-field">
-                                <span>Mẹ cô dâu</span>
-                                <input value={draft.brideMother} type="text" onChange={(event) => updateField('brideMother', event.target.value)} />
+                                <span className="clve-field-check-head">
+                                    <input
+                                        type="checkbox"
+                                        checked={isFamilyMemberEnabled('brideMother')}
+                                        onChange={(event) => handleFamilyMemberEnabledChange('brideMother', event.target.checked)}
+                                    />
+                                    Mẹ cô dâu
+                                </span>
+                                <input
+                                    value={draft.brideMother}
+                                    type="text"
+                                    disabled={!isFamilyMemberEnabled('brideMother')}
+                                    onChange={(event) => updateField('brideMother', event.target.value)}
+                                />
                             </label>
                         </div>
                     </section>
@@ -861,15 +980,20 @@ function ElegantInvitationEditor() {
 
                         <div className="clve-image-row-head">
                             <label>Album (Tối đa 20 ảnh)</label>
-                            <span>{draft.images.gallery.filter(Boolean).length}/20 ảnh</span>
+                            <span>{draft.images.gallery.slice(0, MAX_GALLERY_IMAGES).filter(Boolean).length}/{MAX_GALLERY_IMAGES} ảnh</span>
                         </div>
 
                         <div className="clve-image-strip" ref={galleryStripRef}>
-                            <button className="clve-add-image" type="button" onClick={addGalleryImage}>
+                            <button
+                                className="clve-add-image"
+                                type="button"
+                                disabled={draft.images.gallery.slice(0, MAX_GALLERY_IMAGES).filter(Boolean).length >= MAX_GALLERY_IMAGES}
+                                onClick={addGalleryImage}
+                            >
                                 <Plus size={24} />
                                 <span>Thêm ảnh</span>
                             </button>
-                            {draft.images.gallery.map((image, index) => (
+                            {draft.images.gallery.slice(0, MAX_GALLERY_IMAGES).map((image, index) => (
                                 image && (
                                     <button key={`album-strip-btn-${index}`} type="button" onClick={() => requestImage(`images.gallery.${index}`)}>
                                         <img src={image} alt={`Album ${index + 1}`} />

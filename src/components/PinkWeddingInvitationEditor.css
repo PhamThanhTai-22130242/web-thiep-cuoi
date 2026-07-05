@@ -143,6 +143,10 @@
   background: linear-gradient(180deg, #fffdf9 0%, rgba(255, 253, 249, 0.96) 78%, rgba(255, 253, 249, 0) 100%);
 }
 
+.pwie-actions.has-save-draft {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .pwie-actions .is-primary {
   border-color: #734812;
   background: #8d5f25;
@@ -275,6 +279,21 @@
   background: #fffdfb;
   color: #242838;
   font: inherit;
+}
+
+.pwie-field-check-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pwie-field-check-head input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: #8d5f25;
 }
 
 .pwie-field textarea {
@@ -580,6 +599,7 @@
   }
 
   .pwie-actions,
+  .pwie-actions.has-save-draft,
   .pwie-grid-2,
   .pwie-qr-toggle-grid,
   .pwie-upload-grid {
@@ -845,4 +865,27 @@
 
 .pwie-success-dialog__btn.is-secondary:hover {
   background: #fffdf9;
+}
+
+.pwie-delete-gallery-btn {
+  position: absolute !important;
+  top: -4px !important;
+  right: -4px !important;
+  z-index: 10;
+  display: grid !important;
+  place-items: center;
+  width: 20px !important;
+  height: 20px !important;
+  border: 0;
+  border-radius: 50% !important;
+  background: #e53935 !important;
+  color: #fff !important;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.pwie-delete-gallery-btn:hover {
+  background: #b71c1c !important;
+  transform: scale(1.1);
 }

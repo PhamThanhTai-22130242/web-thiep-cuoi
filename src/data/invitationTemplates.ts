@@ -123,7 +123,7 @@ export const defaultInvitationTemplate: InvitationTemplate = {
         time: '10 giờ 00',
         venue: 'Trống Đồng Palace Cảnh Hồ',
         address: '173B Đ. Trường Chinh, Khương Mai, Thanh Xuân, Hà Nội',
-        mapUrl: 'https://www.google.com/maps?q=Tr%E1%BB%91ng%20%C4%90%E1%BB%93ng%20Palace%20C%E1%BA%A3nh%20H%E1%BB%93&output=embed',
+        mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.420568519887!2d105.81214007504353!3d21.0158515806302!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab637bdcd18f%3A0x4b49fd28f46d40e!2zOTEgUC4gTMOhbmcgSOG6oSwgxJDhu5FuZyDEkGEsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1783234416201!5m2!1svi!2s',
     },
     calendar: {
         weekdays: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
@@ -195,7 +195,7 @@ export const defaultRubyInvitationTemplate: InvitationTemplate = {
         time: '11 giờ 00',
         venue: 'Diamond Palace',
         address: '91 Láng Hạ, Láng Hạ, Đống Đa, Hà Nội',
-        mapUrl: 'https://www.google.com/maps?q=Diamond%20Palace%2091%20L%C3%A1ng%20H%E1%BA%A1&output=embed',
+        mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2633.5718430505244!2d105.81355598574797!3d21.01535306242635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab0632b61b6d%3A0x4301f5b11e6ce760!2zS2hydWEgQmFhbiBUaGFpIOKAkyAzNTggVGjDoWkgSMOg!5e0!3m2!1svi!2s!4v1783233185619!5m2!1svi!2s',
     },
     calendar: {
         weekdays: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
@@ -265,7 +265,7 @@ export const defaultCineLoveInvitationTemplate: InvitationTemplate = {
         time: '12 giờ 00',
         venue: 'Nhà hàng Diamond Palace',
         address: 'Hai Bà Trưng, Hà Nội',
-        mapUrl: 'https://maps.google.com',
+        mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.1358896720753!2d106.67251457481832!3d10.800902689349323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529281040a431%3A0x7ff3572ff87b852a!2zVHJ1bmcgdMOibSBI4buZaSBuZ2jhu4sgLSBUaeG7h2MgY8aw4bubaSBEaWFtb25kIFBsYWNl!5e0!3m2!1svi!2s!4v1783237472531!5m2!1svi!2s',
     },
     images: {
         cover: 'https://cdn.chungdoi.com/uploads/7303a48d-0dd9-4358-8ad1-d9969b8ae75e.jpg',
@@ -391,7 +391,9 @@ export const defaultPinkInvitationTemplate: InvitationTemplate = {
             'https://cdn.chungdoi.com/uploads/d2ff077c-5a82-4eb4-bd56-0e263dca9b50.jpg',
             '	https://cdn.chungdoi.com/uploads/0846b5ff-8d55-47d2-8a6f-758dbf5eedf5.jpg',
             '	https://cdn.chungdoi.com/uploads/0b731ac9-0aee-4779-b751-722d1fef90d5.jpg',
-            'https://cdn.chungdoi.com/uploads/052c6d0b-0eba-42b9-ad38-9e03dcecb34b.jpg'
+            'https://cdn.chungdoi.com/uploads/052c6d0b-0eba-42b9-ad38-9e03dcecb34b.jpg',
+            'https://cdn.chungdoi.com/uploads/4c1bb136-36f4-40bd-acd7-514250c33150.jpg',
+
         ]
     }
 };

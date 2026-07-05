@@ -789,23 +789,8 @@ function EmeraldInvitation({
 
 
                 <footer className="ei-thanks" data-ei-reveal>
-                    <img
-                        src={invitationData.images.thank}
-                        alt="Cô dâu chú rể gửi lời cảm ơn"
-                        role={onImageClick ? 'button' : undefined}
-                        tabIndex={onImageClick ? 0 : undefined}
-                        onClick={onImageClick ? () => onImageClick('images.thank') : undefined}
-                        onKeyDown={(event) => {
-                            if (onImageClick && (event.key === 'Enter' || event.key === ' ')) {
-                                event.preventDefault();
-                                onImageClick('images.thank');
-                            }
-                        }}
-                    />
-                    {onImageClick && <span className="ei-edit-image-hint ei-thanks-hint">Đổi ảnh</span>}
                     <div>
                         <h2>Thank You!</h2>
-                        <p>Rất hân hạnh được đón tiếp</p>
                     </div>
                 </footer>
             </main>

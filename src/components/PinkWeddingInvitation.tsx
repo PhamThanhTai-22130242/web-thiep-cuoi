@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Gift, MapPin, Send, X } from 'lucide-react';
+import { Gift, MapPin, Send, Trash2, X } from 'lucide-react';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
 import { loadPinkPreview, defaultPinkInvitationTemplate } from '../data/invitationTemplates';
@@ -56,6 +56,7 @@ type PinkWeddingInvitationProps = {
     data?: PinkWeddingInvitationData;
     editable?: boolean;
     onImageClick?: (target: EditablePinkImageTarget, mode?: 'replace' | 'insert') => void;
+    onImageDelete?: (index: number) => void;
     initialWishes?: Array<{ name: string; message: string }>;
     wishEndpoint?: string;
     wishTopic?: string;
@@ -83,7 +84,7 @@ export const defaultPinkWeddingInvitationData: PinkWeddingInvitationData = {
     brideFather: 'Ông Phạm Gia Long',
     brideMother: 'Bà Nguyễn Thị Ngọc Hạnh',
     inviteText: defaultPinkInvitationTemplate.couple.headline || 'Trân trọng kính mời quý khách đến chung vui cùng gia đình chúng tôi.',
-    eventDate: defaultPinkInvitationTemplate.event.date ? defaultPinkInvitationTemplate.event.date.split('T')[0] : getTodayDateValue(),
+    eventDate: getTodayDateValue(),
     eventTime: defaultPinkInvitationTemplate.event.time || '11:00',
     venueName: defaultPinkInvitationTemplate.event.venue || 'Nhà hàng Wedding Palace',
     address: defaultPinkInvitationTemplate.event.address || 'Hồ Tây, Hà Nội',
@@ -184,8 +185,8 @@ function getGoogleMapEmbedUrl(value: string) {
 }
 
 function getEventParts(dateValue: string) {
-    const date = new Date(`${dateValue || defaultPinkWeddingInvitationData.eventDate}T00:00:00+07:00`);
-    if (Number.isNaN(date.getTime())) {
+    const date = parseEventDate(dateValue, defaultPinkWeddingInvitationData.eventDate);
+    if (!date) {
         return { dayName: 'Chủ Nhật', day: '14', month: '12', year: '2025' };
     }
 
@@ -201,12 +202,44 @@ function getEventParts(dateValue: string) {
     };
 }
 
+function parseEventDate(dateValue: string, fallbackDateValue: string) {
+    const normalizedDate = dateValue || fallbackDateValue;
+    const match = normalizedDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const date = match
+        ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+        : new Date(`${normalizedDate}T00:00:00+07:00`);
+
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getMonthCalendar(dateValue: string) {
+    const date = parseEventDate(dateValue, defaultPinkWeddingInvitationData.eventDate);
+    if (!date) {
+        return {
+            leadingBlanks: 6,
+            days: Array.from({ length: 31 }, (_, index) => index + 1),
+        };
+    }
+
+    const year = date.getFullYear();
+    const monthIndex = date.getMonth();
+    const firstDay = new Date(year, monthIndex, 1);
+    const mondayFirstIndex = (firstDay.getDay() + 6) % 7;
+    const dayCount = new Date(year, monthIndex + 1, 0).getDate();
+
+    return {
+        leadingBlanks: mondayFirstIndex,
+        days: Array.from({ length: dayCount }, (_, index) => index + 1),
+    };
+}
+
 const DEFAULT_INITIAL_WISHES: Array<{ name: string; message: string }> = [];
 
 function PinkWeddingInvitation({
     data,
     editable = false,
     onImageClick,
+    onImageDelete,
     initialWishes = DEFAULT_INITIAL_WISHES,
     wishEndpoint = '',
     wishTopic = '',
@@ -225,10 +258,9 @@ function PinkWeddingInvitation({
     const lastSubmittedWishDeliveredRef = useRef(false);
     const lastInitialWishesRef = useRef<{ name: string; message: string }[]>(initialWishes);
 
-    const calendarDays = useMemo(() => Array.from({ length: 31 }, (_, index) => index + 1), []);
-
     const invitationData = data ?? previewData ?? defaultPinkWeddingInvitationData;
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
+    const monthCalendar = useMemo(() => getMonthCalendar(invitationData.eventDate), [invitationData.eventDate]);
     const isDefaultDate = invitationData.eventDate === '2025-12-14';
 
     // Load preview data if in preview mode
@@ -378,9 +410,12 @@ function PinkWeddingInvitation({
     };
 
     const rawGallery = invitationData.images.gallery || [];
-    const filledGallery = rawGallery.filter(Boolean);
+    const normalizedGallery = [...rawGallery, ...Array(Math.max(0, 20 - rawGallery.length)).fill('')];
+    const filledGallery = normalizedGallery.filter(Boolean);
+    const lastFilledIndex = normalizedGallery.reduce((acc, curr, idx) => curr ? idx : acc, -1);
+    const visibleCount = Math.min(20, Math.max(5, lastFilledIndex + 2));
     const galleryToRender = editable 
-        ? [...rawGallery, ...Array(Math.max(0, 9 - rawGallery.length)).fill('')]
+        ? normalizedGallery.slice(0, visibleCount) 
         : (filledGallery.length > 0 ? filledGallery : defaultPinkWeddingInvitationData.images.gallery.filter(Boolean));
 
     if (isLoadingPreview) {
@@ -430,8 +465,8 @@ function PinkWeddingInvitation({
                     <div className="pwi-person-info">
                         <div className="pwi-parents-block">
                             <span>{invitationData.groomFamilyLabel || 'Nhà trai'}</span>
-                            <strong>{invitationData.groomFather}</strong>
-                            <strong>{invitationData.groomMother}</strong>
+                            {invitationData.groomFather && <strong>{invitationData.groomFather}</strong>}
+                            {invitationData.groomMother && <strong>{invitationData.groomMother}</strong>}
                         </div>
                         <em>Chú Rể</em>
                         <h2>{invitationData.groomIntroName || invitationData.groomName}</h2>
@@ -451,8 +486,8 @@ function PinkWeddingInvitation({
                     <div className="pwi-person-info">
                         <div className="pwi-parents-block">
                             <span>{invitationData.brideFamilyLabel || 'Nhà gái'}</span>
-                            <strong>{invitationData.brideFather}</strong>
-                            <strong>{invitationData.brideMother}</strong>
+                            {invitationData.brideFather && <strong>{invitationData.brideFather}</strong>}
+                            {invitationData.brideMother && <strong>{invitationData.brideMother}</strong>}
                         </div>
                         <em>Cô Dâu</em>
                         <h2>{invitationData.brideIntroName || invitationData.brideName}</h2>
@@ -516,7 +551,10 @@ function PinkWeddingInvitation({
                     {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map((weekday) => (
                         <strong key={weekday}>{weekday}</strong>
                     ))}
-                    {calendarDays.map((day) => (
+                    {Array.from({ length: monthCalendar.leadingBlanks }, (_, index) => (
+                        <span key={`empty-${index}`} />
+                    ))}
+                    {monthCalendar.days.map((day) => (
                         <span
                             key={day}
                             className={
@@ -575,7 +613,7 @@ function PinkWeddingInvitation({
                 <PinkSectionTitle title="Album Hình Cưới" />
                 <div className="pwi-gallery-grid">
                     {galleryToRender.map((image, index) => (
-                        <figure key={`gallery-${index}`} className={index % 5 === 1 ? 'is-wide' : ''}>
+                        <figure key={`gallery-${index}`} className={index % 3 === 2 ? 'is-wide' : ''} style={{ position: 'relative' }}>
                             <EditablePhoto
                                 src={image}
                                 alt={`Album hình cưới ${index + 1}`}
@@ -583,6 +621,19 @@ function PinkWeddingInvitation({
                                 editable={editable}
                                 onImageClick={onImageClick}
                             />
+                            {editable && index >= 5 && image && (
+                                <button
+                                    type="button"
+                                    className="pwi-delete-image"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onImageDelete?.(index);
+                                    }}
+                                    aria-label="Xóa ảnh"
+                                >
+                                    <Trash2 size={14} />
+                                </button>
+                            )}
                         </figure>
                     ))}
                 </div>

@@ -805,7 +805,7 @@
 .ei-couple-row h2 {
   margin: 0;
   font-size: clamp(2.55rem, 9.5vw, 3.55rem);
-  line-height: 0.9;
+  line-height: 1.25;
   word-break: keep-all;
 }
 
@@ -1299,18 +1299,21 @@
 }
 
 .ei-wish-list::-webkit-scrollbar {
-  width: 10px;
+  width: 4px;
 }
 
 .ei-wish-list::-webkit-scrollbar-track {
   border-radius: 999px;
-  background: rgba(235, 241, 238, 0.92);
+  background: transparent;
 }
 
 .ei-wish-list::-webkit-scrollbar-thumb {
-  border: 2px solid rgba(235, 241, 238, 0.92);
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--ei-green), var(--ei-green-dark));
+  background: rgba(var(--ei-green-rgb), 0.42);
+}
+
+.ei-wish-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--ei-green-rgb), 0.74);
 }
 
 .ei-wish-list article {
@@ -1700,72 +1703,6 @@
   width: 100%;
   height: 72px;
   object-fit: cover;
-}
-
-.ei-rsvp {
-  background: var(--ei-paper);
-}
-
-.ei-rsvp .ei-section-title h2 {
-  color: var(--ei-green);
-}
-
-.ei-gift>div {
-  display: grid;
-  gap: 14px;
-}
-
-.ei-gift article {
-  padding: 18px;
-  border: 1px solid rgba(45, 75, 69, 0.16);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.74);
-}
-
-.ei-gift p {
-  margin: 10px 0 0;
-  line-height: 1.55;
-}
-
-.ei-thanks {
-  padding: 0;
-  text-align: center;
-}
-
-.ei-thanks img {
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-}
-
-.ei-thanks div {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(3px);
-  transform: translateY(-50%);
-}
-
-.ei-thanks h2 {
-  margin: 0;
-  font-size: clamp(2.55rem, 10.5vw, 3.65rem);
-  line-height: 0.95;
-}
-
-.ei-thanks p {
-  margin: 8px 0 0;
-  color: var(--ei-green);
-  font-size: 0.94rem;
-  font-style: italic;
-  font-weight: 700;
-}
-
-[data-ei-reveal] {
-  opacity: 0;
-  transform: translateY(46px);
   transition: opacity calc(0.8s * var(--ei-speed)) ease, transform calc(0.8s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
   will-change: opacity, transform;
 }
@@ -1795,6 +1732,75 @@
 [data-ei-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.ei-rsvp {
+  background: var(--ei-paper);
+}
+
+.ei-rsvp .ei-section-title h2 {
+  color: var(--ei-green);
+}
+
+.ei-gift>div {
+  display: grid;
+  gap: 14px;
+}
+
+.ei-gift article {
+  padding: 18px;
+  border: 1px solid rgba(45, 75, 69, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.ei-gift p {
+  margin: 10px 0 0;
+  line-height: 1.55;
+}
+
+.ei-thanks {
+  position: relative;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  height: 120px;
+  background:
+    linear-gradient(90deg, rgba(var(--ei-green-rgb), 0.04) 1px, transparent 1px),
+    var(--ei-paper);
+  background-size: 36px 36px;
+}
+
+.ei-thanks div {
+  width: 100%;
+  z-index: 2;
+  padding: 16px 20px 10px 20px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.ei-thanks h2 {
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  line-height: 1.15;
+}
+
+.ei-thanks p {
+  margin: 4px 0 0;
+  color: var(--ei-green);
+  font-size: 0.88rem;
+  font-style: italic;
+  font-weight: 700;
+}
+
+[data-ei-reveal] {
+  opacity: 0;
+  transform: translateY(46px);
+  transition: opacity calc(0.8s * var(--ei-speed)) ease, transform calc(0.8s * var(--ei-speed)) cubic-bezier(0.18, 0.88, 0.3, 1);
+  will-change: opacity, transform;
 }
 
 .ei-gallery[data-ei-reveal],
@@ -1879,6 +1885,7 @@
   transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
   will-change: opacity, transform;
 }
+
 .ei-couple-row article:first-of-type[data-ei-reveal].is-visible {
   opacity: 1 !important;
   transform: translateX(0) !important;
@@ -1890,6 +1897,7 @@
   transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
   will-change: opacity, transform;
 }
+
 .ei-couple-row article:last-of-type[data-ei-reveal].is-visible {
   opacity: 1 !important;
   transform: translateX(0) !important;
@@ -1901,6 +1909,7 @@
   transition: opacity calc(2.5s * var(--ei-speed)) ease, transform calc(2.5s * var(--ei-speed)) cubic-bezier(0.1, 0.8, 0.2, 1) !important;
   will-change: opacity, transform;
 }
+
 .ei-couple-row div[data-ei-image-reveal].is-visible {
   opacity: 1 !important;
   transform: scale(1) !important;

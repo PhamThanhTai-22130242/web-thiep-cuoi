@@ -66,6 +66,14 @@ type CineLoveTraditionalInvitationProps = {
     rsvpEndpoint?: string;
 };
 
+function getTodayDateValue() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export const defaultCineLoveInvitationData: CineLoveInvitationData = {
     slug: defaultCineLoveInvitationTemplate.slug,
     groomName: defaultCineLoveInvitationTemplate.couple.groom,
@@ -80,7 +88,7 @@ export const defaultCineLoveInvitationData: CineLoveInvitationData = {
     brideMother: 'Bà Ngô Mai Hoàn',
     inviteText: defaultCineLoveInvitationTemplate.couple.headline,
     guestName: 'Anh Dũng',
-    eventDate: defaultCineLoveInvitationTemplate.event.date.slice(0, 10),
+    eventDate: getTodayDateValue(),
     eventTime: defaultCineLoveInvitationTemplate.event.time.slice(0, 5),
     venueName: defaultCineLoveInvitationTemplate.event.venue,
     address: defaultCineLoveInvitationTemplate.event.address,
@@ -122,7 +130,16 @@ function getMapSrc(value: string) {
     if (trimmedValue.toLowerCase().includes('<iframe')) {
         return trimmedValue.match(/src=["']([^"']+)["']/i)?.[1]?.trim() || '';
     }
-    return trimmedValue;
+    try {
+        const url = new URL(trimmedValue);
+        if (url.hostname.includes('google.') || url.hostname.includes('goo.gl')) {
+            url.searchParams.set('output', 'embed');
+            return url.toString();
+        }
+        return trimmedValue;
+    } catch {
+        return `https://www.google.com/maps?q=${encodeURIComponent(trimmedValue)}&output=embed`;
+    }
 }
 
 function createEmptyEditableData(): CineLoveInvitationData {
@@ -148,9 +165,19 @@ function formatMonthLabel(dateValue: string) {
     return month && year ? `${month}.${year}` : '11.2026';
 }
 
+function parseEventDate(dateValue: string, fallbackDateValue: string) {
+    const normalizedDate = dateValue || fallbackDateValue;
+    const match = normalizedDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    const date = match
+        ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+        : new Date(`${normalizedDate}T00:00:00+07:00`);
+
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function getEventParts(dateValue: string) {
-    const date = new Date(`${dateValue || defaultCineLoveInvitationData.eventDate}T00:00:00+07:00`);
-    if (Number.isNaN(date.getTime())) {
+    const date = parseEventDate(dateValue, defaultCineLoveInvitationData.eventDate);
+    if (!date) {
         return { dayName: 'Thứ Hai', day: '16', month: 'Tháng 11', year: '2026', activeDay: 16 };
     }
 
@@ -164,6 +191,27 @@ function getEventParts(dateValue: string) {
         month,
         year: String(date.getFullYear()),
         activeDay: date.getDate(),
+    };
+}
+
+function getMonthCalendar(dateValue: string) {
+    const date = parseEventDate(dateValue, defaultCineLoveInvitationData.eventDate);
+    if (!date) {
+        return {
+            leadingBlanks: 5,
+            days: Array.from({ length: 30 }, (_, index) => index + 1),
+        };
+    }
+
+    const year = date.getFullYear();
+    const monthIndex = date.getMonth();
+    const firstDay = new Date(year, monthIndex, 1);
+    const mondayFirstIndex = (firstDay.getDay() + 6) % 7;
+    const dayCount = new Date(year, monthIndex + 1, 0).getDate();
+
+    return {
+        leadingBlanks: mondayFirstIndex,
+        days: Array.from({ length: dayCount }, (_, index) => index + 1),
     };
 }
 
@@ -287,8 +335,8 @@ function CineLoveTraditionalInvitation({
     const invitationData = data ?? previewData ?? defaultCineLoveInvitationData;
     const mapSrc = getMapSrc(invitationData.mapUrl);
 
-    const calendarDays = useMemo(() => Array.from({ length: 30 }, (_, index) => index + 1), []);
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
+    const monthCalendar = useMemo(() => getMonthCalendar(invitationData.eventDate), [invitationData.eventDate]);
     const countdownTarget = useMemo(
         () => getCountdownTarget(invitationData.eventDate, invitationData.eventTime),
         [invitationData.eventDate, invitationData.eventTime],
@@ -528,8 +576,10 @@ function CineLoveTraditionalInvitation({
                 <div className="clv-family-grid">
                     <article>
                         <h3>{invitationData.groomFamilyLabel}</h3>
-                        <p>{invitationData.groomFather}</p>
-                        <p>{invitationData.groomMother}</p>
+                        <div className="clv-parents-wrap">
+                            {invitationData.groomFather && <p>{invitationData.groomFather}</p>}
+                            {invitationData.groomMother && <p>{invitationData.groomMother}</p>}
+                        </div>
                         <div className="clv-portrait">
                             <EditablePhoto
                                 src={invitationData.images.groom}
@@ -546,8 +596,10 @@ function CineLoveTraditionalInvitation({
 
                     <article>
                         <h3>{invitationData.brideFamilyLabel}</h3>
-                        <p>{invitationData.brideFather}</p>
-                        <p>{invitationData.brideMother}</p>
+                        <div className="clv-parents-wrap">
+                            {invitationData.brideFather && <p>{invitationData.brideFather}</p>}
+                            {invitationData.brideMother && <p>{invitationData.brideMother}</p>}
+                        </div>
                         <div className="clv-portrait">
                             <EditablePhoto
                                 src={invitationData.images.bride}
@@ -597,10 +649,10 @@ function CineLoveTraditionalInvitation({
                         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
                             <strong key={day}>{day}</strong>
                         ))}
-                        {Array.from({ length: 5 }, (_, index) => (
+                        {Array.from({ length: monthCalendar.leadingBlanks }, (_, index) => (
                             <span key={`empty-${index}`} />
                         ))}
-                        {calendarDays.map((day) => (
+                        {monthCalendar.days.map((day) => (
                             <span className={day === eventParts.activeDay ? 'clv-calendar__active' : ''} key={day}>
                                 {day}
                             </span>
@@ -621,24 +673,13 @@ function CineLoveTraditionalInvitation({
                     )}
                     {invitationData.address}
                 </p>
-                {mapSrc && (mapSrc.includes('embed') || mapSrc.includes('maps.google.com/maps?q=')) ? (
+                {mapSrc ? (
                     <iframe
                         title="Bản đồ địa điểm tổ chức tiệc cưới"
                         src={mapSrc}
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                     />
-                ) : mapSrc ? (
-                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                        <a
-                            href={mapSrc}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#a62d2d', color: '#fff', borderRadius: '30px', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}
-                        >
-                            Chỉ đường trên Google Maps
-                        </a>
-                    </div>
                 ) : null}
             </section>
 
