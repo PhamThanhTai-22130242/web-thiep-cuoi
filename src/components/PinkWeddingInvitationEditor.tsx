@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { CSSProperties, ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
     CalendarDays,
@@ -9,11 +9,17 @@ import {
     Link as LinkIcon,
     Loader2,
     MapPin,
+    Music2,
     Plus,
     Save,
     Upload,
     UsersRound,
     Trash2,
+    Play,
+    Pause,
+    Maximize2,
+    X,
+    Users,
 } from 'lucide-react';
 import PinkWeddingInvitation, {
     PinkWeddingInvitationData,
@@ -129,7 +135,12 @@ function toSaveRequest(data: PinkWeddingInvitationData, status: 'draft' | 'activ
             venueName: data.venueName,
             address: data.address,
             linkMap: data.mapUrl,
+            guestList: data.guestList || '',
         },
+        musicTrack: data.musicTrack?.fileUrl ? {
+            fileUrl: data.musicTrack.fileUrl,
+            timeStart: Math.max(0, Number(data.musicTrack.timeStart || 0)),
+        } : null,
         media: [...singleMedia, ...galleryMedia],
     };
 }
@@ -167,9 +178,14 @@ function fromApiCard(card: MyWeddingCardResponse, fallback: PinkWeddingInvitatio
         venueName: event?.venueName || fallback.venueName,
         address: event?.address || fallback.address,
         mapUrl: event?.linkMap || fallback.mapUrl,
+        guestList: event?.guestList || fallback.guestList || '',
         showGroomGift: Boolean(groomQr),
         showBrideGift: Boolean(brideQr),
         showGiftSection: Boolean(groomQr || brideQr),
+        musicTrack: card.musicTrack?.fileUrl ? {
+            fileUrl: card.musicTrack.fileUrl,
+            timeStart: Math.max(0, Number(card.musicTrack.timeStart || 0)),
+        } : null,
         images: {
             cover: mediaBySlot.get('images.cover') || fallback.images.cover,
             portraitOne: mediaBySlot.get('images.portraitOne') || fallback.images.portraitOne,
@@ -196,8 +212,9 @@ async function uploadLocalImages(data: PinkWeddingInvitationData, onProgress: (m
             .filter((entry) => entry.url?.startsWith('blob:')),
     ];
 
-    if (allEntries.length === 0) return next;
-    onProgress('Đang lưu...');
+    if (allEntries.length > 0) {
+        onProgress('Đang lưu ảnh...');
+    }
 
     const uploaded = await Promise.all(
         allEntries.map(async (entry) => ({
@@ -205,6 +222,15 @@ async function uploadLocalImages(data: PinkWeddingInvitationData, onProgress: (m
             uploadedUrl: await weddingCardService.uploadImage(await fetchBlob(entry.url)),
         })),
     );
+
+    if (next.musicTrack?.fileUrl?.startsWith('blob:')) {
+        onProgress('Đang tải nhạc...');
+        const uploadedUrl = await weddingCardService.uploadFile(await fetchBlob(next.musicTrack.fileUrl, 'music.mp3'));
+        next.musicTrack = {
+            ...next.musicTrack,
+            fileUrl: uploadedUrl,
+        };
+    }
 
     uploaded.forEach(({ key, isGallery, index, uploadedUrl }) => {
         if (isGallery && index !== undefined) {
@@ -217,10 +243,10 @@ async function uploadLocalImages(data: PinkWeddingInvitationData, onProgress: (m
     return next;
 }
 
-async function fetchBlob(url: string): Promise<File> {
+async function fetchBlob(url: string, fallbackName = 'upload.jpg'): Promise<File> {
     const response = await fetch(url);
     const blob = await response.blob();
-    return new File([blob], 'upload.jpg', { type: blob.type || 'image/jpeg' });
+    return new File([blob], fallbackName, { type: blob.type || 'application/octet-stream' });
 }
 
 function formatDateInput(dateValue: string) {
@@ -270,6 +296,13 @@ function parseDateDisplay(value: string) {
     return `${year}-${month}-${day}`;
 }
 
+function formatAudioTime(totalSeconds: number) {
+    const safeSeconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+    const minutes = Math.floor(safeSeconds / 60);
+    const seconds = String(safeSeconds % 60).padStart(2, '0');
+    return `${minutes}:${seconds}`;
+}
+
 function extractMapIframeSrc(value: string) {
     const match = value.match(/src=["']([^"']+)["']/i);
     return match?.[1]?.trim() || value;
@@ -292,6 +325,10 @@ function PinkWeddingInvitationEditor() {
     const [slugError, setSlugError] = useState('');
     const [cardStatus, setCardStatus] = useState<'draft' | 'active'>('draft');
     const [hasPersistedCard, setHasPersistedCard] = useState(false);
+    const [musicDuration, setMusicDuration] = useState(0);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const [isMusicModalOpen, setIsMusicModalOpen] = useState(false);
     const hasLoadedRef = useRef(false);
 
     const getWeddingId = () => {
@@ -317,6 +354,7 @@ function PinkWeddingInvitationEditor() {
 
     const [weddingId, setWeddingId] = useState<number | undefined>(() => getWeddingId());
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const musicInputRef = useRef<HTMLInputElement | null>(null);
     const galleryStripRef = useRef<HTMLDivElement | null>(null);
     const uploadTargetRef = useRef<ImageTarget>('images.cover');
     const shouldInsertGalleryImageRef = useRef(false);
@@ -325,6 +363,9 @@ function PinkWeddingInvitationEditor() {
     const dateInputRef = useRef<HTMLInputElement | null>(null);
     const familyMemberBackupRef = useRef<Record<FamilyMemberField, string>>({ ...defaultFamilyMembers });
     const isFamilyMemberEnabled = (field: FamilyMemberField) => draft[field].trim().length > 0;
+    const selectedMusicStart = Math.max(0, Number(draft.musicTrack?.timeStart || 0));
+    const musicTimelineMax = Math.max(musicDuration, selectedMusicStart, 1);
+    const musicTimelineProgress = `${Math.min(100, (selectedMusicStart / musicTimelineMax) * 100)}%`;
 
     const handleFamilyMemberEnabledChange = (field: FamilyMemberField, checked: boolean) => {
         setDraft((current) => {
@@ -525,6 +566,88 @@ function PinkWeddingInvitationEditor() {
         event.target.value = '';
     };
 
+    const handleMusicFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
+        objectUrlsRef.current.push(url);
+        setDraft((current) => ({
+            ...current,
+            musicTrack: {
+                fileUrl: url,
+                timeStart: Math.max(0, Number(current.musicTrack?.timeStart || 0)),
+            },
+        }));
+        event.target.value = '';
+    };
+
+    const updateMusicStart = (value: number) => {
+        const maxStart = musicDuration > 0 ? musicDuration : Number.MAX_SAFE_INTEGER;
+        const timeStart = Math.min(maxStart, Math.max(0, Math.floor(Number(value) || 0)));
+        setDraft((current) => ({
+            ...current,
+            musicTrack: current.musicTrack?.fileUrl
+                ? { ...current.musicTrack, timeStart }
+                : { fileUrl: '', timeStart },
+        }));
+        if (audioRef.current) {
+            audioRef.current.currentTime = timeStart;
+        }
+    };
+
+    const toggleMusicPreview = async () => {
+        const audio = audioRef.current;
+        if (!audio || !draft.musicTrack?.fileUrl) {
+            return;
+        }
+
+        if (audio.paused) {
+            const timeStart = Math.max(0, Number(draft.musicTrack.timeStart || 0));
+            audio.currentTime = timeStart;
+            try {
+                await audio.play();
+                setIsMusicPlaying(true);
+            } catch (error) {
+                console.error('Failed to play audio preview:', error);
+                setIsMusicPlaying(false);
+            }
+        } else {
+            audio.pause();
+            setIsMusicPlaying(false);
+        }
+    };
+
+    useEffect(() => {
+        setIsMusicPlaying(false);
+    }, [draft.musicTrack?.fileUrl]);
+
+    const handleMusicMetadataLoaded = (event: SyntheticEvent<HTMLAudioElement>) => {
+        const duration = Number.isFinite(event.currentTarget.duration)
+            ? Math.floor(event.currentTarget.duration)
+            : 0;
+        setMusicDuration(duration);
+        if (duration <= 0) {
+            return;
+        }
+
+        setDraft((current) => {
+            if (!current.musicTrack?.fileUrl || Number(current.musicTrack.timeStart || 0) <= duration) {
+                return current;
+            }
+
+            return {
+                ...current,
+                musicTrack: {
+                    ...current.musicTrack,
+                    timeStart: duration,
+                },
+            };
+        });
+    };
+
     const validateRequiredImages = (): boolean => {
         const requiredImages: Array<{ key: 'cover' | 'portraitOne' | 'portraitTwo' | 'embrace' | 'letterCenter' | 'kiss'; label: string }> = [
             { key: 'cover', label: 'Ảnh bìa sổ lưu niệm' },
@@ -703,6 +826,7 @@ function PinkWeddingInvitationEditor() {
     return (
         <main className="pwie-page">
             <input ref={fileInputRef} className="pwie-file-input" type="file" accept="image/*" onChange={handleFileChange} />
+            <input ref={musicInputRef} className="pwie-file-input" type="file" accept="audio/*" onChange={handleMusicFileChange} />
 
             <section className="pwie-preview">
                 <div className="pwie-phone-frame">
@@ -766,8 +890,8 @@ function PinkWeddingInvitationEditor() {
                         {isSaving && (
                             <div role="status">
                                 <svg aria-hidden="true" className="w-8 h-8 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
                                 </svg>
                                 <span className="sr-only">Loading...</span>
                             </div>
@@ -798,6 +922,24 @@ function PinkWeddingInvitationEditor() {
                                 onChange={(event) => updateField('slug', event.target.value)}
                             />
                             {slugError && <span className="pwie-field__error">{slugError}</span>}
+                        </div>
+                    </section>
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
+                            <Users size={18} />
+                            <h2>Danh sách khách mời</h2>
+                        </div>
+                        <p style={{ fontSize: '0.82rem', color: '#666', margin: '0 0 12px' }}>
+                            Nhập danh sách khách mời của bạn, mỗi dòng tương ứng với một người. Hệ thống sẽ tự tạo link riêng gửi cho từng người.
+                        </p>
+                        <div className="pwie-field">
+                            <textarea
+                                value={draft.guestList || ''}
+                                rows={5}
+                                placeholder={"Ví dụ:\nAnh Tài Phạm\nChị Khánh Vy\nAnh Dũng"}
+                                onChange={(event) => updateField('guestList', event.target.value)}
+                                style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13px', resize: 'vertical', width: '100%', fontFamily: 'system-ui' }}
+                            />
                         </div>
                     </section>
 
@@ -1000,6 +1142,102 @@ function PinkWeddingInvitationEditor() {
                                 onChange={(event) => updateField('address', event.target.value)}
                             />
                         </label>
+                    </section>
+
+                    <section className="pwie-card">
+                        <div className="pwie-card__title">
+                            <Music2 size={18} />
+                            <h2>Nhạc nền</h2>
+                        </div>
+
+                        <div className="pwie-music-picker">
+                            <button type="button" onClick={() => musicInputRef.current?.click()}>
+                                <Music2 size={18} />
+                                <span>{draft.musicTrack?.fileUrl ? 'Đổi nhạc' : 'Chọn nhạc'}</span>
+                            </button>
+
+                        </div>
+
+                        {draft.musicTrack?.fileUrl && (
+                            <>
+                                <audio
+                                    ref={audioRef}
+                                    src={draft.musicTrack.fileUrl}
+                                    preload="metadata"
+                                    onLoadedMetadata={handleMusicMetadataLoaded}
+                                    onDurationChange={handleMusicMetadataLoaded}
+                                    onEnded={() => setIsMusicPlaying(false)}
+                                />
+                                <div className="pwie-music-timeline-wrapper">
+                                    <div className="pwie-music-timeline">
+                                        <span>{formatAudioTime(selectedMusicStart)}</span>
+                                        <label
+                                            className="pwie-music-range"
+                                            style={{ '--pwie-music-progress': musicTimelineProgress } as CSSProperties}
+                                        >
+                                            <span className="sr-only">Chọn vị trí bắt đầu phát nhạc</span>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max={musicTimelineMax}
+                                                step="1"
+                                                value={Math.min(selectedMusicStart, musicTimelineMax)}
+                                                onChange={(event) => updateMusicStart(Number(event.target.value))}
+                                            />
+                                        </label>
+                                        <strong>{formatAudioTime(musicDuration || musicTimelineMax)}</strong>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="pwie-music-expand-btn"
+                                        onClick={() => setIsMusicModalOpen(true)}
+                                        title="Phóng to"
+                                        aria-label="Phóng to trình cắt nhạc"
+                                    >
+                                        <Maximize2 size={16} />
+                                    </button>
+                                </div>
+                                <div className="pwie-music-controls">
+                                    <button
+                                        type="button"
+                                        className={`pwie-music-play-circle${isMusicPlaying ? ' is-playing' : ''}`}
+                                        onClick={toggleMusicPreview}
+                                        aria-label={isMusicPlaying ? 'Tạm dừng nghe thử' : 'Phát nghe thử'}
+                                    >
+                                        {isMusicPlaying ? (
+                                            <Pause size={18} fill="currentColor" />
+                                        ) : (
+                                            <Play size={18} fill="currentColor" style={{ transform: 'translateX(1px)' }} />
+                                        )}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="pwie-music-remove"
+                                        onClick={() => {
+                                            if (audioRef.current) {
+                                                audioRef.current.pause();
+                                            }
+                                            setIsMusicPlaying(false);
+                                            setMusicDuration(0);
+                                            setDraft((current) => ({ ...current, musicTrack: null }));
+                                        }}
+                                    >
+                                        Bỏ nhạc nền
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {!draft.musicTrack?.fileUrl && (
+                            <div className="pwie-music-empty">
+                                <input
+                                    readOnly
+                                    tabIndex={-1}
+                                    value="Chưa chọn nhạc"
+                                    aria-label="Trạng thái nhạc nền"
+                                />
+                            </div>
+                        )}
                     </section>
 
                     <section className="pwie-card">
@@ -1224,6 +1462,69 @@ function PinkWeddingInvitationEditor() {
                             <button type="button" className="pwie-success-dialog__btn is-primary" onClick={() => navigate('/dashboard')}>
                                 Quản lý thiệp cưới
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isMusicModalOpen && draft.musicTrack?.fileUrl && (
+                <div className="pwie-music-modal-overlay" role="dialog" aria-modal="true">
+                    <div className="pwie-music-modal-content">
+                        <button
+                            type="button"
+                            className="pwie-music-modal-close"
+                            onClick={() => setIsMusicModalOpen(false)}
+                            aria-label="Đóng"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="pwie-music-modal-header">
+                            <h3>Cắt đoạn nhạc nền</h3>
+                            <p>Kéo thanh trượt để chọn thời điểm bắt đầu phát nhạc khi khách mở thiệp.</p>
+                        </div>
+
+                        <div className="pwie-music-modal-body">
+                            <div className="pwie-music-timeline pwie-modal-timeline">
+                                <span>{formatAudioTime(selectedMusicStart)}</span>
+                                <label
+                                    className="pwie-music-range"
+                                    style={{ '--pwie-music-progress': musicTimelineProgress } as CSSProperties}
+                                >
+                                    <span className="sr-only">Chọn vị trí bắt đầu phát nhạc</span>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max={musicTimelineMax}
+                                        step="1"
+                                        value={Math.min(selectedMusicStart, musicTimelineMax)}
+                                        onChange={(event) => updateMusicStart(Number(event.target.value))}
+                                    />
+                                </label>
+                                <strong>{formatAudioTime(musicDuration || musicTimelineMax)}</strong>
+                            </div>
+
+                            <div className="pwie-music-modal-controls">
+                                <button
+                                    type="button"
+                                    className={`pwie-music-play-circle large${isMusicPlaying ? ' is-playing' : ''}`}
+                                    onClick={toggleMusicPreview}
+                                    aria-label={isMusicPlaying ? 'Tạm dừng nghe thử' : 'Phát nghe thử'}
+                                >
+                                    {isMusicPlaying ? (
+                                        <Pause size={24} fill="currentColor" />
+                                    ) : (
+                                        <Play size={24} fill="currentColor" style={{ transform: 'translateX(1px)' }} />
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="pwie-music-modal-confirm-btn"
+                                    onClick={() => setIsMusicModalOpen(false)}
+                                >
+                                    Xác nhận
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

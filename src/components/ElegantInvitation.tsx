@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Gift, MapPin, Send, X } from 'lucide-react';
 import InvitationLoadingScreen, { useInvitationImagePreload } from './InvitationLoadingScreen';
 import './ElegantInvitation.css';
+import { decodeGuestName } from '../utils/guest';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
 import { loadElegantPreview, defaultElegantInvitationTemplate } from '../data/invitationTemplates';
@@ -28,6 +29,10 @@ export interface ElegantInvitationData {
     showGroomGift?: boolean;
     showBrideGift?: boolean;
     showGiftSection?: boolean;
+    musicTrack: {
+        fileUrl: string;
+        timeStart: number;
+    } | null;
     images: {
         cover: string;
         hero: string;
@@ -37,6 +42,7 @@ export interface ElegantInvitationData {
         brideQr: string;
         gallery: string[];
     };
+    guestList?: string;
 }
 
 export type EditableElegantImageTarget =
@@ -68,6 +74,7 @@ function getTodayDateValue() {
 
 export const defaultElegantInvitationData: ElegantInvitationData = {
     slug: '',
+    guestList: '',
     groomName: defaultElegantInvitationTemplate.couple.groom || 'Thanh Sơn',
     brideName: defaultElegantInvitationTemplate.couple.bride || 'Diệu Nhi',
     groomIntroName: defaultElegantInvitationTemplate.couple.groom || 'Thanh Sơn',
@@ -87,6 +94,7 @@ export const defaultElegantInvitationData: ElegantInvitationData = {
     showGroomGift: true,
     showBrideGift: true,
     showGiftSection: true,
+    musicTrack: null,
     images: {
         cover: defaultElegantInvitationTemplate.images.cover || '',
         hero: 'https://miuwedding.com/uploads/69b95065dcc4597893deb84b/1773752594568-1768964174030-615120422_925471073144357_5596178545909683221_n.webp',
@@ -194,6 +202,98 @@ function ElegantInvitation({
     const lastInitialWishesRef = useRef<{ name: string; message: string }[]>(initialWishes);
 
     const invitationData = data ?? previewData ?? defaultElegantInvitationData;
+    const { guest } = useParams<{ guest?: string }>();
+    const guestName = guest
+        ? decodeGuestName(guest)
+        : (searchParams.get('to') || searchParams.get('guest') || 'Quý khách');
+
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const fadeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const musicTrack = invitationData.musicTrack;
+    const musicStartTime = Math.max(0, Number(musicTrack?.timeStart || 0));
+
+    const startFadeIn = (audio: HTMLAudioElement) => {
+        if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
+        audio.volume = 0;
+        const duration = 3000; // 3 seconds
+        const interval = 50; // smooth updates
+        const step = 1 / (duration / interval);
+        
+        fadeTimerRef.current = setInterval(() => {
+            const nextVolume = audio.volume + step;
+            if (nextVolume >= 1) {
+                audio.volume = 1;
+                if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
+            } else {
+                audio.volume = nextVolume;
+            }
+        }, interval);
+    };
+
+    const playWithFadeIn = async () => {
+        const audio = audioRef.current;
+        if (!audio || !musicTrack?.fileUrl) return;
+        try {
+            audio.volume = 0;
+            if (audio.currentTime < musicStartTime) {
+                audio.currentTime = musicStartTime;
+            }
+            await audio.play();
+            setIsMusicPlaying(true);
+            startFadeIn(audio);
+        } catch {
+            setIsMusicPlaying(false);
+        }
+    };
+
+    const toggleMusic = async () => {
+        const audio = audioRef.current;
+        if (!audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        if (audio.paused) {
+            await playWithFadeIn();
+            return;
+        }
+
+        if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
+        audio.pause();
+        setIsMusicPlaying(false);
+    };
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (editable || !audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        audio.pause();
+        audio.currentTime = musicStartTime;
+        audio.volume = 0;
+        setIsMusicPlaying(false);
+
+        playWithFadeIn();
+
+        const handleInteraction = async () => {
+            if (audio.paused) {
+                await playWithFadeIn();
+            }
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+
+        window.addEventListener('click', handleInteraction, { passive: true });
+        window.addEventListener('touchstart', handleInteraction, { passive: true });
+
+        return () => {
+            if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, [musicTrack?.fileUrl, musicStartTime, editable]);
 
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
     const isDefaultDate = invitationData.eventDate === '2026-12-31';
@@ -294,6 +394,7 @@ function ElegantInvitation({
     const openInvitation = () => {
         setIsOpeningOut(true);
         window.setTimeout(() => setIsOpeningVisible(false), 1800);
+        playWithFadeIn();
     };
 
     const handleRsvpSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -384,6 +485,31 @@ function ElegantInvitation({
 
     return (
         <main className={`qp-page${editable ? ' is-editing' : ''}${isOpened ? ' is-opened' : ''}`}>
+            {musicTrack?.fileUrl && !editable && (
+                <>
+                    <audio
+                        ref={audioRef}
+                        src={musicTrack.fileUrl}
+                        preload="metadata"
+                        onEnded={() => setIsMusicPlaying(false)}
+                    />
+                    <button
+                        className={`elgt-music-control-btn${isMusicPlaying ? ' is-playing' : ''}`}
+                        type="button"
+                        onClick={toggleMusic}
+                        aria-label={isMusicPlaying ? 'Tạm dừng nhạc nền' : 'Phát nhạc nền'}
+                    >
+                        <span className="elgt-music-inner">
+                            <span className="elgt-music-bars">
+                                <i style={{ '--bar-height': '22px', '--bar-delay': '-0.2s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '14px', '--bar-delay': '-0.4s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '8px', '--bar-delay': '-0.1s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '18px', '--bar-delay': '-0.3s' } as CSSProperties} />
+                            </span>
+                        </span>
+                    </button>
+                </>
+            )}
             {isOpeningVisible && !editable && (
                 <section className={`qp-opening${isOpeningOut ? ' is-open' : ''}`} aria-label="Mở thiệp cưới">
                     <div className="qp-opening-side qp-opening-left">
@@ -394,7 +520,7 @@ function ElegantInvitation({
                             <strong>{invitationData.brideName}</strong>
                         </div>
                         <p>Trân trọng kính mời</p>
-                        <b>Quý khách</b>
+                        <b>{guestName}</b>
                     </div>
                     <div className="qp-opening-side qp-opening-right" />
                     <button className="qp-opening-seal" type="button" onClick={openInvitation} aria-label="Mở thiệp">

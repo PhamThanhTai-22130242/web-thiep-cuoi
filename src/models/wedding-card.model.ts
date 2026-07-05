@@ -15,12 +15,18 @@ export type WeddingCardEvent = {
     venueName?: string;
     address?: string;
     linkMap?: string;
+    guestList?: string;
 };
 
 export type WeddingCardMedia = {
     slotKey: string;
     imgUrl: string;
     number?: number;
+};
+
+export type WeddingCardMusicTrack = {
+    fileUrl: string;
+    timeStart?: number;
 };
 
 export type MyWeddingCardResponse = {
@@ -38,6 +44,7 @@ export type MyWeddingCardResponse = {
         code: string;
         previewImg?: string;
     };
+    musicTrack?: WeddingCardMusicTrack | null;
     people: WeddingCardPerson[];
     events: WeddingCardEvent[];
     media: WeddingCardMedia[];
@@ -73,7 +80,9 @@ export type MyWeddingCardSaveRequest = {
         venueName: string;
         address: string;
         linkMap: string;
+        guestList?: string;
     };
+    musicTrack?: WeddingCardMusicTrack | null;
     media: WeddingCardMedia[];
 };
 

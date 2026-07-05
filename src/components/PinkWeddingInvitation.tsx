@@ -1,11 +1,13 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Gift, MapPin, Send, Trash2, X } from 'lucide-react';
+import { WeddingCardMusicTrack } from '../models/wedding-card.model';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
 import { loadPinkPreview, defaultPinkInvitationTemplate } from '../data/invitationTemplates';
 import InvitationLoadingScreen from './InvitationLoadingScreen';
 import './PinkWeddingInvitation.css';
+import { decodeGuestName } from '../utils/guest';
 
 export interface PinkWeddingInvitationData {
     slug?: string;
@@ -28,6 +30,7 @@ export interface PinkWeddingInvitationData {
     showGroomGift?: boolean;
     showBrideGift?: boolean;
     showGiftSection?: boolean;
+    musicTrack?: WeddingCardMusicTrack | null;
     images: {
         cover: string;
         portraitOne: string;
@@ -39,6 +42,7 @@ export interface PinkWeddingInvitationData {
         brideQr: string;
         gallery: string[];
     };
+    guestList?: string;
 }
 
 export type EditablePinkImageTarget =
@@ -73,6 +77,7 @@ function getTodayDateValue() {
 
 export const defaultPinkWeddingInvitationData: PinkWeddingInvitationData = {
     slug: '',
+    guestList: '',
     groomName: defaultPinkInvitationTemplate.couple.groom || 'Nhật Minh',
     brideName: defaultPinkInvitationTemplate.couple.bride || 'Khánh Vy',
     groomIntroName: defaultPinkInvitationTemplate.couple.groom || 'Nhật Minh',
@@ -92,6 +97,7 @@ export const defaultPinkWeddingInvitationData: PinkWeddingInvitationData = {
     showGroomGift: true,
     showBrideGift: true,
     showGiftSection: true,
+    musicTrack: null,
     images: {
         cover: defaultPinkInvitationTemplate.images.cover || '',
         portraitOne: defaultPinkInvitationTemplate.images.smile || '',
@@ -254,14 +260,22 @@ function PinkWeddingInvitation({
     const [wishes, setWishes] = useState(initialWishes);
     const [wishStatus, setWishStatus] = useState('');
     const [submittedRsvp, setSubmittedRsvp] = useState(false);
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const lastSubmittedWishRef = useRef<{ name: string; message: string } | null>(null);
     const lastSubmittedWishDeliveredRef = useRef(false);
     const lastInitialWishesRef = useRef<{ name: string; message: string }[]>(initialWishes);
 
     const invitationData = data ?? previewData ?? defaultPinkWeddingInvitationData;
+    const musicTrack = invitationData.musicTrack;
+    const musicStartTime = Math.max(0, Number(musicTrack?.timeStart || 0));
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
     const monthCalendar = useMemo(() => getMonthCalendar(invitationData.eventDate), [invitationData.eventDate]);
     const isDefaultDate = invitationData.eventDate === '2025-12-14';
+    const { guest } = useParams<{ guest?: string }>();
+    const guestName = guest
+        ? decodeGuestName(guest)
+        : (searchParams.get('to') || searchParams.get('guest') || 'Anh Tài Phạm');
 
     // Load preview data if in preview mode
     useEffect(() => {
@@ -279,6 +293,75 @@ function PinkWeddingInvitation({
             .catch(() => {})
             .finally(() => setIsLoadingPreview(false));
     }, [isPreviewMode, data]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (editable || !audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        audio.pause();
+        audio.currentTime = musicStartTime;
+        audio.volume = 0;
+        setIsMusicPlaying(false);
+
+        let fadeTimer: NodeJS.Timeout | null = null;
+
+        const startFadeIn = () => {
+            if (fadeTimer) clearInterval(fadeTimer);
+            audio.volume = 0;
+            const duration = 3000; // 3 seconds
+            const interval = 50; // smooth updates
+            const step = 1 / (duration / interval);
+            
+            fadeTimer = setInterval(() => {
+                const nextVolume = audio.volume + step;
+                if (nextVolume >= 1) {
+                    audio.volume = 1;
+                    if (fadeTimer) clearInterval(fadeTimer);
+                } else {
+                    audio.volume = nextVolume;
+                }
+            }, interval);
+        };
+
+        const startPlay = async () => {
+            try {
+                audio.volume = 0;
+                await audio.play();
+                setIsMusicPlaying(true);
+                startFadeIn();
+            } catch {
+                setIsMusicPlaying(false);
+            }
+        };
+
+        startPlay();
+
+        const handleInteraction = async () => {
+            if (audio.paused) {
+                try {
+                    audio.volume = 0;
+                    await audio.play();
+                    setIsMusicPlaying(true);
+                    startFadeIn();
+                } catch {
+                    setIsMusicPlaying(false);
+                }
+            }
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+
+        window.addEventListener('click', handleInteraction, { passive: true });
+        window.addEventListener('touchstart', handleInteraction, { passive: true });
+
+        return () => {
+            if (fadeTimer) clearInterval(fadeTimer);
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, [musicTrack?.fileUrl, musicStartTime, editable]);
 
     useEffect(() => {
         const isSame = initialWishes.length === lastInitialWishesRef.current.length &&
@@ -318,11 +401,16 @@ function PinkWeddingInvitation({
     }, [isPreviewMode, wishTopic]);
 
     useEffect(() => {
-        if (editable) {
+        if (editable || isLoadingPreview) {
             return undefined;
         }
 
         const revealItems = document.querySelectorAll<HTMLElement>('[data-pwi-reveal]');
+        if (!('IntersectionObserver' in window)) {
+            revealItems.forEach((item) => item.classList.add('is-visible'));
+            return undefined;
+        }
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -338,7 +426,7 @@ function PinkWeddingInvitation({
 
         revealItems.forEach((item) => observer.observe(item));
         return () => observer.disconnect();
-    }, [editable]);
+    }, [editable, isLoadingPreview]);
 
     const handleWishSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -409,6 +497,29 @@ function PinkWeddingInvitation({
         }
     };
 
+    const toggleMusic = async () => {
+        const audio = audioRef.current;
+        if (!audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        if (audio.paused) {
+            if (audio.currentTime < musicStartTime) {
+                audio.currentTime = musicStartTime;
+            }
+            try {
+                await audio.play();
+                setIsMusicPlaying(true);
+            } catch {
+                setIsMusicPlaying(false);
+            }
+            return;
+        }
+
+        audio.pause();
+        setIsMusicPlaying(false);
+    };
+
     const rawGallery = invitationData.images.gallery || [];
     const normalizedGallery = [...rawGallery, ...Array(Math.max(0, 20 - rawGallery.length)).fill('')];
     const filledGallery = normalizedGallery.filter(Boolean);
@@ -424,6 +535,32 @@ function PinkWeddingInvitation({
 
     return (
         <main className="pwi-page">
+            {musicTrack?.fileUrl && !editable && (
+                <>
+                    <audio
+                        ref={audioRef}
+                        src={musicTrack.fileUrl}
+                        preload="metadata"
+                        onEnded={() => setIsMusicPlaying(false)}
+                    />
+                    <button
+                        className={`pwi-music-control-btn${isMusicPlaying ? ' is-playing' : ''}`}
+                        type="button"
+                        onClick={toggleMusic}
+                        aria-label={isMusicPlaying ? 'Tạm dừng nhạc nền' : 'Phát nhạc nền'}
+                    >
+                        <span className="pwi-music-inner">
+                            <span className="pwi-music-bars">
+                                <i style={{ '--bar-height': '22px', '--bar-delay': '-0.2s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '14px', '--bar-delay': '-0.4s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '8px', '--bar-delay': '-0.1s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '18px', '--bar-delay': '-0.3s' } as CSSProperties} />
+                            </span>
+                        </span>
+                    </button>
+                </>
+            )}
+
             <section className={`pwi-save-photo${editable ? ' is-visible' : ''}`} data-pwi-reveal>
                 <div className="pwi-save-heading">
                     <span>Save The Date</span>
@@ -530,6 +667,7 @@ function PinkWeddingInvitation({
                 <p style={{ marginTop: '24px', fontStyle: 'italic', color: '#666', textTransform: 'none' }}>
                     {invitationData.inviteText}
                 </p>
+                <p className="pwi-guest-name">{guestName}</p>
             </section>
 
             <section className={`pwi-ceremony${editable ? ' is-visible' : ''}`} data-pwi-reveal>

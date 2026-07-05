@@ -9,6 +9,8 @@ import CineLoveTraditionalInvitation, {
     CineLoveInvitationData,
     defaultCineLoveInvitationData,
 } from './CineLoveTraditionalInvitation';
+import PinkWeddingInvitation from './PinkWeddingInvitation';
+import { mapPublicCardToPinkData, PublicWeddingCardResponse } from './PublicWeddingCardPage';
 import InvitationLoadingScreen from './InvitationLoadingScreen';
 import './PublicWeddingCardPage.css';
 
@@ -149,6 +151,10 @@ function MyWeddingCardPreviewPage() {
 
     if (card.template.code === 'CineLoveTraditionalInvitation') {
         return <CineLoveTraditionalInvitation data={mapMyCardToCineLoveData(card)} />;
+    }
+
+    if (card.template.code === 'PinkWeddingInvitation') {
+        return <PinkWeddingInvitation data={mapPublicCardToPinkData(card as unknown as PublicWeddingCardResponse)} />;
     }
 
     if (card.template.code !== 'EmeraldInvitation') {

@@ -105,6 +105,7 @@ function App() {
                 })}
                 <Route path="/test-fabric" element={<TestComponent />} />
                 <Route path="/CODIEN" element={<CoDienInvitation />} />
+                <Route path="/thiep/:slug/:guest" element={<PublicWeddingCardPage />} />
                 <Route path="/thiep/:slug" element={<PublicWeddingCardPage />} />
                 <Route path="/preview-wedding-card/:weddingId" element={<RequireAuth><MyWeddingCardPreviewPage /></RequireAuth>} />
                 <Route path="/admin-dashboard" element={<RequireAuth allowedRoles={['ADMIN']}><AdminDashboard /></RequireAuth>} />

@@ -112,7 +112,7 @@ export const weddingCardService = {
         return response.data;
     },
 
-    async uploadImage(file: File) {
+    async uploadFile(file: File) {
         const formData = new FormData();
         formData.append('file', file);
 
@@ -144,5 +144,9 @@ export const weddingCardService = {
 
             throw error;
         }
+    },
+
+    async uploadImage(file: File) {
+        return this.uploadFile(file);
     },
 };

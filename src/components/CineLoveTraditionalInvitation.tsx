@@ -1,7 +1,8 @@
 import { CSSProperties, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import './CineLoveTraditionalInvitation.css';
+import { decodeGuestName } from '../utils/guest';
 import { defaultCineLoveInvitationTemplate, loadCineLovePreview } from '../data/invitationTemplates';
 import { subscribeToStompTopic } from '../services/stomp.service';
 import { httpRequest } from '../services/http.service';
@@ -44,8 +45,13 @@ export type CineLoveInvitationData = {
     showBrideGift: boolean;
     groomGiftTitle: string;
     brideGiftTitle: string;
+    musicTrack: {
+        fileUrl: string;
+        timeStart: number;
+    } | null;
     images: CineLoveInvitationImages;
     slug?: string;
+    guestList?: string;
 };
 
 type EditableImageTarget =
@@ -76,6 +82,7 @@ function getTodayDateValue() {
 
 export const defaultCineLoveInvitationData: CineLoveInvitationData = {
     slug: defaultCineLoveInvitationTemplate.slug,
+    guestList: '',
     groomName: defaultCineLoveInvitationTemplate.couple.groom,
     brideName: defaultCineLoveInvitationTemplate.couple.bride,
     groomIntroName: defaultCineLoveInvitationTemplate.couple.groom,
@@ -97,6 +104,7 @@ export const defaultCineLoveInvitationData: CineLoveInvitationData = {
     showBrideGift: true,
     groomGiftTitle: 'QR Đến Chú Rể',
     brideGiftTitle: 'QR Đến Cô Dâu',
+    musicTrack: null,
     images: {
         hero: defaultCineLoveInvitationTemplate.images.hero || '',
         groom: defaultCineLoveInvitationTemplate.images.groom || '',
@@ -334,6 +342,108 @@ function CineLoveTraditionalInvitation({
 
     const invitationData = data ?? previewData ?? defaultCineLoveInvitationData;
     const mapSrc = getMapSrc(invitationData.mapUrl);
+    const { guest } = useParams<{ guest?: string }>();
+    const guestName = guest
+        ? decodeGuestName(guest)
+        : (searchParams.get('to') || searchParams.get('guest') || 'Anh Tài Phạm');
+
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const musicTrack = invitationData.musicTrack;
+    const musicStartTime = Math.max(0, Number(musicTrack?.timeStart || 0));
+
+    const toggleMusic = async () => {
+        const audio = audioRef.current;
+        if (!audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        if (audio.paused) {
+            if (audio.currentTime < musicStartTime) {
+                audio.currentTime = musicStartTime;
+            }
+            try {
+                await audio.play();
+                setIsMusicPlaying(true);
+            } catch {
+                setIsMusicPlaying(false);
+            }
+            return;
+        }
+
+        audio.pause();
+        setIsMusicPlaying(false);
+    };
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (editable || !audio || !musicTrack?.fileUrl) {
+            return;
+        }
+
+        audio.pause();
+        audio.currentTime = musicStartTime;
+        audio.volume = 0;
+        setIsMusicPlaying(false);
+
+        let fadeTimer: NodeJS.Timeout | null = null;
+
+        const startFadeIn = () => {
+            if (fadeTimer) clearInterval(fadeTimer);
+            audio.volume = 0;
+            const duration = 3000; // 3 seconds
+            const interval = 50; // smooth updates
+            const step = 1 / (duration / interval);
+            
+            fadeTimer = setInterval(() => {
+                const nextVolume = audio.volume + step;
+                if (nextVolume >= 1) {
+                    audio.volume = 1;
+                    if (fadeTimer) clearInterval(fadeTimer);
+                } else {
+                    audio.volume = nextVolume;
+                }
+            }, interval);
+        };
+
+        const startPlay = async () => {
+            try {
+                audio.volume = 0;
+                await audio.play();
+                setIsMusicPlaying(true);
+                startFadeIn();
+            } catch {
+                setIsMusicPlaying(false);
+            }
+        };
+
+        startPlay();
+
+        const handleInteraction = async () => {
+            if (audio.paused) {
+                try {
+                    audio.volume = 0;
+                    await audio.play();
+                    setIsMusicPlaying(true);
+                    startFadeIn();
+                } catch {
+                    setIsMusicPlaying(false);
+                }
+            }
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+
+        window.addEventListener('click', handleInteraction, { passive: true });
+        window.addEventListener('touchstart', handleInteraction, { passive: true });
+
+        return () => {
+            if (fadeTimer) clearInterval(fadeTimer);
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, [musicTrack?.fileUrl, musicStartTime, editable]);
 
     const eventParts = useMemo(() => getEventParts(invitationData.eventDate), [invitationData.eventDate]);
     const monthCalendar = useMemo(() => getMonthCalendar(invitationData.eventDate), [invitationData.eventDate]);
@@ -549,6 +659,31 @@ function CineLoveTraditionalInvitation({
 
     return (
         <main className={`clv-page${editable ? ' is-editing' : ''}`}>
+            {musicTrack?.fileUrl && !editable && (
+                <>
+                    <audio
+                        ref={audioRef}
+                        src={musicTrack.fileUrl}
+                        preload="metadata"
+                        onEnded={() => setIsMusicPlaying(false)}
+                    />
+                    <button
+                        className={`clv-music-control-btn${isMusicPlaying ? ' is-playing' : ''}`}
+                        type="button"
+                        onClick={toggleMusic}
+                        aria-label={isMusicPlaying ? 'Tạm dừng nhạc nền' : 'Phát nhạc nền'}
+                    >
+                        <span className="clv-music-inner">
+                            <span className="clv-music-bars">
+                                <i style={{ '--bar-height': '22px', '--bar-delay': '-0.2s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '14px', '--bar-delay': '-0.4s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '8px', '--bar-delay': '-0.1s' } as CSSProperties} />
+                                <i style={{ '--bar-height': '18px', '--bar-delay': '-0.3s' } as CSSProperties} />
+                            </span>
+                        </span>
+                    </button>
+                </>
+            )}
             <section className="clv-hero">
                 <div className="clv-hero__top">
                     <span className="clv-save">Save The Date</span>
@@ -630,7 +765,7 @@ function CineLoveTraditionalInvitation({
 
             <section className="clv-invite clv-bordered-panel">
                 <p className="clv-event-title">{invitationData.inviteText}</p>
-                {/* <p className="clv-at">{invitationData.guestName}</p> */}
+                <p className="clv-guest-name">{guestName}</p>
 
                 <div className="clv-time-row">
                     <span>{invitationData.eventTime}</span>

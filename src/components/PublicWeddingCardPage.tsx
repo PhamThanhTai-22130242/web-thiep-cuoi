@@ -24,7 +24,7 @@ import PinkWeddingInvitation, {
     defaultPinkWeddingInvitationData,
 } from './PinkWeddingInvitation';
 import { httpRequest } from '../services/http.service';
-import { WeddingCardEvent, WeddingCardMedia, WeddingCardPerson } from '../models/wedding-card.model';
+import { WeddingCardEvent, WeddingCardMedia, WeddingCardMusicTrack, WeddingCardPerson } from '../models/wedding-card.model';
 import NotFoundPage from './NotFoundPage';
 import './PublicWeddingCardPage.css';
 
@@ -37,6 +37,7 @@ export type PublicWeddingCardResponse = {
     };
     people: WeddingCardPerson[];
     events: WeddingCardEvent[];
+    musicTrack?: WeddingCardMusicTrack | null;
     media: WeddingCardMedia[];
     wishes: Array<{
         guestName: string;
@@ -143,9 +144,14 @@ export function mapPublicCardToCineLoveData(card: PublicWeddingCardResponse): Ci
     data.venueName = event?.venueName || data.venueName;
     data.address = event?.address || data.address;
     data.mapUrl = event?.linkMap || data.mapUrl;
+    data.guestList = event?.guestList || '';
     data.showGroomGift = Boolean(groomQr);
     data.showBrideGift = Boolean(brideQr);
     data.showGiftSection = Boolean(groomQr || brideQr);
+    data.musicTrack = card.musicTrack?.fileUrl ? {
+        fileUrl: card.musicTrack.fileUrl,
+        timeStart: card.musicTrack.timeStart ?? 0,
+    } : null;
     data.images.hero = mediaBySlot.get('images.hero') || data.images.hero;
     data.images.groom = mediaBySlot.get('images.groom') || data.images.groom;
     data.images.bride = mediaBySlot.get('images.bride') || data.images.bride;
@@ -187,9 +193,14 @@ export function mapPublicCardToElegantData(card: PublicWeddingCardResponse): Ele
     data.venueName = event?.venueName || data.venueName;
     data.address = event?.address || data.address;
     data.mapUrl = event?.linkMap || data.mapUrl;
+    data.guestList = event?.guestList || '';
     data.showGroomGift = Boolean(groomQr);
     data.showBrideGift = Boolean(brideQr);
     data.showGiftSection = Boolean(groomQr || brideQr);
+    data.musicTrack = card.musicTrack?.fileUrl ? {
+        fileUrl: card.musicTrack.fileUrl,
+        timeStart: card.musicTrack.timeStart ?? 0,
+    } : null;
     data.images.cover = mediaBySlot.get('images.cover') || data.images.cover;
     data.images.hero = mediaBySlot.get('images.hero') || data.images.hero;
     data.images.portraitOne = mediaBySlot.get('images.portraitOne') || data.images.portraitOne;
@@ -233,9 +244,11 @@ export function mapPublicCardToPinkData(card: PublicWeddingCardResponse): PinkWe
     data.venueName = event?.venueName || data.venueName;
     data.address = event?.address || data.address;
     data.mapUrl = event?.linkMap || data.mapUrl;
+    data.guestList = event?.guestList || '';
     data.showGroomGift = Boolean(groomQr);
     data.showBrideGift = Boolean(brideQr);
     data.showGiftSection = Boolean(groomQr || brideQr);
+    data.musicTrack = card.musicTrack?.fileUrl ? card.musicTrack : null;
     data.images.cover = mediaBySlot.get('images.cover') || data.images.cover;
     data.images.portraitOne = mediaBySlot.get('images.portraitOne') || data.images.portraitOne;
     data.images.portraitTwo = mediaBySlot.get('images.portraitTwo') || data.images.portraitTwo;

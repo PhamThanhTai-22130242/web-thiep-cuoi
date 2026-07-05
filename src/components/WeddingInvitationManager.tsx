@@ -9,6 +9,7 @@ import {
     WeddingCardWishManagementResponse,
 } from '../models/wedding-card.model';
 import { weddingCardService } from '../services/wedding-card.service';
+import { encodeGuestName } from '../utils/guest';
 import './WeddingInvitationManager.css';
 
 type InvitationStatus = 'active' | 'draft';
@@ -30,6 +31,7 @@ interface InvitationCard {
     publicUrl: string;
     updatedAt?: string;
     eventDate?: string;
+    guestList?: string;
 }
 
 const statusLabels: Record<InvitationStatus, string> = {
@@ -128,6 +130,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
     const thumbnail = config?.thumbnailPath || card.template.previewImg || getMediaUrl(card, 'images.cover') || fallbackThumbnail;
     const editPath = config?.editorPath || '';
     const updatedAt = card.updatedAt || card.createdAt;
+    const guestList = event?.guestList || '';
 
     return {
         id: card.weddingId,
@@ -146,6 +149,7 @@ function mapCard(card: MyWeddingCardResponse): InvitationCard {
         publicUrl: `/thiep/${card.slug}`,
         updatedAt,
         eventDate: event?.eventDate,
+        guestList,
     };
 }
 
@@ -205,6 +209,7 @@ function WeddingInvitationManager() {
     const [rsvpMessage, setRsvpMessage] = useState('');
     const [rsvpFilter, setRsvpFilter] = useState<'all' | 'yes' | 'no'>('all');
     const toastTimerRef = useRef<number | null>(null);
+    const [selectedGuestCard, setSelectedGuestCard] = useState<InvitationCard | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
@@ -391,10 +396,10 @@ function WeddingInvitationManager() {
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        
+
         const selectedRsvpCard = invitations.find((inv) => inv.id === rsvpCardId);
         const fileNameSuffix = selectedRsvpCard ? `_${selectedRsvpCard.couple.replace(/\s+/g, '_')}` : '';
-        
+
         link.setAttribute('href', url);
         link.setAttribute('download', `danh_sach_xac_nhan_tham_du${fileNameSuffix}.csv`);
         link.style.visibility = 'hidden';
@@ -419,6 +424,14 @@ function WeddingInvitationManager() {
                 setCommentMessage(error instanceof Error ? error.message : 'Không thể cập nhật bình luận.');
             })
             .finally(() => setUpdatingWishId(null));
+    };
+
+    const openGuestManager = (card: InvitationCard) => {
+        setSelectedGuestCard(card);
+    };
+
+    const closeGuestManager = () => {
+        setSelectedGuestCard(null);
     };
 
     return (
@@ -557,6 +570,10 @@ function WeddingInvitationManager() {
                                 <Users size={15} strokeWidth={2.3} />
                                 <span>Xác nhận tham dự</span>
                             </button>
+                            <button type="button" onClick={() => openGuestManager(invitation)}>
+                                <Users size={15} strokeWidth={2.3} />
+                                <span>Gửi thiệp khách mời</span>
+                            </button>
                         </div>
                     </article>
                 ))}
@@ -567,9 +584,7 @@ function WeddingInvitationManager() {
                     <div className="wim-comment-panel">
                         <div className="wim-comment-head">
                             <div>
-                                <p>Quản lí bình luận</p>
-                                <h2 id="wim-comment-title">{selectedCommentCard.couple}</h2>
-                                <span>/{selectedCommentCard.slug}</span>
+                                <p id="wim-comment-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#7c160f', margin: 0, textTransform: 'none', letterSpacing: 'normal' }}>Quản lí bình luận</p>
                             </div>
                             <button type="button" aria-label="Đóng quản lí bình luận" onClick={closeCommentManager}>
                                 <X size={20} strokeWidth={2.4} />
@@ -662,12 +677,10 @@ function WeddingInvitationManager() {
                 return (
                     <div className="wim-rsvp-modal" role="dialog" aria-modal="true" aria-labelledby="wim-rsvp-title">
                         <div className="wim-rsvp-panel">
-                            <div className="wim-rsvp-head">
-                                <div>
-                                    <p>Danh sách xác nhận tham dự</p>
-                                    <h2 id="wim-rsvp-title">{selectedRsvpCard?.couple}</h2>
-                                    <span>/{selectedRsvpCard?.slug}</span>
-                                </div>
+                             <div className="wim-rsvp-head">
+                                 <div>
+                                     <p id="wim-rsvp-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#7c160f', margin: 0, textTransform: 'none', letterSpacing: 'normal' }}>Danh sách xác nhận tham dự</p>
+                                 </div>
                                 <button type="button" aria-label="Đóng" onClick={closeRsvpManager}>
                                     <X size={20} strokeWidth={2.4} />
                                 </button>
@@ -730,6 +743,65 @@ function WeddingInvitationManager() {
                                                 </span>
                                             </article>
                                         ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
+
+            {selectedGuestCard && (() => {
+                const guests = (selectedGuestCard.guestList || '')
+                    .split('\n')
+                    .map((g) => g.trim())
+                    .filter(Boolean);
+
+                return (
+                    <div className="wim-guest-modal" role="dialog" aria-modal="true" aria-labelledby="wim-guest-title">
+                        <div className="wim-guest-panel">
+                             <div className="wim-guest-head">
+                                 <div>
+                                     <p id="wim-guest-title" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#7c160f', margin: 0, textTransform: 'none', letterSpacing: 'normal' }}>Gửi thiệp khách mời</p>
+                                 </div>
+                                <button type="button" aria-label="Đóng gửi thiệp khách mời" onClick={closeGuestManager}>
+                                    <X size={20} strokeWidth={2.4} />
+                                </button>
+                            </div>
+
+                            <div className="wim-guest-body">
+                                {guests.length === 0 ? (
+                                    <div className="wim-guest-empty">
+                                        <p>Bạn chưa thiết lập danh sách khách mời cho mẫu thiệp này.</p>
+                                        <span>Hãy nhấn nút <strong>Chỉnh sửa</strong> thiệp, tìm mục <strong>Danh sách khách mời</strong>, nhập danh sách (mỗi dòng một người) và lưu lại để sử dụng chức năng này.</span>
+                                    </div>
+                                ) : (
+                                    <div className="wim-guest-list">
+                                        {guests.map((guest, idx) => {
+                                            const guestUrl = `${window.location.origin}/thiep/${selectedGuestCard.slug}/${encodeGuestName(guest)}`;
+
+                                            return (
+                                                <article className="wim-guest-item" key={`${guest}-${idx}`}>
+                                                    <div className="wim-guest-info">
+                                                        <strong className="wim-guest-name">{guest}</strong>
+                                                        <span className="wim-guest-url">{guestUrl}</span>
+                                                    </div>
+                                                    <div className="wim-guest-actions">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                 navigator.clipboard.writeText(guestUrl);
+                                                                 showToast(`Đã copy link của ${guest}`);
+                                                            }}
+                                                            title="Copy đường dẫn thiệp cá nhân"
+                                                        >
+                                                            <LinkIcon size={13} />
+                                                            <span>Copy Link</span>
+                                                        </button>
+                                                    </div>
+                                                </article>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

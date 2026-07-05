@@ -1070,3 +1070,405 @@
   background: #b71c1c !important;
   transform: scale(1.1);
 }
+
+/* Music Section & Timeline & Modal (Identical to PinkWeddingInvitation) */
+.pwie-music-timeline-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.pwie-music-timeline-wrapper .pwie-music-timeline {
+  flex: 1;
+}
+
+.pwie-music-expand-btn {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(141, 95, 37, 0.18);
+  border-radius: 9px;
+  background: #fffdfb;
+  color: #8d5f25;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwie-music-expand-btn:hover {
+  background: #8d5f25;
+  color: #ffffff;
+}
+
+/* Music Modal Styles */
+.pwie-music-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6); /* Blurry white glass backdrop */
+  backdrop-filter: blur(12px);
+  animation: pwie-fade-in 0.22s ease both;
+}
+
+.pwie-music-modal-content {
+  position: relative;
+  width: calc(100% - 16px);
+  max-width: 1000px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  animation: pwie-scale-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.pwie-music-modal-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 10;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  color: #6b7078;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwie-music-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #111111;
+}
+
+.pwie-music-modal-header {
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.pwie-music-modal-header h3 {
+  margin: 0 0 6px;
+  color: #23121a;
+  font-size: 1.35rem;
+  font-weight: 850;
+}
+
+.pwie-music-modal-header p {
+  margin: 0;
+  color: #6b7078;
+  font-size: 0.94rem;
+  line-height: 1.4;
+}
+
+.pwie-music-modal-body {
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pwie-modal-timeline {
+  width: 100%;
+}
+
+.pwie-music-modal-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 10px;
+}
+
+.pwie-music-play-circle.large {
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 6px 20px rgba(23, 13, 32, 0.3);
+}
+
+.pwie-music-modal-confirm-btn {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 23px;
+  padding: 0 36px;
+  background: #170d20;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.98rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(23, 13, 32, 0.15);
+}
+
+.pwie-music-modal-confirm-btn:hover {
+  background: #281736;
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes pwie-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pwie-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.pwie-music-timeline {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #170d20;
+  color: #ffffff;
+}
+
+.pwie-music-timeline span,
+.pwie-music-timeline strong {
+  min-width: 44px;
+  font-size: 0.86rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.pwie-music-timeline strong {
+  text-align: right;
+}
+
+.pwie-music-range {
+  position: relative;
+  display: block;
+  min-height: 26px;
+}
+
+.pwie-music-range::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, #ffffff 0 var(--pwie-music-progress), rgba(255, 255, 255, 0.28) var(--pwie-music-progress) 100%);
+  transform: translateY(-50%);
+}
+
+.pwie-music-range input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 26px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pwie-music-range input::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.pwie-music-range input::-webkit-slider-thumb {
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  appearance: none;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #1e63ff;
+  box-shadow: 0 3px 12px rgba(30, 99, 255, 0.45);
+}
+
+.pwie-music-range input::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.pwie-music-range input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  background: #1e63ff;
+  box-shadow: 0 3px 12px rgba(30, 99, 255, 0.45);
+}
+
+.pwie-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.pwie-music-play-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #170d20;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.pwie-music-play-circle:hover {
+  transform: scale(1.08);
+  background: #281736;
+}
+
+.pwie-music-play-circle.is-playing {
+  background: #d32f2f;
+  border-color: #ffffff;
+}
+
+.pwie-music-play-circle.is-playing:hover {
+  background: #b71c1c;
+}
+
+.pwie-music-remove {
+  justify-self: start;
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  border: 1px solid rgba(141, 95, 37, 0.18);
+  border-radius: 9px;
+  padding: 0 12px;
+  background: #fffdfb;
+  color: #8d5f25;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.pwie-music-empty input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(141, 95, 37, 0.16);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fffdfb;
+  color: #566070;
+  font: inherit;
+}
+
+.pwie-music-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.pwie-music-picker>button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(141, 95, 37, 0.16);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fffdfb;
+  color: #343744;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.pwie-music-modal-footer {
+  padding: 24px 28px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fffdfc;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.pwie-music-modal-play-circle {
+  display: inline-flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #170d20;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.pwie-music-modal-play-circle:hover {
+  transform: scale(1.08);
+  background: #281736;
+}
+
+.pwie-music-modal-play-circle.is-playing {
+  background: #d32f2f;
+}
+
+.pwie-music-modal-play-circle.is-playing:hover {
+  background: #b71c1c;
+}
+
+.pwie-music-modal-footer > span {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #566070;
+  flex: 1;
+}
+
+.pwie-music-modal-save {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 24px;
+  background: #170d20;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwie-music-modal-save:hover {
+  background: #281736;
+  transform: translateY(-1px);
+}

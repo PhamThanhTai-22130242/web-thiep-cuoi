@@ -2196,3 +2196,103 @@ body::-webkit-scrollbar-button {
     height: calc(100% - 46px);
   }
 }
+
+/* Music Control Button & Waves */
+.elgt-music-control-btn {
+  position: fixed;
+  right: max(16px, calc((100vw - 575px) / 2 + 16px));
+  bottom: 18px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: transparent;
+  padding: 0;
+  box-shadow: 0 8px 24px rgba(141, 95, 37, 0.35);
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+}
+
+@media (min-width: 768px) {
+  .elgt-music-control-btn {
+    right: 24px;
+    bottom: 24px;
+  }
+}
+
+.elgt-music-control-btn:hover {
+  box-shadow: 0 10px 28px rgba(141, 95, 37, 0.45);
+}
+
+.elgt-music-control-btn:not(.is-playing)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 2px;
+  background-color: #ffffff;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  border-radius: 99px;
+  z-index: 2;
+}
+
+.elgt-music-control-btn.is-playing .elgt-music-inner {
+  animation: elgt-spin 8s linear infinite;
+}
+
+.elgt-music-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8d5f25, #6a4415);
+}
+
+.elgt-music-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.elgt-music-bars i {
+  display: block;
+  width: 3px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffffff;
+  transition: height 0.2s ease;
+}
+
+.elgt-music-control-btn.is-playing .elgt-music-bars i {
+  height: var(--bar-height);
+  animation: elgt-bar-dance 0.3s ease-in-out infinite alternate;
+  animation-delay: var(--bar-delay);
+}
+
+@keyframes elgt-bar-dance {
+  0% {
+    height: 4px;
+  }
+  100% {
+    height: var(--bar-height);
+  }
+}
+
+@keyframes elgt-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
